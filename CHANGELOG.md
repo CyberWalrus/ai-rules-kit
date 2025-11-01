@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.1.5] - 2025-11-01
+
+<small>01.11.2025 23:09</small>
+
+### Changed
+
+- **Рефакторинг определения директории пакета**
+    - Вынесена логика определения директории пакета в отдельный модуль `get-package-dir.ts`
+    - Улучшена читаемость и тестируемость кода CLI модуля
+    - Добавлены unit-тесты для функции `getPackageDir` с покрытием различных сценариев (production/development окружения, относительные пути)
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/60c8ddda33a039424a0607d37ce95bb288f5ce2c" target="_blank">60c8ddd</a>
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/fdaf0ada0c67496ebcd206b1841d2c3b6545f9c0" target="_blank">fdaf0ad</a>
+
+- **Обновление зависимостей**
+    - Обновлен yarn.lock для зависимостей citty и picocolors
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/4e6a550b6f393162d771264d19e8eac2cd3d5015" target="_blank">4e6a550</a>
+
 ## [0.1.4] - 2025-11-01
 
 <small>01.11.2025 22:34</small>
