@@ -40,3 +40,6 @@ export type VersionDiff = {
     /** Файлы для обновления */
     toUpdate: string[];
 };
+
+/** Карта путей файлов и их хешей */
+export type FileHashMap = Map<string, string>;
