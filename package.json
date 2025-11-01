@@ -1,6 +1,6 @@
 {
     "name": "cursor-rules-cli",
-    "version": "0.1.5",
+    "version": "0.1.6",
     "description": "CLI tool for managing .cursor rules in projects",
     "bin": {
         "cursor-rules-cli": "./dist/cli.js"
@@ -9,8 +9,10 @@
     "scripts": {
         "build": "tsup",
         "start": "node --import tsx src/cli.ts",
-        "test:unit": "cross-env NODE_ENV=test vitest --run",
-        "test:e2e": "cross-env NODE_ENV=test vitest --run",
+        "test": "cross-env NODE_ENV=test vitest --run",
+        "test:unit": "cross-env NODE_ENV=test vitest --run --exclude '**/*.e2e.test.ts'",
+        "test:e2e": "cross-env NODE_ENV=test TEST_TYPE=e2e vitest --run",
+        "test:coverage": "cross-env NODE_ENV=test vitest --coverage",
         "typecheck": "tsc --noEmit",
         "lint": "yarn eslint --fix --report-unused-disable-directives-severity off src && yarn typecheck"
     },

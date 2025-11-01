@@ -3,7 +3,7 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
     test: {
         coverage: {
-            exclude: ['node_modules/', 'src/**/*.test.ts', 'src/**/*.d.ts'],
+            exclude: ['node_modules/', 'src/**/*.test.ts', 'src/**/*.e2e.test.ts', 'src/**/*.d.ts'],
             provider: 'v8',
             reporter: ['text', 'json', 'html'],
             thresholds: {
@@ -19,15 +19,9 @@ export default defineConfig({
             NODE_ENV: 'test',
         },
         environment: 'node',
-        exclude: ['node_modules', 'dist', '**/*.e2e.test.ts'],
+        exclude: ['node_modules', 'dist'],
         globals: true,
-        include: ['src/**/*.test.ts'],
+        include: process.env.TEST_TYPE === 'e2e' ? ['src/**/*.e2e.test.ts'] : ['src/**/*.test.ts'],
         setupFiles: ['src/test-setup.ts'],
     },
 });
-
-
-
-
-
-
