@@ -1,8 +1,10 @@
 import { access, constants } from 'node:fs/promises';
 
+import { isEmptyString } from '../helpers';
+
 /** Проверяет существование файла или директории */
 export async function pathExists(path: string): Promise<boolean> {
-    if (!path) {
+    if (isEmptyString(path)) {
         return false;
     }
 

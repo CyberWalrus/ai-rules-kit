@@ -1,9 +1,11 @@
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
+import { isEmptyString } from '../helpers';
+
 /** Получает версию из package.json пакета */
 export async function getPackageVersion(packageDir: string): Promise<string> {
-    if (!packageDir) {
+    if (isEmptyString(packageDir)) {
         throw new Error('packageDir is required');
     }
 

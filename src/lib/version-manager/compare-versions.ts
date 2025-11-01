@@ -1,11 +1,12 @@
-import type { VersionComparison } from '../../model/types/main';
+import type { VersionComparison } from '../../model';
+import { isEmptyString } from '../helpers';
 
 /** Сравнивает две версии в формате semver */
 export function compareVersions(current: string, target: string): VersionComparison {
-    if (!current) {
+    if (isEmptyString(current)) {
         throw new Error('current version is required');
     }
-    if (!target) {
+    if (isEmptyString(target)) {
         throw new Error('target version is required');
     }
 

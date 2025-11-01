@@ -1,15 +1,16 @@
 import { cp } from 'node:fs/promises';
 import { join } from 'node:path';
 
-import { RULES_DIRS } from '../../model/constants/main';
+import { RULES_DIRS } from '../../model';
+import { isEmptyString } from '../helpers';
 import { pathExists } from './path-exists';
 
 /** Копирует правила из пакета в целевую директорию */
 export async function copyRulesToTarget(packageDir: string, targetDir: string): Promise<void> {
-    if (!packageDir) {
+    if (isEmptyString(packageDir)) {
         throw new Error('packageDir is required');
     }
-    if (!targetDir) {
+    if (isEmptyString(targetDir)) {
         throw new Error('targetDir is required');
     }
 

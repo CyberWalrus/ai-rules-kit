@@ -1,15 +1,16 @@
 import { writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
-import { VERSION_FILE_NAME } from '../../model/constants/main';
-import type { VersionInfo } from '../../model/types/main';
+import type { VersionInfo } from '../../model';
+import { VERSION_FILE_NAME } from '../../model';
+import { isEmptyString } from '../helpers';
 
 /** Записывает файл версии в целевую директорию */
 export async function writeVersionFile(targetDir: string, versionInfo: VersionInfo): Promise<void> {
-    if (!targetDir) {
+    if (isEmptyString(targetDir)) {
         throw new Error('targetDir is required');
     }
-    if (!versionInfo) {
+    if (versionInfo === null || versionInfo === undefined) {
         throw new Error('versionInfo is required');
     }
 

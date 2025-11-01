@@ -1,20 +1,21 @@
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
-import { VERSION_FILE_NAME } from '../../model/constants/main';
-import type { VersionInfo } from '../../model/types/main';
+import type { VersionInfo } from '../../model';
+import { VERSION_FILE_NAME } from '../../model';
+import { isEmptyString } from '../helpers';
 import { pathExists } from './path-exists';
 
 /** Читает файл версии из целевой директории */
 export async function readVersionFile(targetDir: string): Promise<VersionInfo | null> {
-    if (!targetDir) {
+    if (isEmptyString(targetDir)) {
         throw new Error('targetDir is required');
     }
 
     const versionFilePath = join(targetDir, VERSION_FILE_NAME);
     const fileExists = await pathExists(versionFilePath);
 
-    if (!fileExists) {
+    if (fileExists === false) {
         return null;
     }
 
