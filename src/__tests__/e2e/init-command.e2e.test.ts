@@ -3,53 +3,55 @@ import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { initCommand } from '../../cli/commands/init/index';
-import { createVersionFile } from './helpers/copy-fixtures';
-import { cleanupTempDir, createTempDir } from './helpers/temp-dir';
+import { createVersionFile } from './helpers/create-version-file';
+import { tempDir } from './helpers/temp-dir';
 
 describe('Init Command E2E', () => {
-    let tempDir: string;
+    let tempDirPath: string;
     const packageDir = process.cwd();
 
     beforeEach(async () => {
-        tempDir = await createTempDir();
+        tempDirPath = await tempDir.create();
     });
 
     afterEach(async () => {
-        await cleanupTempDir(tempDir);
+        await tempDir.cleanup(tempDirPath);
     });
 
     it('должен выбрасывать ошибку при инициализации если правила уже установлены', async () => {
-        await createVersionFile(tempDir, '1.0.0');
+        await createVersionFile(tempDirPath, '1.0.0');
 
-        await expect(initCommand(packageDir, tempDir)).rejects.toThrow('Rules already initialized with version 1.0.0');
+        await expect(initCommand(packageDir, tempDirPath)).rejects.toThrow(
+            'Rules already initialized with version 1.0.0',
+        );
     });
 
     it('должен выбрасывать ошибку если package директория не существует', async () => {
-        const nonExistentDir = join(tempDir, 'non-existent-package');
+        const nonExistentDir = join(tempDirPath, 'non-existent-package');
 
-        await expect(initCommand(nonExistentDir, tempDir)).rejects.toThrow();
+        await expect(initCommand(nonExistentDir, tempDirPath)).rejects.toThrow();
     });
 
     it('должен создавать .cursor-rules-version.json файл', async () => {
-        await initCommand(packageDir, tempDir);
+        await initCommand(packageDir, tempDirPath);
 
-        const versionFilePath = join(tempDir, '.cursor-rules-version.json');
+        const versionFilePath = join(tempDirPath, '.cursor-rules-version.json');
 
         await expect(access(versionFilePath, constants.F_OK)).resolves.toBeUndefined();
     });
 
     it('должен копировать .cursor директорию', async () => {
-        await initCommand(packageDir, tempDir);
+        await initCommand(packageDir, tempDirPath);
 
-        const cursorDir = join(tempDir, '.cursor');
+        const cursorDir = join(tempDirPath, '.cursor');
 
         await expect(access(cursorDir, constants.F_OK)).resolves.toBeUndefined();
     });
 
     it('должен копировать user-rules директорию', async () => {
-        await initCommand(packageDir, tempDir);
+        await initCommand(packageDir, tempDirPath);
 
-        const userRulesDir = join(tempDir, 'user-rules');
+        const userRulesDir = join(tempDirPath, 'user-rules');
 
         await expect(access(userRulesDir, constants.F_OK)).resolves.toBeUndefined();
     });

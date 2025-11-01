@@ -3,7 +3,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 /** Создает временную директорию для тестов */
-export async function createTempDir(): Promise<string> {
+async function createTempDir(): Promise<string> {
     const tempBaseDir = tmpdir();
     const tempProjectDir = join(
         tempBaseDir,
@@ -16,7 +16,7 @@ export async function createTempDir(): Promise<string> {
 }
 
 /** Удаляет временную директорию */
-export async function cleanupTempDir(path: string): Promise<void> {
+async function cleanupTempDir(path: string): Promise<void> {
     if (!path) {
         return;
     }
@@ -25,8 +25,19 @@ export async function cleanupTempDir(path: string): Promise<void> {
 }
 
 /** Возвращает путь к временной директории проекта */
-export function getTempProjectDir(): string {
+function getTempProjectDir(): string {
     const tempBaseDir = tmpdir();
 
     return join(tempBaseDir, `cursor-rules-test-${Date.now()}`);
 }
+
+/** Фабрика для работы с временными директориями */
+export const tempDir: {
+    cleanup: (path: string) => Promise<void>;
+    create: () => Promise<string>;
+    getProjectDir: () => string;
+} = {
+    cleanup: cleanupTempDir,
+    create: createTempDir,
+    getProjectDir: getTempProjectDir,
+};

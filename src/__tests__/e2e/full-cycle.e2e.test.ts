@@ -6,26 +6,26 @@ import { initCommand } from '../../cli/commands/init/index';
 import { replaceAllCommand } from '../../cli/commands/replace-all/index';
 import { updateCommand } from '../../cli/commands/update/index';
 import type { VersionInfo } from '../../model/types/main';
-import { cleanupTempDir, createTempDir } from './helpers/temp-dir';
+import { tempDir } from './helpers/temp-dir';
 
 describe('Full Cycle E2E', () => {
-    let tempDir: string;
+    let tempDirPath: string;
     const packageDir = process.cwd();
 
     beforeAll(async () => {
-        tempDir = await createTempDir();
+        tempDirPath = await tempDir.create();
     });
 
     afterAll(async () => {
-        await cleanupTempDir(tempDir);
+        await tempDir.cleanup(tempDirPath);
     });
 
     it('должен выполнять полный цикл: init → update → replace-all', async () => {
-        await initCommand(packageDir, tempDir);
+        await initCommand(packageDir, tempDirPath);
 
-        const cursorDir = join(tempDir, '.cursor');
-        const userRulesDir = join(tempDir, 'user-rules');
-        const versionFilePath = join(tempDir, '.cursor-rules-version.json');
+        const cursorDir = join(tempDirPath, '.cursor');
+        const userRulesDir = join(tempDirPath, 'user-rules');
+        const versionFilePath = join(tempDirPath, '.cursor-rules-version.json');
 
         await expect(access(cursorDir, constants.F_OK)).resolves.toBeUndefined();
         await expect(access(userRulesDir, constants.F_OK)).resolves.toBeUndefined();
@@ -42,7 +42,7 @@ describe('Full Cycle E2E', () => {
             setTimeout(() => resolve(), 10);
         });
 
-        await updateCommand(packageDir, tempDir);
+        await updateCommand(packageDir, tempDirPath);
 
         const versionAfterUpdate = JSON.parse(await readFile(versionFilePath, 'utf-8')) as VersionInfo;
 
@@ -52,7 +52,7 @@ describe('Full Cycle E2E', () => {
             setTimeout(() => resolve(), 10);
         });
 
-        await replaceAllCommand(packageDir, tempDir);
+        await replaceAllCommand(packageDir, tempDirPath);
 
         const versionAfterReplace = JSON.parse(await readFile(versionFilePath, 'utf-8')) as VersionInfo;
         const timestampAfterReplace = new Date(versionAfterReplace.installedAt).getTime();
@@ -66,7 +66,7 @@ describe('Full Cycle E2E', () => {
     });
 
     it('должен корректно обновлять timestamp на каждом шаге', async () => {
-        const tempDir2: string = await createTempDir();
+        const tempDir2: string = await tempDir.create();
 
         await initCommand(packageDir, tempDir2);
         const versionFilePath: string = join(tempDir2, '.cursor-rules-version.json');
@@ -94,11 +94,11 @@ describe('Full Cycle E2E', () => {
 
         expect(timestampReplace).toBeGreaterThan(timestampUpdate);
 
-        await cleanupTempDir(tempDir2);
+        await tempDir.cleanup(tempDir2);
     });
 
     it('должен сохранять целостность файловой системы после всех операций', async () => {
-        const tempDir3: string = await createTempDir();
+        const tempDir3: string = await tempDir.create();
 
         await initCommand(packageDir, tempDir3);
         await updateCommand(packageDir, tempDir3);
@@ -116,6 +116,6 @@ describe('Full Cycle E2E', () => {
         await expect(access(userRulesDir, constants.F_OK)).resolves.toBeUndefined();
         await expect(access(versionFilePath, constants.F_OK)).resolves.toBeUndefined();
 
-        await cleanupTempDir(tempDir3);
+        await tempDir.cleanup(tempDir3);
     });
 });
