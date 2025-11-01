@@ -1,51 +1,153 @@
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { calculateDiff } from '../calculate-diff';
+import { scanDirectory } from '../scan-directory';
+
+vi.mock('../scan-directory');
+
+const mockScanDirectory = vi.mocked(scanDirectory);
 
 describe('calculateDiff', () => {
-    it('должен возвращать все директории в toUpdate для MVP версии', () => {
-        const currentVersion = '1.0.0';
-        const targetVersion = '1.1.0';
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
 
-        const result = calculateDiff(currentVersion, targetVersion);
+    it('должен определять новые файлы (toAdd)', async () => {
+        const sourceMap = new Map([
+            ['file1.txt', 'hash1'],
+            ['file2.txt', 'hash2'],
+        ]);
+        const targetMap = new Map([['file1.txt', 'hash1']]);
 
-        expect(result.toUpdate).toHaveLength(4);
-        expect(result.toUpdate).toEqual(['.cursor/rules', '.cursor/docs', '.cursor/commands', 'user-rules']);
+        // Мокируем для каждой директории RULES_DIRS (4 директории * 2 вызова = 8)
+        mockScanDirectory
+            .mockResolvedValueOnce(sourceMap) // .cursor/rules source
+            .mockResolvedValueOnce(targetMap) // .cursor/rules target
+            .mockResolvedValue(new Map()); // Остальные директории пустые
+
+        const result = await calculateDiff('/package', '/target');
+
+        expect(result.toAdd).toContain('.cursor/rules/file2.txt');
+    });
+
+    it('должен определять измененные файлы (toUpdate)', async () => {
+        const sourceMap = new Map([['file1.txt', 'hash1-new']]);
+        const targetMap = new Map([['file1.txt', 'hash1-old']]);
+
+        mockScanDirectory.mockImplementation((path: string) => {
+            if (path.includes('.cursor/rules') && path.includes('/package')) {
+                return Promise.resolve(sourceMap);
+            }
+            if (path.includes('.cursor/rules') && path.includes('/target')) {
+                return Promise.resolve(targetMap);
+            }
+
+            return Promise.resolve(new Map());
+        });
+
+        const result = await calculateDiff('/package', '/target');
+
+        expect(result.toUpdate).toContain('.cursor/rules/file1.txt');
+    });
+
+    it('должен определять удаленные файлы (toDelete)', async () => {
+        const sourceMap = new Map([['file1.txt', 'hash1']]);
+        const targetMap = new Map([
+            ['file1.txt', 'hash1'],
+            ['file2.txt', 'hash2'],
+        ]);
+
+        mockScanDirectory.mockImplementation((path: string) => {
+            if (path.includes('.cursor/rules') && path.includes('/package')) {
+                return Promise.resolve(sourceMap);
+            }
+            if (path.includes('.cursor/rules') && path.includes('/target')) {
+                return Promise.resolve(targetMap);
+            }
+
+            return Promise.resolve(new Map());
+        });
+
+        const result = await calculateDiff('/package', '/target');
+
+        expect(result.toDelete).toContain('.cursor/rules/file2.txt');
+    });
+
+    it('должен возвращать пустые массивы если файлы идентичны', async () => {
+        const sameMap = new Map([
+            ['file1.txt', 'hash1'],
+            ['file2.txt', 'hash2'],
+        ]);
+
+        mockScanDirectory.mockResolvedValue(sameMap);
+
+        const result = await calculateDiff('/package', '/target');
+
         expect(result.toAdd).toEqual([]);
+        expect(result.toUpdate).toEqual([]);
         expect(result.toDelete).toEqual([]);
     });
 
-    it('должен выбрасывать ошибку если currentVersion пустой', () => {
-        expect(() => calculateDiff('', '1.0.0')).toThrow('currentVersion is required');
-    });
+    it('должен обрабатывать пустые директории', async () => {
+        mockScanDirectory.mockResolvedValue(new Map());
 
-    it('должен выбрасывать ошибку если currentVersion null', () => {
-        expect(() => calculateDiff(null as unknown as string, '1.0.0')).toThrow('currentVersion is required');
-    });
-
-    it('должен выбрасывать ошибку если targetVersion пустой', () => {
-        expect(() => calculateDiff('1.0.0', '')).toThrow('targetVersion is required');
-    });
-
-    it('должен выбрасывать ошибку если targetVersion null', () => {
-        expect(() => calculateDiff('1.0.0', null as unknown as string)).toThrow('targetVersion is required');
-    });
-
-    it('должен возвращать пустые массивы toAdd и toDelete', () => {
-        const currentVersion = '0.1.0';
-        const targetVersion = '0.2.0';
-
-        const result = calculateDiff(currentVersion, targetVersion);
+        const result = await calculateDiff('/package', '/target');
 
         expect(result.toAdd).toEqual([]);
+        expect(result.toUpdate).toEqual([]);
         expect(result.toDelete).toEqual([]);
     });
 
-    it('должен работать с разными версиями', () => {
-        const result1 = calculateDiff('1.0.0', '2.0.0');
-        const result2 = calculateDiff('0.1.0', '0.1.1');
+    it('должен выбрасывать ошибку если packageDir пустой', async () => {
+        await expect(calculateDiff('', '/target')).rejects.toThrow('packageDir is required');
+    });
 
-        expect(result1.toUpdate).toEqual(['.cursor/rules', '.cursor/docs', '.cursor/commands', 'user-rules']);
-        expect(result2.toUpdate).toEqual(['.cursor/rules', '.cursor/docs', '.cursor/commands', 'user-rules']);
+    it('должен выбрасывать ошибку если packageDir null', async () => {
+        await expect(calculateDiff(null as unknown as string, '/target')).rejects.toThrow('packageDir is required');
+    });
+
+    it('должен выбрасывать ошибку если packageDir undefined', async () => {
+        await expect(calculateDiff(undefined as unknown as string, '/target')).rejects.toThrow(
+            'packageDir is required',
+        );
+    });
+
+    it('должен выбрасывать ошибку если targetDir пустой', async () => {
+        await expect(calculateDiff('/package', '')).rejects.toThrow('targetDir is required');
+    });
+
+    it('должен выбрасывать ошибку если targetDir null', async () => {
+        await expect(calculateDiff('/package', null as unknown as string)).rejects.toThrow('targetDir is required');
+    });
+
+    it('должен выбрасывать ошибку если targetDir undefined', async () => {
+        await expect(calculateDiff('/package', undefined as unknown as string)).rejects.toThrow(
+            'targetDir is required',
+        );
+    });
+
+    it('должен обрабатывать несколько директорий правил', async () => {
+        const sourceMap = new Map<string, string>([['file.txt', 'hash1']]);
+        const emptyMap = new Map<string, string>();
+
+        mockScanDirectory
+            .mockResolvedValueOnce(sourceMap) // .cursor/rules source
+            .mockResolvedValueOnce(emptyMap) // .cursor/rules target (empty)
+            .mockResolvedValue(new Map<string, string>()); // Остальные директории пустые
+
+        const result = await calculateDiff('/package', '/target');
+
+        expect(result.toAdd.length).toBeGreaterThan(0);
+    });
+
+    it('должен продолжать работу если одна из директорий не существует', async () => {
+        const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+        mockScanDirectory.mockRejectedValueOnce(new Error('ENOENT')).mockResolvedValue(new Map<string, string>());
+
+        const result = await calculateDiff('/package', '/target');
+
+        expect(result).toBeDefined();
+        expect(result.toAdd).toEqual([]);
+        consoleErrorSpy.mockRestore();
     });
 });
