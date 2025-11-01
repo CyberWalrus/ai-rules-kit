@@ -1,13 +1,13 @@
 import { defineCommand, runMain } from 'citty';
-import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { initCommand } from '../commands/init/index';
 import { replaceAllCommand } from '../commands/replace-all/index';
 import { updateCommand } from '../commands/update/index';
+import { getPackageDir } from './get-package-dir';
 
 const currentFilePath = fileURLToPath(import.meta.url);
-const packageDir = join(dirname(currentFilePath), '..', '..', '..');
+const packageDir = getPackageDir(currentFilePath);
 
 /** Получает текущую рабочую директорию */
 function getTargetDir(): string {
