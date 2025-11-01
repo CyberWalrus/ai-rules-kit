@@ -1,8 +1,10 @@
 import { dirname, join } from 'node:path';
 
+import { isEmptyString } from '../../lib/helpers';
+
 /** Определяет директорию пакета на основе пути к текущему файлу */
 export function getPackageDir(currentFilePath: string): string {
-    if (!currentFilePath) {
+    if (isEmptyString(currentFilePath)) {
         throw new Error('currentFilePath is required');
     }
 

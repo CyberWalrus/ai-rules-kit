@@ -35,7 +35,7 @@ describe('updateCommand', () => {
             current: '1.0.0',
             target: '1.1.0',
         });
-        mockCalculateDiff.mockReturnValue({
+        mockCalculateDiff.mockResolvedValue({
             toAdd: [],
             toDelete: [],
             toUpdate: ['.cursor/rules'],
@@ -48,7 +48,7 @@ describe('updateCommand', () => {
         expect(mockGetCurrentVersion).toHaveBeenCalledWith('/target/dir');
         expect(mockGetPackageVersion).toHaveBeenCalledWith('/package/dir');
         expect(mockCompareVersions).toHaveBeenCalledWith('1.0.0', '1.1.0');
-        expect(mockCalculateDiff).toHaveBeenCalledWith('1.0.0', '1.1.0');
+        expect(mockCalculateDiff).toHaveBeenCalledWith('/package/dir', '/target/dir');
         expect(mockCopyRulesToTarget).toHaveBeenCalledWith('/package/dir', '/target/dir');
         expect(mockWriteVersionFile).toHaveBeenCalledWith('/target/dir', {
             installedAt: expect.any(String),
@@ -108,7 +108,7 @@ describe('updateCommand', () => {
             current: '1.0.0',
             target: '2.0.0',
         });
-        mockCalculateDiff.mockReturnValue({
+        mockCalculateDiff.mockResolvedValue({
             toAdd: ['.cursor/new'],
             toDelete: ['.cursor/old'],
             toUpdate: ['.cursor/rules'],
@@ -119,7 +119,7 @@ describe('updateCommand', () => {
         await updateCommand('/package/dir', '/target/dir');
 
         expect(mockCalculateDiff).toHaveBeenCalledTimes(1);
-        expect(mockCalculateDiff).toHaveBeenCalledWith('1.0.0', '2.0.0');
+        expect(mockCalculateDiff).toHaveBeenCalledWith('/package/dir', '/target/dir');
     });
 
     it('должен обновлять версию через writeVersionFile', async () => {
@@ -130,7 +130,7 @@ describe('updateCommand', () => {
             current: '1.0.0',
             target: '1.2.0',
         });
-        mockCalculateDiff.mockReturnValue({
+        mockCalculateDiff.mockResolvedValue({
             toAdd: [],
             toDelete: [],
             toUpdate: ['.cursor/rules'],
@@ -156,7 +156,7 @@ describe('updateCommand', () => {
             current: '1.0.0',
             target: '1.1.0',
         });
-        mockCalculateDiff.mockReturnValue({
+        mockCalculateDiff.mockResolvedValue({
             toAdd: [],
             toDelete: [],
             toUpdate: ['.cursor/rules'],
@@ -184,7 +184,7 @@ describe('updateCommand', () => {
             current: '1.0.0',
             target: '1.0.1',
         });
-        mockCalculateDiff.mockReturnValue({
+        mockCalculateDiff.mockResolvedValue({
             toAdd: [],
             toDelete: [],
             toUpdate: ['.cursor/rules'],
