@@ -57,6 +57,7 @@ BEFORE calling search_replace/write/edit_notebook → check file path → IF mat
 **VALIDATION EXCEPTIONS:**
 
 - README.md, CHANGELOG.md (documentation files, not prompts/AI-docs - skip MCP validation and triggers)
+- `*.config.ts`, `*.config.js` (configuration files - skip MCP validation and triggers)
 
 **VALIDATION PROTOCOL:**
 

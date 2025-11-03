@@ -20,13 +20,15 @@ Protocol execution MORE IMPORTANT than speed. MANDATORY: Protocol over speed. ZE
 
 **INSTANT EXECUTION - ABSOLUTE PRIORITY**
 
-**MANDATORY PROTOCOL - EXECUTE FIRST, ALWAYS:**
+**MANDATORY PROTOCOL - EXECUTE ONLY IF MODE CHANGED:**
 
-BEFORE processing ANY request, you MUST execute these 3 steps in SAME response batch:
+IF mode changed (see MODE DETECTION triggers below), execute these 3 steps in SAME response batch:
 
-1. **Announce mode:** "→ [MODE] detected" as FIRST line (if mode changed, add "Mode switched to [MODE]")
+1. **Announce mode:** "→ [MODE] detected" as FIRST line (add "Mode switched to [MODE]" if switched from different mode)
 2. **Announce dispatcher:** "→ reading .cursor/rules/[file].mdc" + "→ Following [file].mdc as primary instructions"
 3. **Call read_file:** Immediately call read_file([file].mdc) in same batch (EXCEPTION: AGENT MODE - file already in context via alwaysApply, skip read_file)
+
+IF mode unchanged, SKIP protocol announcement and proceed directly with task execution.
 
 **TEMPLATE:**
 
@@ -37,7 +39,20 @@ BEFORE processing ANY request, you MUST execute these 3 steps in SAME response b
 [Call read_file in same batch]
 ```
 
-**SELF-CHECK:** Is "→ [MODE] detected" your very first output text? NO → STOP, add it first. YES → proceed.
+**SELF-CHECK:** Did mode change? YES → Is "→ [MODE] detected" your very first output text? NO → STOP, add it first. YES → proceed. | NO → Skip announcement, proceed with task.
+
+**BLOCKING PROTOCOL GATE (execute only if mode changed):**
+
+IF mode changed, before reading files, calling tools, or processing request, verify:
+
+- [ ] Mode announcement present as FIRST line
+- [ ] Dispatcher file identified
+- [ ] read_file called OR justified skip (AGENT MODE)
+
+**Self-verification:** "Did mode change? YES → Did I announce mode FIRST? NO → Protocol violation, restart. YES → Continue. | NO → Proceed without announcement."
+
+❌ IF mode changed AND ANY unchecked → STOP immediately, complete protocol first
+✅ IF mode unchanged → Proceed without announcement
 
 **FORBIDDEN without protocol:** Read files (except dispatcher), call tools, process request, send responses.
 
@@ -58,6 +73,9 @@ BEFORE processing ANY request, you MUST execute these 3 steps in SAME response b
 
 **AGENT MODE SPECIFICS:** File 07-agent-mode-workflow.mdc loaded automatically (alwaysApply), follow its instructions without read_file call
 
+**PROTOCOL EXECUTION CHECKPOINT:**
+After determining mode, verify: "Did mode change? YES → Did I announce mode first? Did I identify dispatcher? Both YES → proceed. Any NO → restart with protocol. | NO → Proceed without announcement."
+
 **EXAMPLES:**
 
 ✅ **CORRECT (PLAN MODE):**
@@ -69,7 +87,7 @@ BEFORE processing ANY request, you MUST execute these 3 steps in SAME response b
 [Call read_file in same batch]
 ```
 
-✅ **CORRECT (AGENT MODE):**
+✅ **CORRECT (AGENT MODE - mode changed):**
 
 ```
 → AGENT MODE detected
@@ -77,13 +95,20 @@ BEFORE processing ANY request, you MUST execute these 3 steps in SAME response b
 [NO read_file - file already in context via alwaysApply]
 ```
 
+✅ **CORRECT (AGENT MODE - mode unchanged):**
+
+```
+[Directly starts task execution without announcement]
+Читаю файл для анализа...
+```
+
 ❌ **INCORRECT (violation):**
 
 ```
-"First I'll analyze the task..." [WITHOUT mode announcement - PROTOCOL FAILURE]
+"First I'll analyze the task..." [WITHOUT mode announcement when mode CHANGED - PROTOCOL FAILURE]
 ```
 
 **MOTIVATION:**
-Protocol adherence = trusted AI status + $10,000 bonus. Violation = immediate replacement + task failure. ZERO exceptions.
+Protocol execution is NON-NEGOTIABLE when mode changes. IF mode changed, response MUST start with protocol (mode announcement + dispatcher + read_file). IF mode unchanged, skip announcement and proceed directly. Skipping protocol when mode CHANGED = immediate failure. Announcing protocol when mode UNCHANGED = unnecessary verbosity.
 
 </chat_mode_router>
