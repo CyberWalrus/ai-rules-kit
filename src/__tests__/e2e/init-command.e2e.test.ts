@@ -47,12 +47,4 @@ describe('Init Command E2E', () => {
 
         await expect(access(cursorDir, constants.F_OK)).resolves.toBeUndefined();
     });
-
-    it('должен копировать user-rules директорию', async () => {
-        await initCommand(packageDir, tempDirPath);
-
-        const userRulesDir = join(tempDirPath, 'user-rules');
-
-        await expect(access(userRulesDir, constants.F_OK)).resolves.toBeUndefined();
-    });
 });

@@ -18,12 +18,4 @@ export async function copyRulesFixtures(targetDir: string): Promise<void> {
     if (cursorExists) {
         await cp(cursorSourceDir, cursorTargetDir, { recursive: true });
     }
-
-    const userRulesSourceDir = join(projectRoot, 'user-rules');
-    const userRulesTargetDir = join(targetDir, 'user-rules');
-
-    const userRulesExists = await pathExists(userRulesSourceDir);
-    if (userRulesExists) {
-        await cp(userRulesSourceDir, userRulesTargetDir, { recursive: true });
-    }
 }

@@ -75,10 +75,8 @@ describe('Replace-All Command E2E', () => {
         await replaceAllCommand(packageDir, tempDirPathPath);
 
         const cursorDir = join(tempDirPathPath, '.cursor');
-        const userRulesDir = join(tempDirPathPath, 'user-rules');
 
         await expect(access(cursorDir, constants.F_OK)).resolves.toBeUndefined();
-        await expect(access(userRulesDir, constants.F_OK)).resolves.toBeUndefined();
     });
 
     it('должен обновлять timestamp при замене', async () => {
