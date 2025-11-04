@@ -1,5 +1,75 @@
 # Changelog
 
+## [0.1.9] - 2025-11-04
+
+<small>04.11.2025 04:01</small>
+
+### Added
+
+- **Автоматическая проверка и обновление версии пакета**
+    - Добавлены функции для получения версии из npm registry и автоматического обновления пакета
+    - Реализована проверка версии перед выполнением CLI команд с автоматическим обновлением при необходимости
+    - Добавлены функции `getNpmVersion`, `updatePackage` и `checkAndUpdatePackage` в модуль version-manager
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/d63352100769df332a351ed0b63b419a8491ef9f" target="_blank">d633521</a>
+
+- **Интеграция проверки версии в CLI**
+    - Добавлена автоматическая проверка версии перед выполнением команд init, replace-all и update
+    - Созданы вспомогательные функции `ensureLatestVersion` и `getTargetDir` для работы CLI
+    - Обеспечена обработка ошибок при проверке версии без блокировки выполнения команд
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/f470f31b6e9352b99dcd982e7953f70184125a07" target="_blank">f470f31</a>
+
+- **Тесты для функций проверки версии**
+    - Добавлены unit тесты для всех новых функций проверки и обновления версии
+    - Покрытие тестами функций работы с npm registry и обновления пакета
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/083c167adf7d2f77ee31528ac062a5fc16906c26" target="_blank">083c167</a>
+
+### Changed
+
+- **Рефакторинг обработки путей файлов**
+    - Упрощена обработка путей в `calculateDiff` и `scanDirectory` с заменой обратных слэшей на прямые
+    - Улучшена кроссплатформенная совместимость работы с путями
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/6b9c1849e141097caf001033b8d927412e408e9f" target="_blank">6b9c184</a>
+
+- **Обновление конфигурации CI/CD**
+    - Заменены тестовые задачи на задачи линтинга в CI/CD конфигурации
+    - Улучшена структура pipeline для более эффективной проверки качества кода
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/af54834547ea3308e161ba1c15084e1d7dc23a7c" target="_blank">af54834</a>
+
+- **Обновление зависимостей и инструментов**
+    - Обновлен ai-friendly-runner до версии 0.4.0
+    - Добавлена конфигурация knip для анализа неиспользуемого кода
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/934b746ca742b756fc6ce7a1aaee8f2bea8f3166" target="_blank">934b746</a>
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/52cff61f783c7f1474e4b110ccca0e1b785c8d88" target="_blank">52cff61</a>
+
+- **Упрощение проверок и типизации**
+    - Упрощены проверки и добавлена типизация в catch блоках
+    - Улучшена типобезопасность обработки ошибок
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/29c7916634fc59c17b96f8dc5d3e894f16a0333e" target="_blank">29c7916</a>
+
+- **Обновление расположения файла версии**
+    - Перемещен файл версии в `.cursor/rules-version.json` для лучшей организации
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/6f2ce902fda7e5f7d6085946fb3c2cba3ec34db8" target="_blank">6f2ce90</a>
+
+- **Обновление конфигурации ESLint**
+    - Отключено правило `no-console` для поддержки логирования в CLI приложении
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/d9279c4178071d0f5cad93f0995dffa1df9211de" target="_blank">d9279c4</a>
+
+### Removed
+
+- **Удаление поддержки user-rules директории**
+    - Удалена поддержка директории user-rules для упрощения архитектуры
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/93cd9fdef01166d3c8d844f742939f5f90ba7aa4" target="_blank">93cd9fd</a>
+
+### Docs
+
+- **Обновление документации**
+    - Обновлена архитектура с добавлением scripts слоя
+    - Добавлена документация quality:check в AI-документацию
+    - Обновлен протокол роутера режимов для условного выполнения
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/95a2dadfcbabc1a1397b262f1897d557751fd7f9" target="_blank">95a2dad</a>
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/8d58ec2301bf7c42ec7a3d1b98f0bdb949e289c0" target="_blank">8d58ec2</a>
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/93a8cc180e96c962099cbe2b5f41ed3b99261193" target="_blank">93a8cc1</a>
+
 ## [0.1.7] - 2025-11-02
 
 <small>02.11.2025 04:19</small>
