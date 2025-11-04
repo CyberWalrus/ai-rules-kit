@@ -19,11 +19,10 @@ describe('calculateDiff', () => {
         ]);
         const targetMap = new Map([['file1.txt', 'hash1']]);
 
-        // Мокируем для каждой директории RULES_DIRS (4 директории * 2 вызова = 8)
         mockScanDirectory
-            .mockResolvedValueOnce(sourceMap) // .cursor/rules source
-            .mockResolvedValueOnce(targetMap) // .cursor/rules target
-            .mockResolvedValue(new Map()); // Остальные директории пустые
+            .mockResolvedValueOnce(sourceMap)
+            .mockResolvedValueOnce(targetMap)
+            .mockResolvedValue(new Map());
 
         const result = await calculateDiff('/package', '/target');
 
@@ -35,10 +34,11 @@ describe('calculateDiff', () => {
         const targetMap = new Map([['file1.txt', 'hash1-old']]);
 
         mockScanDirectory.mockImplementation((path: string) => {
-            if (path.includes('.cursor/rules') && path.includes('/package')) {
+            const normalizedPath = path.replace(/\\/g, '/');
+            if (normalizedPath.includes('.cursor/rules') && normalizedPath.includes('/package')) {
                 return Promise.resolve(sourceMap);
             }
-            if (path.includes('.cursor/rules') && path.includes('/target')) {
+            if (normalizedPath.includes('.cursor/rules') && normalizedPath.includes('/target')) {
                 return Promise.resolve(targetMap);
             }
 
@@ -58,10 +58,11 @@ describe('calculateDiff', () => {
         ]);
 
         mockScanDirectory.mockImplementation((path: string) => {
-            if (path.includes('.cursor/rules') && path.includes('/package')) {
+            const normalizedPath = path.replace(/\\/g, '/');
+            if (normalizedPath.includes('.cursor/rules') && normalizedPath.includes('/package')) {
                 return Promise.resolve(sourceMap);
             }
-            if (path.includes('.cursor/rules') && path.includes('/target')) {
+            if (normalizedPath.includes('.cursor/rules') && normalizedPath.includes('/target')) {
                 return Promise.resolve(targetMap);
             }
 
@@ -131,9 +132,9 @@ describe('calculateDiff', () => {
         const emptyMap = new Map<string, string>();
 
         mockScanDirectory
-            .mockResolvedValueOnce(sourceMap) // .cursor/rules source
-            .mockResolvedValueOnce(emptyMap) // .cursor/rules target (empty)
-            .mockResolvedValue(new Map<string, string>()); // Остальные директории пустые
+            .mockResolvedValueOnce(sourceMap)
+            .mockResolvedValueOnce(emptyMap)
+            .mockResolvedValue(new Map<string, string>());
 
         const result = await calculateDiff('/package', '/target');
 
