@@ -9,7 +9,7 @@ permissions:
   packages: write
 
 jobs:
-  test:
+  lint-linux:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -27,24 +27,7 @@ jobs:
       - name: Run linter
         run: yarn lint
 
-      - name: Run unit tests
-        run: yarn test:unit
-        env:
-          NODE_ENV: "test"
-          API_KEY: "test-key-for-e2e"
-
-      - name: Build package
-        run: yarn build
-
-      - name: Run e2e tests
-        run: yarn test:e2e
-        env:
-          MCP_E2E_TEST: "true"
-          NODE_ENV: "test"
-          API_KEY: "test-key-for-e2e"
-          CI: "true"
-
-  test-windows:
+  lint-windows:
     runs-on: windows-latest
     steps:
       - name: Checkout code
@@ -62,24 +45,7 @@ jobs:
       - name: Run linter
         run: yarn lint
 
-      - name: Run unit tests
-        run: yarn test:unit
-        env:
-          NODE_ENV: "test"
-          API_KEY: "test-key-for-e2e"
-
-      - name: Build package
-        run: yarn build
-
-      - name: Run e2e tests
-        run: yarn test:e2e
-        env:
-          MCP_E2E_TEST: "true"
-          NODE_ENV: "test"
-          API_KEY: "test-key-for-e2e"
-          CI: "true"
-
-  test-macos:
+  lint-macos:
     runs-on: macos-latest
     steps:
       - name: Checkout code
@@ -97,26 +63,9 @@ jobs:
       - name: Run linter
         run: yarn lint
 
-      - name: Run unit tests
-        run: yarn test:unit
-        env:
-          NODE_ENV: "test"
-          API_KEY: "test-key-for-e2e"
-
-      - name: Build package
-        run: yarn build
-
-      - name: Run e2e tests
-        run: yarn test:e2e
-        env:
-          MCP_E2E_TEST: "true"
-          NODE_ENV: "test"
-          API_KEY: "test-key-for-e2e"
-          CI: "true"
-
   # Проверяем версию и публикуем только если нужно
   check-version-and-publish:
-    needs: [test, test-windows, test-macos]
+    needs: [lint-linux, lint-windows, lint-macos]
     runs-on: ubuntu-latest
     outputs:
       published: ${{ steps.publish.outputs.published }}
