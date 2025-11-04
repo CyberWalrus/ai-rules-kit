@@ -4,16 +4,14 @@ import { fileURLToPath } from 'node:url';
 import { initCommand } from '../commands/init/index';
 import { replaceAllCommand } from '../commands/replace-all/index';
 import { updateCommand } from '../commands/update/index';
+import { ensureLatestVersion } from './ensure-latest-version';
 import { getPackageDir } from './get-package-dir';
+import { getTargetDir } from './get-target-dir';
 
 const currentFilePath = fileURLToPath(import.meta.url);
 const packageDir = getPackageDir(currentFilePath);
 
-/** Получает текущую рабочую директорию */
-function getTargetDir(): string {
-    return process.cwd();
-}
-
+/** Главная команда CLI */
 const main = defineCommand({
     meta: {
         description: 'CLI tool for managing .cursor rules in projects',
@@ -30,7 +28,6 @@ const main = defineCommand({
             async run(): Promise<void> {
                 const targetDir = getTargetDir();
                 await initCommand(packageDir, targetDir);
-                // eslint-disable-next-line no-console
                 console.log('✅ Rules initialized successfully');
             },
         }),
@@ -43,7 +40,6 @@ const main = defineCommand({
             async run(): Promise<void> {
                 const targetDir = getTargetDir();
                 await replaceAllCommand(packageDir, targetDir);
-                // eslint-disable-next-line no-console
                 console.log('✅ Rules replaced successfully');
             },
         }),
@@ -56,7 +52,6 @@ const main = defineCommand({
             async run(): Promise<void> {
                 const targetDir = getTargetDir();
                 await updateCommand(packageDir, targetDir);
-                // eslint-disable-next-line no-console
                 console.log('✅ Rules updated successfully');
             },
         }),
@@ -65,5 +60,16 @@ const main = defineCommand({
 
 /** Запускает CLI приложение */
 export async function runCli(): Promise<void> {
+    if (packageDir === null || packageDir === undefined) {
+        throw new Error('Package directory not found');
+    }
+
+    try {
+        await ensureLatestVersion(packageDir);
+    } catch (error) {
+        const message: string = error instanceof Error ? error.message : String(error);
+        console.warn(`⚠️ Failed to check for updates: ${message}`);
+    }
+
     await runMain(main);
 }
