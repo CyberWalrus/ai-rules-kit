@@ -8,7 +8,11 @@ export const baseConfig = [
     ...configs.createMainConfig({
         rootDir: resolve(dirname(fileURLToPath(import.meta.url))),
     }),
-    {},
+    {
+        rules: {
+            'no-console': 'off',
+        },
+    },
 ] satisfies Linter.Config[];
 
 export default baseConfig;
