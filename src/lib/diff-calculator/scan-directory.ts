@@ -29,7 +29,7 @@ export async function scanDirectory(dirPath: string, baseDir: string = dirPath):
                 });
             } else if (entry.isFile()) {
                 const hash = await getFileHash(fullPath);
-                const relativePath = relative(baseDir, fullPath);
+                const relativePath = relative(baseDir, fullPath).replace(/\\/g, '/');
                 fileHashMap.set(relativePath, hash);
             }
         }
