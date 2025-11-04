@@ -32,10 +32,10 @@ describe('Init Command E2E', () => {
         await expect(initCommand(nonExistentDir, tempDirPath)).rejects.toThrow();
     });
 
-    it('должен создавать .cursor-rules-version.json файл', async () => {
+    it('должен создавать .cursor/rules-version.json файл', async () => {
         await initCommand(packageDir, tempDirPath);
 
-        const versionFilePath = join(tempDirPath, '.cursor-rules-version.json');
+        const versionFilePath = join(tempDirPath, '.cursor', 'rules-version.json');
 
         await expect(access(versionFilePath, constants.F_OK)).resolves.toBeUndefined();
     });

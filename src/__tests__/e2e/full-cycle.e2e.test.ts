@@ -24,7 +24,7 @@ describe('Full Cycle E2E', () => {
         await initCommand(packageDir, tempDirPath);
 
         const cursorDir = join(tempDirPath, '.cursor');
-        const versionFilePath = join(tempDirPath, '.cursor-rules-version.json');
+        const versionFilePath = join(cursorDir, 'rules-version.json');
 
         await expect(access(cursorDir, constants.F_OK)).resolves.toBeUndefined();
         await expect(access(versionFilePath, constants.F_OK)).resolves.toBeUndefined();
@@ -66,7 +66,7 @@ describe('Full Cycle E2E', () => {
         const tempDir2: string = await tempDir.create();
 
         await initCommand(packageDir, tempDir2);
-        const versionFilePath: string = join(tempDir2, '.cursor-rules-version.json');
+        const versionFilePath: string = join(tempDir2, '.cursor', 'rules-version.json');
 
         const versionAfterInit = JSON.parse(await readFile(versionFilePath, 'utf-8')) as VersionInfo;
         const timestampInit = new Date(versionAfterInit.installedAt).getTime();
@@ -104,7 +104,7 @@ describe('Full Cycle E2E', () => {
         const cursorRulesDir: string = join(tempDir3, '.cursor', 'rules');
         const cursorDocsDir: string = join(tempDir3, '.cursor', 'docs');
         const cursorCommandsDir: string = join(tempDir3, '.cursor', 'commands');
-        const versionFilePath: string = join(tempDir3, '.cursor-rules-version.json');
+        const versionFilePath: string = join(tempDir3, '.cursor', 'rules-version.json');
 
         await expect(access(cursorRulesDir, constants.F_OK)).resolves.toBeUndefined();
         await expect(access(cursorDocsDir, constants.F_OK)).resolves.toBeUndefined();

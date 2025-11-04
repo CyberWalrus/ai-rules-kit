@@ -23,7 +23,7 @@ describe('Replace-All Command E2E', () => {
     it('должен успешно выполнять полную замену существующих правил', async () => {
         await initCommand(packageDir, tempDirPathPath);
 
-        const versionFilePathBefore = join(tempDirPathPath, '.cursor-rules-version.json');
+        const versionFilePathBefore = join(tempDirPathPath, '.cursor', 'rules-version.json');
         const contentBefore = JSON.parse(await readFile(versionFilePathBefore, 'utf-8')) as VersionInfo;
 
         await new Promise<void>((resolve) => {
@@ -32,7 +32,7 @@ describe('Replace-All Command E2E', () => {
 
         await replaceAllCommand(packageDir, tempDirPathPath);
 
-        const versionFilePathAfter = join(tempDirPathPath, '.cursor-rules-version.json');
+        const versionFilePathAfter = join(tempDirPathPath, '.cursor', 'rules-version.json');
         const contentAfter = JSON.parse(await readFile(versionFilePathAfter, 'utf-8')) as VersionInfo;
 
         expect(contentAfter.version).toBe(contentBefore.version);
@@ -45,7 +45,7 @@ describe('Replace-All Command E2E', () => {
         await replaceAllCommand(packageDir, tempDirPathPath);
 
         const cursorDir = join(tempDirPathPath, '.cursor');
-        const versionFilePath = join(tempDirPathPath, '.cursor-rules-version.json');
+        const versionFilePath = join(cursorDir, 'rules-version.json');
 
         await expect(access(cursorDir, constants.F_OK)).resolves.toBeUndefined();
         await expect(access(versionFilePath, constants.F_OK)).resolves.toBeUndefined();
@@ -62,7 +62,7 @@ describe('Replace-All Command E2E', () => {
 
         await replaceAllCommand(packageDir, tempDirPathPath);
 
-        const versionFilePath = join(tempDirPathPath, '.cursor-rules-version.json');
+        const versionFilePath = join(tempDirPathPath, '.cursor', 'rules-version.json');
         const content = JSON.parse(await readFile(versionFilePath, 'utf-8')) as VersionInfo;
 
         expect(content).toHaveProperty('version');
@@ -82,7 +82,7 @@ describe('Replace-All Command E2E', () => {
     it('должен обновлять timestamp при замене', async () => {
         await createVersionFile(tempDirPathPath, '0.0.1');
 
-        const versionFilePath = join(tempDirPathPath, '.cursor-rules-version.json');
+        const versionFilePath = join(tempDirPathPath, '.cursor', 'rules-version.json');
         const contentBefore = JSON.parse(await readFile(versionFilePath, 'utf-8')) as VersionInfo;
         const timestampBefore = new Date(contentBefore.installedAt).getTime();
 

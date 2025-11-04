@@ -1,4 +1,4 @@
-import { writeFile } from 'node:fs/promises';
+import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 import type { VersionInfo } from '../../model';
@@ -14,10 +14,12 @@ export async function writeVersionFile(targetDir: string, versionInfo: VersionIn
         throw new Error('versionInfo is required');
     }
 
-    const versionFilePath = join(targetDir, VERSION_FILE_NAME);
+    const cursorDir = join(targetDir, '.cursor');
+    const versionFilePath = join(cursorDir, VERSION_FILE_NAME);
     const content = JSON.stringify(versionInfo, null, 2);
 
     try {
+        await mkdir(cursorDir, { recursive: true });
         await writeFile(versionFilePath, content, 'utf-8');
     } catch (error) {
         throw new Error(`Failed to write version file: ${String(error)}`);

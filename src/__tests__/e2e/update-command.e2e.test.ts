@@ -29,7 +29,7 @@ describe('Update Command E2E', () => {
     it('должен пропускать обновление если версии идентичны', async () => {
         await initCommand(packageDir, tempDirPathPath);
 
-        const versionFilePath = join(tempDirPathPath, '.cursor-rules-version.json');
+        const versionFilePath = join(tempDirPathPath, '.cursor', 'rules-version.json');
         const versionBeforeUpdate = await readFile(versionFilePath, 'utf-8');
 
         await updateCommand(packageDir, tempDirPathPath);
@@ -42,12 +42,12 @@ describe('Update Command E2E', () => {
     it('должен успешно обновлять при наличии diff', async () => {
         await createVersionFile(tempDirPathPath, '0.0.1');
 
-        const versionFilePathBefore = join(tempDirPathPath, '.cursor-rules-version.json');
+        const versionFilePathBefore = join(tempDirPathPath, '.cursor', 'rules-version.json');
         const contentBefore = JSON.parse(await readFile(versionFilePathBefore, 'utf-8')) as VersionInfo;
 
         await updateCommand(packageDir, tempDirPathPath);
 
-        const versionFilePathAfter = join(tempDirPathPath, '.cursor-rules-version.json');
+        const versionFilePathAfter = join(tempDirPathPath, '.cursor', 'rules-version.json');
         const contentAfter = JSON.parse(await readFile(versionFilePathAfter, 'utf-8')) as VersionInfo;
 
         expect(contentAfter.version).not.toBe(contentBefore.version);
@@ -57,7 +57,7 @@ describe('Update Command E2E', () => {
     it('должен обновлять timestamp при обновлении', async () => {
         await createVersionFile(tempDirPathPath, '0.0.1');
 
-        const versionFilePath = join(tempDirPathPath, '.cursor-rules-version.json');
+        const versionFilePath = join(tempDirPathPath, '.cursor', 'rules-version.json');
         const contentBefore = JSON.parse(await readFile(versionFilePath, 'utf-8')) as VersionInfo;
         const timestampBefore = new Date(contentBefore.installedAt).getTime();
 

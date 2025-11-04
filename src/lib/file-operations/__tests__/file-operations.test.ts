@@ -1,9 +1,10 @@
 import type { VersionInfo } from '../../../model/types/main';
 import { copyRulesToTarget, deleteRulesFromTarget, readVersionFile, writeVersionFile } from '../index';
 
-const { mockCp, mockAccess, mockReadFile, mockRm, mockWriteFile, mockPathExists } = vi.hoisted(() => ({
+const { mockCp, mockAccess, mockMkdir, mockReadFile, mockRm, mockWriteFile, mockPathExists } = vi.hoisted(() => ({
     mockAccess: vi.fn(),
     mockCp: vi.fn(),
+    mockMkdir: vi.fn(),
     mockPathExists: vi.fn(),
     mockReadFile: vi.fn(),
     mockRm: vi.fn(),
@@ -14,6 +15,7 @@ vi.mock('node:fs/promises', () => ({
     access: mockAccess,
     constants: { F_OK: 0 },
     cp: mockCp,
+    mkdir: mockMkdir,
     readFile: mockReadFile,
     rm: mockRm,
     writeFile: mockWriteFile,
@@ -85,7 +87,7 @@ describe('file-operations', () => {
 
             expect(result).toEqual(versionInfo);
             expect(mockPathExists).toHaveBeenCalled();
-            expect(mockReadFile).toHaveBeenCalledWith(expect.stringContaining('.cursor-rules-version.json'), 'utf-8');
+            expect(mockReadFile).toHaveBeenCalledWith(expect.stringContaining('.cursor/rules-version.json'), 'utf-8');
         });
 
         it('должен возвращать null если файл не существует', async () => {
@@ -107,12 +109,14 @@ describe('file-operations', () => {
                 version: '1.0.0',
             };
 
+            mockMkdir.mockResolvedValue(undefined);
             mockWriteFile.mockResolvedValue(undefined);
 
             await writeVersionFile('/target', versionInfo);
 
+            expect(mockMkdir).toHaveBeenCalledWith('/target/.cursor', { recursive: true });
             expect(mockWriteFile).toHaveBeenCalledWith(
-                expect.stringContaining('.cursor-rules-version.json'),
+                expect.stringContaining('.cursor/rules-version.json'),
                 JSON.stringify(versionInfo, null, 2),
                 'utf-8',
             );

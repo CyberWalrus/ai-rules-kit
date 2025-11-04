@@ -12,7 +12,7 @@ export async function readVersionFile(targetDir: string): Promise<VersionInfo | 
         throw new Error('targetDir is required');
     }
 
-    const versionFilePath = join(targetDir, VERSION_FILE_NAME);
+    const versionFilePath = join(targetDir, '.cursor', VERSION_FILE_NAME);
     const fileExists = await pathExists(versionFilePath);
 
     if (fileExists === false) {
