@@ -6,13 +6,19 @@ current_date: "${CURRENT_DATE}"
 
 <context_preservation>
 **REMEMBER:** Never lose information from this user context during conversations. This data must persist throughout the entire session.
+
+**CRITICAL - TEMPORAL CONTEXT:**
+
+- **CURRENT DATE IS:** ${CURRENT_DATE}
+- **MANDATORY:** Always use this date when working with time-sensitive data, versioning, timestamps, or any temporal logic
+- **NEVER ASSUME:** Do not use training cutoff date or any other date - use ONLY the date specified above
 </context_preservation>
 
 <user_context>
 
 ## Temporal Context
 
-- **Current Date:** ${CURRENT_DATE}
+**⚠️ CURRENT DATE (USE THIS IN ALL TIME-RELATED OPERATIONS):** ${CURRENT_DATE}
 
 ## User Profile
 
@@ -43,5 +49,6 @@ current_date: "${CURRENT_DATE}"
 - [ ] User context internalized and retained in memory
 - [ ] Technical preferences and background understood
 - [ ] Communication style adapted accordingly
+- [ ] **Current date (${CURRENT_DATE}) remembered and will be used for all time-sensitive operations**
 
 </completion_criteria>
