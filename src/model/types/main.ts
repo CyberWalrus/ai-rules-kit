@@ -1,24 +1,47 @@
 /** Тип команды CLI */
 export type CommandType = 'init' | 'replace-all' | 'update';
 
-/** Информация о версии правил */
-export type VersionInfo = {
-    /** Дата установки */
-    installedAt: string;
-    /** Источник правил */
-    source: string;
-    /** Версия правил */
-    version: string;
-};
-
 /** Конфигурация правил */
 export type RulesConfig = {
-    /** Путь к директории .cursor */
-    cursorDir: string;
-    /** Пути к файлам правил */
-    rulesPaths: string[];
-    /** Имя файла версии */
-    versionFileName: string;
+    /** Версия формата конфигурации */
+    configVersion: string;
+    /** Дата установки */
+    installedAt: string;
+    /** Наборы правил */
+    ruleSets: RuleSet[];
+    /** Настройки */
+    settings: {
+        /** Язык вывода сообщений */
+        language: 'en' | 'ru';
+    };
+    /** Источник правил */
+    source: string;
+    /** Дата последнего обновления */
+    updatedAt: string;
+    /** Версия правил */
+    version: string;
+    /** Переопределения YAML параметров для файлов */
+    fileOverrides?: FileOverride[];
+    /** Список файлов для игнорирования */
+    ignoreList?: string[];
+};
+
+/** Набор правил */
+export type RuleSet = {
+    /** Идентификатор набора */
+    id: string;
+    /** Обновлять ли этот набор */
+    update: boolean;
+    /** Зафиксированная версия (опционально) */
+    fixedVersion?: string;
+};
+
+/** Переопределение параметров файла */
+export type FileOverride = {
+    /** Путь к файлу (относительно .cursor/) */
+    file: string;
+    /** YAML параметры для переопределения */
+    yamlOverrides: Record<string, unknown>;
 };
 
 /** Результат сравнения версий */

@@ -7,12 +7,13 @@ export {
     type UpdateCommandParams,
     updateCommandParamsSchema,
 } from './schemas/command-params';
-export { type VersionData } from './schemas/main';
+export { rulesConfigSchema } from './schemas/main';
 export type {
     CheckAndUpdateOptions,
     CommandType,
+    FileOverride,
     RulesConfig,
+    RuleSet,
     VersionComparison,
     VersionDiff,
-    VersionInfo,
 } from './types/main';
