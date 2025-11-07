@@ -1,15 +1,12 @@
 import { calculateDiff } from '../../../lib/diff-calculator/calculate-diff';
-import { copyRulesToTarget } from '../../../lib/file-operations/copy-rules-to-target';
-import { writeVersionFile } from '../../../lib/file-operations/write-version-file';
+import { copyRulesToTarget, readConfigFile, writeConfigFile } from '../../../lib/file-operations';
 import { compareVersions } from '../../../lib/version-manager/compare-versions';
 import { getCurrentVersion } from '../../../lib/version-manager/get-current-version';
 import { getPackageVersion } from '../../../lib/version-manager/get-package-version';
-import type { VersionInfo } from '../../../model';
 import { updateCommandParamsSchema } from '../../../model';
 
 /** Команда обновления правил */
 export async function updateCommand(packageDir: string, targetDir: string): Promise<void> {
-    // Валидация параметров через Zod
     try {
         updateCommandParamsSchema.parse({ packageDir, targetDir });
     } catch (error) {
@@ -27,7 +24,6 @@ export async function updateCommand(packageDir: string, targetDir: string): Prom
         throw error;
     }
 
-    // Получаем версии
     const currentVersion = await getCurrentVersion(targetDir);
     if (currentVersion === null) {
         throw new Error('Rules not initialized. Run init command first.');
@@ -35,23 +31,36 @@ export async function updateCommand(packageDir: string, targetDir: string): Prom
 
     const packageVersion = await getPackageVersion(packageDir);
 
-    // Сравниваем версии
     const comparison = compareVersions(currentVersion, packageVersion);
     if (comparison.changeType === 'none') {
         return;
     }
 
-    // Вычисляем diff между директориями
+    const config = await readConfigFile(targetDir);
+    if (config === null) {
+        throw new Error('Config file not found');
+    }
+
+    const ruleSetsToUpdate = config.ruleSets.filter((ruleSet) => ruleSet.update);
+
+    if (ruleSetsToUpdate.length === 0) {
+        return;
+    }
+
+    const knownRuleSetIds = ['base'];
+    const unknownRuleSets = ruleSetsToUpdate.filter((ruleSet) => !knownRuleSetIds.includes(ruleSet.id));
+
+    if (unknownRuleSets.length > 0) {
+        console.warn(
+            `Warning: Unknown rule set IDs found: ${unknownRuleSets.map((rs) => rs.id).join(', ')}. Proceeding anyway.`,
+        );
+    }
+
     await calculateDiff(packageDir, targetDir);
 
-    // Копируем обновленные правила
-    await copyRulesToTarget(packageDir, targetDir);
+    await copyRulesToTarget(packageDir, targetDir, config.ignoreList ?? [], config.fileOverrides ?? []);
 
-    // Обновляем версию
-    const versionInfo: VersionInfo = {
-        installedAt: new Date().toISOString(),
-        source: 'cursor-rules',
-        version: packageVersion,
-    };
-    await writeVersionFile(targetDir, versionInfo);
+    config.version = packageVersion;
+    config.updatedAt = new Date().toISOString();
+    await writeConfigFile(targetDir, config);
 }

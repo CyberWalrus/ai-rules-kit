@@ -1,4 +1,4 @@
-import { readVersionFile } from '../file-operations/read-version-file';
+import { readConfigFile } from '../file-operations/read-config-file';
 
 /** Получает текущую версию правил из целевой директории */
 export async function getCurrentVersion(targetDir: string): Promise<string | null> {
@@ -6,11 +6,11 @@ export async function getCurrentVersion(targetDir: string): Promise<string | nul
         throw new Error('targetDir is required');
     }
 
-    const versionInfo = await readVersionFile(targetDir);
+    const config = await readConfigFile(targetDir);
 
-    if (versionInfo === null) {
+    if (config === null) {
         return null;
     }
 
-    return versionInfo.version;
+    return config.version;
 }

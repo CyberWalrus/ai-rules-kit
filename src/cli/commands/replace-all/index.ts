@@ -1,13 +1,15 @@
-import { copyRulesToTarget } from '../../../lib/file-operations/copy-rules-to-target';
-import { deleteRulesFromTarget } from '../../../lib/file-operations/delete-rules-from-target';
-import { writeVersionFile } from '../../../lib/file-operations/write-version-file';
+import {
+    copyRulesToTarget,
+    deleteRulesFromTarget,
+    readConfigFile,
+    writeConfigFile,
+} from '../../../lib/file-operations';
 import { getPackageVersion } from '../../../lib/version-manager/get-package-version';
-import type { VersionInfo } from '../../../model';
+import type { RulesConfig } from '../../../model';
 import { replaceAllCommandParamsSchema } from '../../../model';
 
 /** Команда полной замены правил */
 export async function replaceAllCommand(packageDir: string, targetDir: string): Promise<void> {
-    // Валидация параметров через Zod
     try {
         replaceAllCommandParamsSchema.parse({ packageDir, targetDir });
     } catch (error) {
@@ -25,18 +27,42 @@ export async function replaceAllCommand(packageDir: string, targetDir: string): 
         throw error;
     }
 
-    // Удаляем старые правила
+    const existingConfig = await readConfigFile(targetDir);
+    const version = await getPackageVersion(packageDir);
+    const currentTimestamp = new Date().toISOString();
+
+    let config: RulesConfig;
+
+    if (existingConfig !== null) {
+        config = {
+            ...existingConfig,
+            updatedAt: currentTimestamp,
+            version,
+        };
+    } else {
+        config = {
+            configVersion: '1.0.0',
+            fileOverrides: [],
+            ignoreList: [],
+            installedAt: currentTimestamp,
+            ruleSets: [
+                {
+                    id: 'base',
+                    update: true,
+                },
+            ],
+            settings: {
+                language: 'ru',
+            },
+            source: 'cursor-rules',
+            updatedAt: currentTimestamp,
+            version,
+        };
+    }
+
     await deleteRulesFromTarget(targetDir);
 
-    // Копируем новые правила
-    await copyRulesToTarget(packageDir, targetDir);
+    await copyRulesToTarget(packageDir, targetDir, config.ignoreList ?? [], config.fileOverrides ?? []);
 
-    // Записываем версию
-    const version = await getPackageVersion(packageDir);
-    const versionInfo: VersionInfo = {
-        installedAt: new Date().toISOString(),
-        source: 'cursor-rules',
-        version,
-    };
-    await writeVersionFile(targetDir, versionInfo);
+    await writeConfigFile(targetDir, config);
 }

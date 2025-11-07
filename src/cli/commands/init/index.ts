@@ -1,13 +1,12 @@
 import { copyRulesToTarget } from '../../../lib/file-operations/copy-rules-to-target';
-import { writeVersionFile } from '../../../lib/file-operations/write-version-file';
+import { writeConfigFile } from '../../../lib/file-operations/write-config-file';
 import { getCurrentVersion } from '../../../lib/version-manager/get-current-version';
 import { getPackageVersion } from '../../../lib/version-manager/get-package-version';
-import type { VersionInfo } from '../../../model';
+import type { RulesConfig } from '../../../model';
 import { initCommandParamsSchema } from '../../../model';
 
 /** Команда инициализации правил */
 export async function initCommand(packageDir: string, targetDir: string): Promise<void> {
-    // Валидация параметров через Zod
     try {
         initCommandParamsSchema.parse({ packageDir, targetDir });
     } catch (error) {
@@ -25,21 +24,32 @@ export async function initCommand(packageDir: string, targetDir: string): Promis
         throw error;
     }
 
-    // Проверяем наличие существующих правил
     const existingVersion = await getCurrentVersion(targetDir);
     if (existingVersion !== null) {
         throw new Error(`Rules already initialized with version ${existingVersion}`);
     }
 
-    // Копируем правила
     await copyRulesToTarget(packageDir, targetDir);
 
-    // Записываем версию
     const version = await getPackageVersion(packageDir);
-    const versionInfo: VersionInfo = {
-        installedAt: new Date().toISOString(),
+    const currentTimestamp = new Date().toISOString();
+    const config: RulesConfig = {
+        configVersion: '1.0.0',
+        fileOverrides: [],
+        ignoreList: [],
+        installedAt: currentTimestamp,
+        ruleSets: [
+            {
+                id: 'base',
+                update: true,
+            },
+        ],
+        settings: {
+            language: 'ru',
+        },
         source: 'cursor-rules',
+        updatedAt: currentTimestamp,
         version,
     };
-    await writeVersionFile(targetDir, versionInfo);
+    await writeConfigFile(targetDir, config);
 }
