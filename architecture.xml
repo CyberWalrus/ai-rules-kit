@@ -17,6 +17,7 @@
       <unit path="src/cli/main" layer="cli" />
       <unit path="src/lib/file-operations" layer="lib" />
       <unit path="src/lib/version-manager" layer="lib" />
+      <unit path="src/lib/version-manager/respawn-process" layer="lib" />
       <unit path="src/lib/diff-calculator" layer="lib" />
       <unit path="scripts" layer="scripts" />
     </module_units>
@@ -80,9 +81,11 @@
 
           <directory name="version-manager">
             <module name="version-manager">
-              <facade name="index.ts" role="unit_facade" purpose="Управление версиями" exports="getCurrentVersion, getPackageVersion, compareVersions" />
+              <facade name="index.ts" role="unit_facade" purpose="Управление версиями" exports="getCurrentVersion, getPackageVersion, compareVersions, respawnProcess" />
+              <file name="respawn-process.ts" role="function" purpose="Перезапуск CLI процесса для загрузки новой версии кода" />
               <directory name="__tests__">
                 <test name="version-manager.test.ts" role="unit_test" />
+                <test name="respawn-process.test.ts" role="unit_test" />
               </directory>
             </module>
           </directory>
