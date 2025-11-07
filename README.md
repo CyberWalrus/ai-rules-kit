@@ -87,7 +87,7 @@
 
 ```json
 {
-  "$schema": "https://json.schemastore.org/cursor-rules-config-1.0.0.json",
+  "$schema": "https://raw.githubusercontent.com/CyberWalrus/cursor-rules-cli/main/.cursor/cursor-rules-config-1.0.0.schema.json",
   "configVersion": "1.0.0",
   "installedAt": "2025-11-07T10:00:00.000Z",
   "updatedAt": "2025-11-07T10:00:00.000Z",
@@ -148,7 +148,7 @@
 }
 ```
 
-> **📋 JSON Schema:** Файл конфигурации поддерживает автодополнение через JSON Schema. Схема автоматически публикуется в [SchemaStore.org](https://www.schemastore.org/json/) при обновлении версии.
+> **📋 JSON Schema:** Файл конфигурации поддерживает автодополнение через JSON Schema. Схема доступна через GitHub и автоматически подхватывается IDE через поле `$schema` в конфигурации.
 
 ### MCP Серверы
 
