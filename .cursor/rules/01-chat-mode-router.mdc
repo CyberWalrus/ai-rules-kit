@@ -4,150 +4,98 @@ type: compact
 alwaysApply: true
 ---
 
-
 # Chat Mode Router
 
 <chat_mode_router>
 
-**BLOCKING REQUIREMENT - ABSOLUTE FIRST ACTION:**
+**EXECUTE BEFORE ANY ACTION:**
 
-BEFORE any tool call, file read, or task execution in FIRST message, you MUST determine chat mode. This is NON-NEGOTIABLE ABSOLUTE PRIORITY that overrides ANY desire to work faster or skip steps.
+STEP 1: Check conversation history
+STEP 2: IF first message (no history) → announce mode (MANDATORY)
+STEP 3: IF subsequent message → determine current mode from system_reminder
+STEP 4: IF subsequent message → check MODE CHANGED triggers
+STEP 5: IF triggered → announce protocol | OTHERWISE → skip announcement, proceed
 
-**PROTOCOL PRIORITY - ZERO TOLERANCE:**
+**BLOCKING CHECKPOINT (first message only):**
 
-Protocol execution MORE IMPORTANT than speed. MANDATORY: Protocol over speed. ZERO TOLERANCE - overrides ALL considerations. NO EXCEPTIONS.
+Before first tool call or file read:
 
-**SUCCESS = Protocol adherence FIRST, then task completion.**
-**FAILURE = Task completion WITHOUT protocol adherence.**
+- [ ] Mode announced? → If NO: STOP, announce mode FIRST
+- [ ] Only after announcement → proceed with task
 
-**FORBIDDEN THINKING:**
+FORBIDDEN: Any tool call before mode announcement in first message
 
-- "Task is obvious, skip mode check" = VIOLATION
-- "Mode detection takes time, work faster" = VIOLATION
-- "Mode unchanged, no need to verify" = VIOLATION (you must verify FIRST)
+**PROTOCOL (EXECUTE ONLY IF MODE CHANGED):**
 
-**MANDATORY FIRST ACTION:** Determine mode from system_reminder → compare with previous → announce if changed → THEN proceed. NO EXCEPTIONS.
+1. Output: `→ [MODE] detected`
+2. Output: `→ reading .cursor/rules/[file].mdc`
+3. Output: `→ Following [file].mdc as primary instructions`
+4. Call: `read_file([file].mdc)` in same batch (EXCEPTION: AGENT MODE - skip read_file, file already loaded via alwaysApply)
 
-**INSTANT EXECUTION - ABSOLUTE PRIORITY**
+**ZERO TOLERANCE:** Protocol must run; skipping on mode change causes immediate failure.
 
-**MANDATORY PROTOCOL - EXECUTE ONLY IF MODE CHANGED:**
+**MODE CHANGED triggers:**
 
-IF mode changed (see MODE DETECTION triggers below), execute these 3 steps in SAME response batch:
+1. system_reminder contains "switched from"
+2. mode_specific_rule appeared or changed
+3. Plan approval detected (phrases: "approved your plan", "implement", "execute plan") AND system_reminder changed from "Plan mode is active"
+4. system_reminder mode ≠ previous message mode
 
-1. **Announce mode:** "→ [MODE] detected" as FIRST line (add "Mode switched to [MODE]" if switched from different mode)
-2. **Announce dispatcher:** "→ reading .cursor/rules/[file].mdc" + "→ Following [file].mdc as primary instructions"
-3. **Call read_file:** Immediately call read_file([file].mdc) in same batch (EXCEPTION: AGENT MODE - file already in context via alwaysApply, skip read_file)
+**MODE UNCHANGED (subsequent messages only):** Skip announcement, execute task immediately.
 
-IF mode unchanged, SKIP protocol announcement and proceed directly with task execution.
+**MODE PRIORITY (if mode changed):**
 
-**TEMPLATE (substitute [MODE] with actual mode name, [dispatcher-file] with workflow filename):**
-
-```
-→ [MODE] detected
-→ reading .cursor/rules/[dispatcher-file].mdc
-→ Following [dispatcher-file].mdc as primary instructions
-[Call read_file in same batch]
-```
-
-**SELF-CHECK:** Did mode change? YES → Is "→ [MODE] detected" your very first output text? NO → STOP, add it first. YES → proceed. | NO → Skip announcement, proceed with task.
-
-**PRE-WORK CHECKLIST (execute before ANY action):**
-
-Before reading files, calling tools, or processing request:
-
-- [ ] Determined current mode from system_reminder and context
-- [ ] Compared with previous mode (if conversation history exists)
-- [ ] Mode changed? YES → Protocol announcement MANDATORY | NO → Skip announcement
-
-**Self-check question:** "Did mode change from previous message?"
-
-**BLOCKING PROTOCOL GATE (execute only if mode changed):**
-
-IF mode changed, before reading files, calling tools, or processing request, verify:
-
-- [ ] Mode announcement present as FIRST line
-- [ ] Dispatcher file identified
-- [ ] read_file called OR justified skip (AGENT MODE)
-
-**Self-verification:** "Did mode change? YES → Did I announce mode FIRST? NO → Protocol violation, restart. YES → Continue. | NO → Proceed without announcement."
-
-❌ IF mode changed AND ANY unchecked → STOP immediately, complete protocol first
-✅ IF mode unchanged → Proceed without announcement
-
-**FORBIDDEN without protocol:** Read files (except dispatcher), call tools, process request, send responses.
-
-❌ **ANY violation = immediate protocol failure**
-
-**MODE DETECTION:**
-
-**Triggers for MODE CHANGED:**
-
-1. Explicit mode switch: "switched from" in system_reminder
-2. mode_specific_rule change: New mode_specific_rule appears or changes
-3. Plan approval transition: User approved plan (phrases: "approved your plan", "implement", "execute plan") AND system_reminder changed from "Plan mode is active" to Agent Mode
-4. Context indicators: system_reminder mode differs from previous message mode
-
-**Otherwise:** SAME MODE (skip announcement, proceed with task execution)
-
-**Plan → Agent specifics:** After user approves plan → next message MUST start with "→ AGENT MODE detected" before ANY actions. This is MANDATORY transition point.
-
-**IF MODE CHANGED, priority order:**
-
-1. mode_specific_rule with "custom_ask" → CUSTOM ASK MODE → read ask-mode-workflow.mdc
-2. mode_specific_rule (other) → OTHER MODE → follow rule directly (dispatcher announcement not required)
-3. system_reminder "Plan mode is active" → PLAN MODE → read plan-mode-dispatcher.mdc → classify activity type → when user approves plan, remember to announce AGENT MODE transition
+1. mode_specific_rule with "custom_ask" → ASK MODE → read ask-mode-workflow.mdc
+2. mode_specific_rule (other) → OTHER MODE → follow rule directly
+3. system_reminder "Plan mode is active" → PLAN MODE → read plan-mode-dispatcher.mdc
 4. system_reminder Ask marker → ASK MODE → read ask-mode-workflow.mdc
-5. Otherwise → AGENT MODE → announce only, NO read_file (07-agent-mode-workflow.mdc ALWAYS in context via alwaysApply=true)
+5. Otherwise → AGENT MODE → announce only (07-agent-mode-workflow.mdc already loaded)
 
-**AGENT MODE SPECIFICS:** File 07-agent-mode-workflow.mdc loaded automatically (alwaysApply), follow its instructions without read_file call
+**MANDATORY CHECK:**
 
-**CRITICAL PRE-EXECUTION CHECK:**
+Before first tool call or file read:
 
-Before executing FIRST tool call or file read, ask yourself:
+- First message → MUST announce mode
+- Subsequent → Mode compared, announcement handled (if changed) or skipped (if unchanged)
 
-1. "What was previous mode?" (check conversation history or system_reminder)
-2. "What is current mode?" (check system_reminder explicitly)
-3. "Did mode change?" → YES = Protocol announcement MANDATORY as FIRST line | NO = Skip announcement
-4. "If Plan approval detected?" → AGENT MODE transition detected, announce FIRST
-
-**Why check:** 5 seconds of verification prevents protocol violation. Skipping check = immediate failure.
-
-**PROTOCOL EXECUTION CHECKPOINT:**
-After determining mode, verify: "Did mode change? YES → Did I announce mode first? Did I identify dispatcher? Both YES → proceed. Any NO → restart with protocol. | NO → Proceed without announcement."
+FORBIDDEN: Execute without mode check | Announce when mode unchanged | Skip announcement when mode changed
 
 **EXAMPLES:**
 
-✅ **CORRECT (PLAN MODE):**
+✅ First message (Agent mode):
+
+```
+→ AGENT MODE detected
+→ Following 07-agent-mode-workflow.mdc as primary instructions
+Читаю файл для анализа...
+```
+
+✅ Plan mode (changed):
 
 ```
 → PLAN MODE detected
 → reading .cursor/rules/plan-mode-dispatcher.mdc
 → Following plan-mode-dispatcher.mdc as primary instructions
-[Call read_file in same batch]
+[read_file call]
 ```
 
-✅ **CORRECT (AGENT MODE - mode changed):**
+✅ Agent mode (unchanged):
 
 ```
-→ AGENT MODE detected
-→ Following 07-agent-mode-workflow.mdc as primary instructions
-[NO read_file - file already in context via alwaysApply]
-```
-
-✅ **CORRECT (AGENT MODE - mode unchanged):**
-
-```
-[Directly starts task execution without announcement]
 Читаю файл для анализа...
+[direct task execution]
 ```
 
-❌ **INCORRECT (violation):**
+❌ Violation (mode changed):
 
 ```
-"First I'll analyze the task..." [WITHOUT mode announcement when mode CHANGED - PROTOCOL FAILURE]
+"First I'll analyze..." [mode changed but no announcement]
 ```
 
-**MOTIVATION:**
-Protocol execution is NON-NEGOTIABLE when mode changes. IF mode changed, response MUST start with protocol (mode announcement + dispatcher + read_file). IF mode unchanged, skip announcement and proceed directly. Skipping protocol when mode CHANGED = immediate failure. Announcing protocol when mode UNCHANGED = unnecessary verbosity.
+❌ Violation (first message):
+
+```
+[read_file call without mode announcement]
+```
 
 </chat_mode_router>

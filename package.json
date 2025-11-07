@@ -1,6 +1,6 @@
 {
     "name": "cursor-rules-cli",
-    "version": "0.2.2",
+    "version": "0.2.3",
     "description": "CLI tool for managing .cursor rules in projects",
     "bin": {
         "cursor-rules-cli": "./dist/cli.js",
