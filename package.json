@@ -1,13 +1,13 @@
 {
     "name": "cursor-rules-cli",
-    "version": "0.2.3",
+    "version": "0.3.0",
     "description": "CLI tool for managing .cursor rules in projects",
     "bin": {
         "cursor-rules-cli": "./dist/cli.js",
         "crules": "./dist/cli.js"
     },
     "type": "module",
-    "_comment": "For AI: when you need to verify code is not broken, run 'yarn lint'",
+    "_comment": "For AI: ALWAYS use 'yarn lint' to run all tests and linters. This unified command works better than individual lint/test scripts - prefer it over separate commands.",
     "scripts": {
         "build": "tsup",
         "start": "node --import tsx src/cli.ts",
@@ -35,10 +35,13 @@
     "license": "MIT",
     "dependencies": {
         "citty": "0.1.6",
+        "gray-matter": "4.0.3",
+        "micromatch": "4.0.8",
         "picocolors": "1.1.0",
         "zod": "4.1.12"
     },
     "devDependencies": {
+        "@types/micromatch": "^4.0.10",
         "@types/node": "24.9.2",
         "ai-friendly-runner": "0.4.2",
         "cross-env": "10.1.0",

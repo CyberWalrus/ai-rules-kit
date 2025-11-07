@@ -7,6 +7,7 @@ on:
 permissions:
   contents: write
   packages: write
+  pull-requests: write
 
 jobs:
   lint-linux:
@@ -63,7 +64,6 @@ jobs:
       - name: Run linter
         run: yarn lint
 
-  # Проверяем версию и публикуем только если нужно
   check-version-and-publish:
     needs: [lint-linux, lint-windows, lint-macos]
     runs-on: ubuntu-latest
@@ -87,7 +87,7 @@ jobs:
           VERSION=$(node -p "require('./package.json').version")
           echo "Checking if version $VERSION exists in npm..."
 
-          if npm view mcp-validator@$VERSION version >/dev/null 2>&1; then
+          if npm view cursor-rules-cli@$VERSION version >/dev/null 2>&1; then
             echo "Version $VERSION already exists in npm - skipping publish"
             echo "should-publish=false" >> $GITHUB_OUTPUT
           else
@@ -120,21 +120,18 @@ jobs:
           VERSION="${{ steps.check.outputs.version }}"
           echo "Extracting changelog for version: $VERSION"
 
-          # Извлекаем секцию ченжлога для конкретной версии
           awk -v version="$VERSION" '
             BEGIN { 
               in_section = 0
               found_version = 0
             }
             /^## \[/ { 
-              # Проверяем, начинается ли строка с нужной версии
               if ($0 ~ "^## \\[" version "\\]") {
                 in_section = 1
                 found_version = 1
                 print
                 next
               } else if (in_section) {
-                # Если мы уже в секции и встретили новую версию - выходим
                 exit
               }
             }
@@ -143,14 +140,13 @@ jobs:
             }
           ' CHANGELOG.md > release_notes.md
 
-          # Проверяем, что файл не пустой и содержит контент
           if [ ! -s release_notes.md ] || [ $(wc -l < release_notes.md) -lt 3 ]; then
             echo "No changelog found for version $VERSION, creating fallback..."
             echo "## [$VERSION] - $(date +%Y-%m-%d)" > release_notes.md
             echo "" >> release_notes.md
             echo "### Changes" >> release_notes.md
-            echo "- See [Full Changelog](https://github.com/CyberWalrus/mcp-validator/commits/v$VERSION) for details" >> release_notes.md
-            echo "- View [All Releases](https://github.com/CyberWalrus/mcp-validator/releases) for complete history" >> release_notes.md
+            echo "- See [Full Changelog](https://github.com/CyberWalrus/cursor-rules-cli/commits/v$VERSION) for details" >> release_notes.md
+            echo "- View [All Releases](https://github.com/CyberWalrus/cursor-rules-cli/releases) for complete history" >> release_notes.md
           else
             echo "Successfully extracted changelog for version $VERSION"
             echo "Changelog preview:"
@@ -167,5 +163,130 @@ jobs:
           draft: false
           prerelease: false
           generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish-schema:
+    needs: [check-version-and-publish]
+    if: needs.check-version-and-publish.outputs.published == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check if schema file exists
+        id: schema-check
+        run: |
+          SCHEMA_FILE=$(ls .cursor/cursor-rules-config-*.schema.json 2>/dev/null | head -1)
+          if [ -z "$SCHEMA_FILE" ]; then
+            echo "No schema file found - skipping schema publication"
+            echo "schema-exists=false" >> $GITHUB_OUTPUT
+          else
+            echo "Found schema file: $SCHEMA_FILE"
+            echo "schema-exists=true" >> $GITHUB_OUTPUT
+            echo "schema_file=$SCHEMA_FILE" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Get config version
+        if: steps.schema-check.outputs.schema-exists == 'true'
+        id: config-version
+        run: |
+          SCHEMA_FILE="${{ steps.schema-check.outputs.schema_file }}"
+          CONFIG_VERSION=$(echo "$SCHEMA_FILE" | sed -E 's/.*cursor-rules-config-([0-9]+\.[0-9]+\.[0-9]+)\.schema\.json/\1/')
+          echo "version=$CONFIG_VERSION" >> $GITHUB_OUTPUT
+          echo "schema_file=$SCHEMA_FILE" >> $GITHUB_OUTPUT
+          echo "Found schema version: $CONFIG_VERSION"
+
+      - name: Check if schema already published
+        if: steps.schema-check.outputs.schema-exists == 'true'
+        id: check-schema
+        run: |
+          VERSION="${{ steps.config-version.outputs.version }}"
+          SCHEMA_NAME="cursor-rules-config-${VERSION}.schema.json"
+
+          if curl -s -f "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/${SCHEMA_NAME}" > /dev/null 2>&1; then
+            echo "Schema ${SCHEMA_NAME} already exists in SchemaStore - skipping"
+            echo "should-publish=false" >> $GITHUB_OUTPUT
+          else
+            echo "Schema ${SCHEMA_NAME} not found in SchemaStore - will create PR"
+            echo "should-publish=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Setup GitHub CLI
+        if: steps.schema-check.outputs.schema-exists == 'true' && steps.check-schema.outputs.should-publish == 'true'
+        uses: cli/cli/actions/setup-cli@v1
+        with:
+          version: "latest"
+
+      - name: Clone SchemaStore repository
+        if: steps.schema-check.outputs.schema-exists == 'true' && steps.check-schema.outputs.should-publish == 'true'
+        run: |
+          git clone https://github.com/SchemaStore/schemastore.git schemastore-repo
+          cd schemastore-repo
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+
+      - name: Copy schema file
+        if: steps.schema-check.outputs.schema-exists == 'true' && steps.check-schema.outputs.should-publish == 'true'
+        run: |
+          VERSION="${{ steps.config-version.outputs.version }}"
+          SCHEMA_FILE="${{ steps.schema-check.outputs.schema_file }}"
+          SCHEMA_NAME="cursor-rules-config-${VERSION}.schema.json"
+
+          cp "$SCHEMA_FILE" "schemastore-repo/src/schemas/json/${SCHEMA_NAME}"
+          echo "Copied schema to schemastore-repo/src/schemas/json/${SCHEMA_NAME}"
+
+      - name: Update catalog
+        if: steps.schema-check.outputs.schema-exists == 'true' && steps.check-schema.outputs.should-publish == 'true'
+        run: |
+          VERSION="${{ steps.config-version.outputs.version }}"
+          SCHEMA_NAME="cursor-rules-config-${VERSION}.schema.json"
+          CATALOG_FILE="schemastore-repo/src/api/json/catalog.json"
+
+          SCHEMA_URL="https://json.schemastore.org/${SCHEMA_NAME}"
+          SCHEMA_DESCRIPTION="JSON Schema for cursor-rules-config.json version ${VERSION}"
+
+          if ! grep -q "\"${SCHEMA_NAME}\"" "$CATALOG_FILE"; then
+            cd schemastore-repo
+            node -e "
+              const fs = require('fs');
+              const catalog = JSON.parse(fs.readFileSync('src/api/json/catalog.json', 'utf8'));
+              catalog.schemas.push({
+                name: '${SCHEMA_NAME}',
+                description: '${SCHEMA_DESCRIPTION}',
+                fileMatch: ['cursor-rules-config.json'],
+                url: '${SCHEMA_URL}'
+              });
+              fs.writeFileSync('src/api/json/catalog.json', JSON.stringify(catalog, null, 2) + '\n');
+            "
+            echo "Added schema to catalog"
+          else
+            echo "Schema already in catalog"
+          fi
+
+      - name: Create pull request
+        if: steps.schema-check.outputs.schema-exists == 'true' && steps.check-schema.outputs.should-publish == 'true'
+        run: |
+          VERSION="${{ steps.config-version.outputs.version }}"
+          SCHEMA_NAME="cursor-rules-config-${VERSION}.schema.json"
+          BRANCH_NAME="add-cursor-rules-config-schema-${VERSION}"
+
+          cd schemastore-repo
+          git checkout -b "$BRANCH_NAME"
+          git add "src/schemas/json/${SCHEMA_NAME}" src/api/json/catalog.json
+          git commit -m "Add cursor-rules-config schema v${VERSION}"
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/SchemaStore/schemastore.git "$BRANCH_NAME"
+
+          gh pr create \
+            --repo SchemaStore/schemastore \
+            --title "Add cursor-rules-config schema v${VERSION}" \
+            --body "This PR adds JSON Schema for cursor-rules-config.json version ${VERSION}
+
+          Schema file: \`${SCHEMA_NAME}\`
+          Source: https://github.com/CyberWalrus/cursor-rules-cli" \
+            --head "$BRANCH_NAME" \
+            --base master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
