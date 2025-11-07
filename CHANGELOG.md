@@ -1,5 +1,39 @@
 # Changelog
 
+## [0.3.3] - 2025-11-07
+
+<small>07.11.2025 15:48</small>
+
+### Added
+
+- **Respawn механизм для перезапуска процесса после обновления**
+    - Добавлена функция `respawnProcess` для перезапуска CLI процесса после автоматического обновления пакета
+    - Реализован механизм перезапуска через `child_process.spawn()` с detached флагом для загрузки обновленного кода
+    - Добавлен параметр `isRespawn` в `CheckAndUpdateOptions` для управления поведением перезапуска
+    - Добавлены unit тесты для функции `respawnProcess` и обновлены тесты `checkAndUpdatePackage`
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/2ee11ad148ef3c54375554dc668434efffa55451" target="_blank">2ee11ad</a>
+
+### Changed
+
+- **Обновление документации и архитектуры**
+    - Обновлена AI-документация с описанием respawn механизма и process respawn логики
+    - Обновлена архитектура XML с добавлением модуля `respawn-process` в version-manager
+    - Добавлено описание механизма перезапуска процесса для гарантии выполнения обновленного кода
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/6058f8c075c8ff02ac0770c387642ffe937f5bb6" target="_blank">6058f8c</a>
+
+- **Изменение способа установки GitHub CLI в CI/CD**
+    - Заменен GitHub Actions setup-cli на ручную установку через apt для улучшения совместимости
+    - Обновлен workflow публикации схемы для использования нативного пакетного менеджера
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/13a7cbde78cbde2fa68c3bdaac3559f1b9089d5a" target="_blank">13a7cbd</a>
+
+### Docs
+
+- **Улучшение описания временного контекста в шаблоне**
+    - Добавлена секция CRITICAL - TEMPORAL CONTEXT с явным указанием текущей даты
+    - Улучшено описание обязательности использования указанной даты для временных операций
+    - Обновлен completion criteria с проверкой запоминания текущей даты
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/7ef18430cfaa46ce00370f1d482552949d478e75" target="_blank">7ef1843</a>
+
 ## [0.3.0] - 2025-11-07
 
 ### Breaking Changes
