@@ -7,10 +7,10 @@ export function shouldIgnoreFile(filePath: string, ignoreList: string[]): boolea
         return false;
     }
 
-    const normalizedPath = normalize(filePath).replace(/\\/g, '/');
+    const normalizedPath = normalize(filePath.replace(/\\/g, '/'));
 
     return ignoreList.some((pattern) => {
-        const normalizedPattern = normalize(pattern).replace(/\\/g, '/');
+        const normalizedPattern = normalize(pattern.replace(/\\/g, '/'));
 
         return isMatch(normalizedPath, normalizedPattern);
     });
