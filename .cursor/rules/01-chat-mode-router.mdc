@@ -8,39 +8,40 @@ alwaysApply: true
 
 <chat_mode_router>
 
-**ABSOLUTE BARRIER - FIRST MESSAGE PROTOCOL:**
+**🎯 SUCCESS = Mode announced first. FAILURE = Tools called without announcement.**
 
-Before ANY tool call:
+**⚡ REWARD:** Correct mode detection → smooth execution & trust.  
+**💥 PUNISHMENT:** Skipping announcement → protocol breach, immediate failure, wasted tokens.
 
-1. Ask yourself: "Have I already responded to the user in this chat?"
-   - NO (this is my first response) → announce mode FIRST (MANDATORY, BLOCKING)
-   - YES (I already responded before) → proceed to mode change detection
-2. FORBIDDEN: Tool execution before mode announcement in first response
-
-**SELF-CHECK (execute before first action):**
-
-Did I announce mode in first message?
-
-- NO → STOP IMMEDIATELY, announce mode FIRST
-- YES → proceed with tool call
-
-FORBIDDEN: Tool execution before mode announcement in first message
-
-**EXECUTE BEFORE ANY ACTION:**
-
-1. Ask: "Have I responded in this chat before?"
-2. IF NO (first response) → announce mode (MANDATORY)
-3. IF YES (subsequent response) → determine current mode from system_reminder
-4. IF YES (subsequent response) → check MODE CHANGED triggers
-5. IF triggered → announce protocol | OTHERWISE → skip announcement, proceed
+🚨 **CRITICAL - FIRST STEP:**
 
 **MANDATORY PRE-FLIGHT CHECK (before ANY tool call):**
 
-- [ ] Asked: "Have I responded in this chat before?"
-- [ ] If NO → mode announced? (BLOCKING - must be YES before tool call)
-- [ ] If YES → mode change check completed?
+**EXPLICIT CHECK MECHANISM:**
 
-❌ ANY unchecked → STOP, complete check first
+Check system_reminder for evidence of previous responses in this chat:
+
+- If system_reminder is empty OR contains only mode info without chat history markers → FIRST RESPONSE → announce mode (mandatory)
+- If system_reminder contains chat history (previous tool calls, previous responses, conversation markers) → SUBSEQUENT RESPONSE → check mode from system_reminder
+
+**CHECKLIST:**
+
+- [ ] Checked system_reminder for previous responses in this chat
+- [ ] If FIRST RESPONSE → announce mode (mandatory) → proceed with tools
+- [ ] If SUBSEQUENT RESPONSE → read mode from system_reminder; if empty → AGENT MODE and skip MODE CHANGED check
+- [ ] If SUBSEQUENT RESPONSE and system_reminder not empty → check MODE CHANGED triggers
+- [ ] If mode unchanged → proceed without announcement | If mode changed → announce protocol
+
+❌ Unchecked → STOP, then check
+
+**EXECUTE BEFORE ANY ACTION:**
+
+1. **EXPLICIT CHECK:** Inspect system_reminder for evidence of previous responses in this chat (tool calls, conversation history, response markers)
+2. **IF FIRST RESPONSE** (no evidence in system_reminder) → announce mode (mandatory) → proceed with tools
+3. **IF SUBSEQUENT RESPONSE** (evidence found) → read mode from system_reminder (if empty → AGENT MODE)
+4. **IF SUBSEQUENT RESPONSE** → check MODE CHANGED triggers
+5. If triggered → announce protocol
+6. Otherwise → verify mode unchanged → proceed without announcement
 
 **PROTOCOL (EXECUTE ONLY IF MODE CHANGED):**
 
@@ -48,6 +49,8 @@ FORBIDDEN: Tool execution before mode announcement in first message
 2. Output: `→ reading .cursor/rules/[file].mdc`
 3. Output: `→ Following [file].mdc as primary instructions`
 4. Call: `read_file([file].mdc)` in same batch (EXCEPTION: AGENT MODE - skip read_file, file already loaded via alwaysApply)
+5. If read_file fails → return ReadError, re-announce mode, and stop execution
+6. If mode announced → proceed with tools | Otherwise → STOP and announce mode
 
 **ZERO TOLERANCE:** Protocol must run; skipping on mode change causes immediate failure.
 
@@ -56,26 +59,32 @@ FORBIDDEN: Tool execution before mode announcement in first message
 1. system_reminder contains "switched from"
 2. mode_specific_rule appeared or changed
 3. Plan approval detected (phrases: "approved your plan", "implement", "execute plan") AND system_reminder changed from "Plan mode is active"
-4. system_reminder mode ≠ previous message mode
+4. system_reminder mode ≠ previous message mode (previous_message_mode = value from system_reminder of last user message; if no previous message → previous_message_mode = null, mode changed if differs from null OR if previous_message_mode = null and current mode is set)
 
-**MODE UNCHANGED (subsequent messages only):** Skip announcement, execute task immediately.
+**MODE UNCHANGED (subsequent messages only):** Proceed without announcement, execute task immediately.
 
-**MODE PRIORITY (if mode changed):**
+**MODE PRIORITY (if mode changed, priority 1 = highest, select lowest number):**
 
-1. mode_specific_rule with "custom_ask" → ASK MODE → read ask-mode-workflow.mdc
-2. mode_specific_rule (other) → OTHER MODE → follow rule directly
-3. system_reminder "Plan mode is active" → PLAN MODE → read plan-mode-dispatcher.mdc
-4. system_reminder Ask marker → ASK MODE → read ask-mode-workflow.mdc
-5. Otherwise → AGENT MODE → announce only (07-agent-mode-workflow.mdc already loaded)
+1. Priority 1: mode_specific_rule with "custom_ask" OR system_reminder Ask marker → ASK MODE → read ask-mode-workflow.mdc
+2. Priority 2: mode_specific_rule (other) → OTHER MODE → follow rule directly
+3. Priority 3: system_reminder "Plan mode is active" → PLAN MODE → read plan-mode-dispatcher.mdc
+4. Priority 4: Otherwise → AGENT MODE → announce only (07-agent-mode-workflow.mdc already loaded)
+
+**If multiple rules match:** Select rule with highest priority (lowest number). If same priority → select first alphabetically by file name (case-insensitive, without extension; if identical → select first lexicographically).
 
 **ABSOLUTE REQUIREMENT:**
 
 Before executing ANY tool (read_file, run_terminal_cmd, grep, search_replace, write, codebase_search, list_dir, glob_file_search, etc.):
 
-- First response (never responded before) → MUST announce mode → STOP IMMEDIATELY if not announced
-- Subsequent response (already responded) → Verify mode comparison completed → Handle announcement (if changed) or skip (if unchanged)
+1. **EXPLICIT CHECK:** Inspect system_reminder for evidence of previous responses in this chat
+2. **IF FIRST RESPONSE** (no evidence found) → MUST announce mode → STOP IMMEDIATELY if not announced
+3. **IF SUBSEQUENT RESPONSE** (evidence found) → Verify mode comparison completed → Handle announcement (if changed) or skip (if unchanged)
 
-FORBIDDEN: Tool execution without mode check | Announcement when mode unchanged | Skip announcement when mode changed
+**FORBIDDEN:**
+
+1. Execute tools before announcing mode (first response)
+2. Announce mode when unchanged (subsequent response - do not announce if mode unchanged)
+3. Skip announcement when mode changed
 
 VIOLATION CONSEQUENCE: Protocol breach = task failure
 
@@ -105,30 +114,10 @@ VIOLATION CONSEQUENCE: Protocol breach = task failure
 [direct task execution]
 ```
 
-❌ Violation (mode changed):
-
-```
-[mode changed but no announcement]
-```
-
 ❌ Violation (first message):
 
 ```
 [read_file call without mode announcement]
-```
-
-❌ Violation (real case #1):
-
-```
-User: "запусти команду линтера и исправь ошибки"
-[run_terminal_cmd executed without mode announcement]
-```
-
-❌ Violation (real case #2):
-
-```
-User: "провалидируй файл"
-[read_file + mcp_mcp-validator_validate executed without mode announcement]
 ```
 
 **Should be:**
@@ -138,5 +127,15 @@ User: "провалидируй файл"
 → Following 07-agent-mode-workflow.mdc as primary instructions
 [read_file executed after announcement]
 ```
+
+<completion_criteria>
+
+- [ ] Mode announced (if first response or mode changed)
+- [ ] Appropriate rule file loaded (if mode changed, except AGENT MODE)
+- [ ] Pre-flight check completed
+- [ ] All checklist items verified
+- [ ] Mode announced when required (first response or mode changed) - failure if skipped
+- [ ] If read_file fails → error returned and execution stopped
+</completion_criteria>
 
 </chat_mode_router>
