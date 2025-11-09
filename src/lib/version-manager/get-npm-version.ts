@@ -9,12 +9,12 @@ export async function getNpmVersion(packageName: string): Promise<string> {
 
     const url = `${NPM_REGISTRY_URL}/${packageName}/latest`;
 
-    try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => {
-            controller.abort();
-        }, NPM_REQUEST_TIMEOUT);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => {
+        controller.abort();
+    }, NPM_REQUEST_TIMEOUT);
 
+    try {
         const response = await fetch(url, {
             signal: controller.signal,
         });
@@ -33,6 +33,8 @@ export async function getNpmVersion(packageName: string): Promise<string> {
 
         return data.version;
     } catch (error) {
+        clearTimeout(timeoutId);
+
         if (error instanceof Error && error.name === 'AbortError') {
             throw new Error('Request timeout: npm registry did not respond in time');
         }

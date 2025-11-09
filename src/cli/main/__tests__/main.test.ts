@@ -118,6 +118,46 @@ describe('runCli', () => {
         expect(mockEnsureLatestVersion).toHaveBeenCalledTimes(1);
         expect(mockRunMain).toHaveBeenCalledTimes(1);
     });
+
+    it('должен запускать команду немедленно, не дожидаясь проверки версии', async () => {
+        let runMainCalled = false;
+        mockRunMain.mockImplementation(() => {
+            runMainCalled = true;
+
+            return Promise.resolve();
+        });
+
+        let versionCheckResolved = false;
+        mockEnsureLatestVersion.mockImplementation(async () => {
+            await new Promise<void>((resolve) => {
+                setTimeout(() => {
+                    versionCheckResolved = true;
+                    resolve();
+                }, 50);
+            });
+        });
+
+        const runCliPromise = runCli();
+
+        await new Promise<void>((resolve) => {
+            setTimeout(() => {
+                resolve();
+            }, 10);
+        });
+
+        expect(runMainCalled).toBe(true);
+        expect(versionCheckResolved).toBe(false);
+
+        await runCliPromise;
+
+        await new Promise<void>((resolve) => {
+            setTimeout(() => {
+                resolve();
+            }, 100);
+        });
+
+        expect(versionCheckResolved).toBe(true);
+    });
 });
 
 describe('getTargetDir', () => {

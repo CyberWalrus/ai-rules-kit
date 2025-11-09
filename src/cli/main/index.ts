@@ -64,12 +64,10 @@ export async function runCli(): Promise<void> {
         throw new Error('Package directory not found');
     }
 
-    try {
-        await ensureLatestVersion(packageDir);
-    } catch (error) {
+    ensureLatestVersion(packageDir).catch((error) => {
         const message: string = error instanceof Error ? error.message : String(error);
         console.warn(`⚠️ Failed to check for updates: ${message}`);
-    }
+    });
 
     await runMain(main);
 }
