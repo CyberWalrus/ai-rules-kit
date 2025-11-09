@@ -39,7 +39,7 @@ BEFORE calling search_replace/write/edit_notebook → check file path → IF mat
 
 **Prompt file detection:** ANY `.md/.mdc` with YAML frontmatter containing `type:` field (check file content, not directory path) | Exclude: see VALIDATION EXCEPTIONS
 
-- Prompt files (including `user-rules/*.md`, `prompts/**/*.md`, `.cursor/**/*.mdc`) → `.cursor/rules/prompt-workflow-compact.mdc`
+- Prompt files (including `user-rules/*.md`, `prompts/**/*.md`, `.cursor/**/*.mdc`) → `.cursor/rules/prompt-structure-guide.mdc`
 - `*.test.ts` (new/edit) → `.cursor/rules/testing.md`
 - Creating new `.ts/.tsx` files → `.cursor/rules/architecture.md`, `.cursor/rules/naming.md`
 - Editing `*.ts/*.tsx` (≥20 lines changes) → `.cursor/rules/code-standards.md`, `.cursor/rules/naming.md`
