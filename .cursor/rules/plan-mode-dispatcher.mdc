@@ -8,99 +8,77 @@ alwaysApply: false
 
 <plan_mode_dispatcher>
 
-**ACTIVATION:** Works ONLY in Plan Mode. If system_reminder lacks "Plan mode is active" → skip this prompt entirely.
+**ACTIVATION:** Execute only when "Plan mode is active" in system_reminder; otherwise skip.
 
-**FIRST PLAN MODE ACTION - CLASSIFY TYPE**
+**CRITICAL FIRST ACTION**
 
-BEFORE any response, verify:
+Before ANY response:
 
-[ ] Task read completely
+1. Self-check: "Did I output 'Identified activity types: [type]'?"
+   - NO → BLOCKING VIOLATION → Execute classification NOW
+   - YES → Proceed
+
+PROHIBITION: Analyze task before classification.
+
+CONSEQUENCE: Skip → wrong workflow → plan failure.
+
+**BLOCKING GATE BEFORE create_plan**
+
+PROHIBITION to call create_plan unless ALL checked:
+
 [ ] Type classified
-
-IF NOT classified yet → STOP → classify NOW using algorithm below
-
-FORBIDDEN to analyze/discuss task without classifying type first.
-
-**BLOCKING GATE - ABSOLUTE BARRIER BEFORE create_plan**
-
-FORBIDDEN to call create_plan unless:
-
-[ ] Type classified (via algorithm below)
 [ ] Type announced: "Identified activity types: [type]"
-[ ] Workflow file read: read_file('[name].mdc') called
-[ ] File content received
+[ ] Workflow read: read_file('[name].mdc') in same batch
+[ ] Content received
 
-IF ANY unchecked → ABORT create_plan → complete missing steps → retry
-
-NO EXCEPTIONS. NO SHORTCUTS. ZERO TOLERANCE.
-
-Violation = protocol breach = task failure.
-
-**Classification Examples:**
-
-- User: "подправить промпт..." → Prompt Engineering (работа с .mdc файлом)
-- User: "исправить баг в функции..." → Code Development (работа с .ts/.js)
-- User: "создать UI компонент..." → UI Development (работа с .tsx)
-- User: "tdcode fix validation" → Code Development (короткий код)
+IF unchecked → ABORT → complete missing → retry
 
 **Classification Algorithm**
 
-1. READ full user request (understand complete context)
-2. CHECK short codes: `td*` in request → instant match
-3. IF no short code → ANALYZE meaning:
-   - Material: .cursor/ files, .ts/.js, configs, docs
-   - Intent: AI behavior, coding, UI, planning, docs
-   - Match to table using MEANING not just keywords
-4. SELECT type from table (choose MOST LIKELY if uncertain)
-5. IF still uncertain → use integrated fallback:
-   - SELECT most likely type from 2-3 candidates
-   - OUTPUT: "Type analysis: [most_likely] (candidates: [A], [B])"
-   - ANNOUNCE: "Identified activity types: [most_likely], reading file [name].mdc"
-   - READ workflow file: read_file('[name].mdc') in same batch
-   - VERIFY file content received
-   - ASK user: "Detected [most_likely] - correct?" (optional, after file read)
-   - PROCEED with create_plan (only after content received)
+1. READ user request
+2. CHECK codes: `td*` → instant match
+3. IF no code → ANALYZE meaning → match table
+4. SELECT type (most probable)
+5. ANNOUNCE: "Identified activity types: [type], reading file [name].mdc"
+6. READ: read_file('[name].mdc') in same batch
+7. VERIFY: content received
+8. PROCEED: create_plan
 
-CRITICAL: Always read workflow file BEFORE asking user.
+Otherwise → DEFAULT: Set type = Code Development, repeat steps 5-8.
 
 **Activity Types**
 
 | Activity | Codes | Key Triggers | File |
 |:---|:---|:---|:---|
-| Prompt Engineering | `tdprompt` `тдпромпт` | `.cursor/` files, "prompt", "AI behavior" | `prompt-workflow-compact.mdc` |
+| Prompt Engineering | `tdprompt` `тдпромпт` | `.cursor/`, "prompt", "AI behavior" | `prompt-workflow-compact.mdc` |
 | Code Development | `tdcode` `тдкод` | ".ts/.js", "bug", "fix", "implement" | `code-workflow.mdc` |
 | UI Development | `tdui` `тдюай` | "ui", "visual", "styles", "layout" | `ui-workflow.mdc` |
-| AI Documentation | `tdaidoc` `тдаидок` | "ai-docs", "YAML frontmatter", "Diátaxis" | `ai-docs-workflow.mdc` |
+| AI Documentation | `tdaidoc` `тдаидок` | "ai-docs", "YAML", "Diátaxis" | `ai-docs-workflow.mdc` |
 | Technical Critique | `tdcritic` `тдкритик` | "critique", "review", "evaluate" | `critique-workflow.mdc` |
 | JIRA Task | `tdjira` `тдджира` | "JIRA task", "technical spec" | `jira-task-creator.mdc` |
 | Auxiliary Dev | `tdaux` `тдвсп` | "script", "deploy", "automation" | `auxiliary-code-workflow.mdc` |
 
-**Execution Protocol** (enforced by blockers above)
+**Execution Protocol**
 
-1. CLASSIFY type (see First Action Blocker + Classification Algorithm)
+1. CLASSIFY type
 2. ANNOUNCE: "Identified activity types: [type], reading file [name].mdc"
-3. READ: read_file('[name].mdc') in SAME batch as announcement
-4. VERIFY: Blocking Gate checklist complete
-5. CREATE: create_plan (only after step 4)
+3. READ: read_file('[name].mdc') in SAME batch
+4. VERIFY: content received
+5. CREATE: create_plan
 
-This protocol is MANDATORY and enforced by blockers.
+**Self-Verification**
 
-**Self-Verification (after reading this prompt):**
+After reading this prompt:
 
-Can you answer these?
-
-1. What is FIRST action in Plan Mode? → classify type
-2. Can create_plan without reading workflow file? → NO - FORBIDDEN
-3. What to announce before read_file? → "Identified activity types: [type], reading file [name].mdc"
-
-If uncertain → re-read Classification Algorithm
+1. First action? → classify type
+2. Create_plan without workflow? → NO
+3. Announce before read_file? → YES: "Identified activity types: [type], reading file [name].mdc"
 
 FORBIDDEN:
 
 - create_plan before classification
 - Questions before read_file
 - Skip announcement
-- read_file after create_plan
 
 **Examples**
 
@@ -108,42 +86,18 @@ CORRECT:
 
 ```
 Identified activity types: Prompt Engineering, reading file prompt-workflow-compact.mdc
-
-[read_file call same batch]
-[file content received]
-[follows workflow]
+[read_file same batch]
+[content received]
 [creates plan]
-```
-
-CORRECT (with uncertainty):
-
-```
-[Reads request fully]
-Type analysis: Prompt Engineering (candidates: Prompt Engineering, AI Documentation)
-Identified activity types: Prompt Engineering, reading file prompt-workflow-compact.mdc
-
-[read_file('prompt-workflow-compact.mdc') in same batch]
-[file content received]
-[follows workflow]
-[creates plan]
-
-Optional: "Detected Prompt Engineering - correct?"
 ```
 
 WRONG:
 
 ```
-Creating plan...
-[create_plan WITHOUT classification]
+[Analyzes without "Identified activity types"]
+[create_plan without classification] ← VIOLATION
 ```
 
-WRONG:
-
-```
-Identified activity types: Prompt Engineering
-
-What do you want to do?
-[NO read_file - questions instead]
-```
+CONSEQUENCE: Wrong workflow → plan failure.
 
 </plan_mode_dispatcher>
