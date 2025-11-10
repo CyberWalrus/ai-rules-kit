@@ -1,0 +1,20 @@
+{
+  "$schema": "https://raw.githubusercontent.com/CyberWalrus/cursor-rules-cli/main/.cursor/cursor-rules-config-1.0.0.schema.json",
+  "cliVersion": "0.4.0",
+  "configVersion": "1.0.0",
+  "fileOverrides": [],
+  "ignoreList": [],
+  "installedAt": "2025-11-10T12:57:22.837Z",
+  "promptsVersion": "2025.11.10.1",
+  "ruleSets": [
+    {
+      "id": "base",
+      "update": true
+    }
+  ],
+  "settings": {
+    "language": "ru"
+  },
+  "source": "cursor-rules",
+  "updatedAt": "2025-11-10T12:57:22.837Z"
+}
