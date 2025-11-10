@@ -12,7 +12,7 @@
     <module_units>
       <unit path="src" layer="package-root" />
       <unit path="src/cli/commands/init" layer="cli" />
-      <unit path="src/cli/commands/update" layer="cli" />
+      <unit path="src/cli/commands/upgrade" layer="cli" />
       <unit path="src/cli/commands/replace-all" layer="cli" />
       <unit path="src/cli/main" layer="cli" />
       <unit path="src/lib/file-operations" layer="lib" />
@@ -32,7 +32,7 @@
     <package_root>
       <source_directory name="src">
         <module name="package-root">
-          <facade name="index.ts" role="unit_facade" purpose="Главный фасад пакета" exports="initCommand, updateCommand, replaceAllCommand, runCli" />
+          <facade name="index.ts" role="unit_facade" purpose="Главный фасад пакета" exports="initCommand, upgradeCommand, replaceAllCommand, runCli" />
         </module>
 
         <layer name="cli" purpose="Слой команд CLI">
@@ -44,10 +44,10 @@
               </directory>
             </module>
 
-            <module name="update">
-              <facade name="index.ts" role="unit_facade" purpose="Команда обновления правил" exports="updateCommand" />
+            <module name="upgrade">
+              <facade name="index.ts" role="unit_facade" purpose="Команда обновления правил" exports="upgradeCommand" />
               <directory name="__tests__">
-                <test name="update.test.ts" role="unit_test" />
+                <test name="upgrade.test.ts" role="unit_test" />
               </directory>
             </module>
 

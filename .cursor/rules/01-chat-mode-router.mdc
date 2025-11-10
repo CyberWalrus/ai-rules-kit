@@ -12,7 +12,7 @@ alwaysApply: true
 
 Before ANY tool call, check system_reminder for `[MODE_INITIALIZED:` marker:
 
-1. Marker NOT FOUND → First response → Announce mode (step 2)
+1. Marker NOT FOUND → First response → Determine mode by priority (lines 24-29) → Announce mode immediately → Then execute tools
 2. Marker FOUND → Extract mode → Check if changed (step 3) → If unchanged, skip to step 4
 3. Mode changed triggers:
    - system_reminder contains "switched from"
