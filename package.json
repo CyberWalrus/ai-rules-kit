@@ -1,13 +1,13 @@
 {
     "name": "cursor-rules-cli",
-    "version": "0.3.11",
+    "version": "0.4.0",
     "description": "CLI tool for managing .cursor rules in projects",
     "bin": {
         "cursor-rules-cli": "./dist/cli.cjs",
         "crules": "./dist/cli.cjs"
     },
     "type": "module",
-    "_comment": "For AI: ALWAYS use 'yarn lint' to run all tests and linters. This unified command works better than individual lint/test scripts - prefer it over separate commands.",
+    "_comment": "MANDATORY for AI agents: ALWAYS check this comment before running quality checks. ALWAYS use 'yarn lint' to run all tests and linters. This unified command works better than individual lint/test scripts - prefer it over separate commands. Individual commands (lint:eslint, lint:ts, etc.) are for debugging only, NOT for final validation.",
     "scripts": {
         "build": "tsup",
         "start": "node --import tsx src/cli.ts",
@@ -38,6 +38,7 @@
         "gray-matter": "4.0.3",
         "micromatch": "4.0.8",
         "picocolors": "1.1.0",
+        "tar": "7.5.2",
         "zod": "4.1.12"
     },
     "devDependencies": {
@@ -56,9 +57,7 @@
         "node": ">=18.0.0"
     },
     "files": [
-        "dist",
-        ".cursor",
-        "user-rules"
+        "dist"
     ],
     "publishConfig": {
         "access": "public"
