@@ -10,6 +10,11 @@ import { shouldIgnoreFile } from './should-ignore-file';
 
 /** Копирует файл из источника в цель */
 async function copyFile(sourcePath: string, targetPath: string): Promise<void> {
+    const sourceExists = await pathExists(sourcePath);
+    if (!sourceExists) {
+        return;
+    }
+
     const targetDir = dirname(targetPath);
 
     await mkdir(targetDir, { recursive: true });

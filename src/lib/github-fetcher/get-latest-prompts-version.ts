@@ -1,5 +1,5 @@
-/** Получает последнюю версию промптов из GitHub репозитория */
-export async function getLatestPromptsVersion(repo: string): Promise<string> {
+/** Получает последнюю версию промптов из GitHub репозитория. Возвращает null при сетевых ошибках */
+export async function getLatestPromptsVersion(repo: string): Promise<string | null> {
     if (repo === null || repo === undefined) {
         throw new Error('repo is required');
     }
@@ -10,9 +10,18 @@ export async function getLatestPromptsVersion(repo: string): Promise<string> {
         ...(token !== undefined && { Authorization: `Bearer ${token}` }),
     };
 
-    const response = await fetch(`https://api.github.com/repos/${repo}/tags?per_page=100`, {
-        headers,
-    });
+    let response: Response;
+
+    try {
+        response = await fetch(`https://api.github.com/repos/${repo}/tags?per_page=100`, {
+            headers,
+        });
+    } catch (error: unknown) {
+        const message: string = error instanceof Error ? error.message : String(error);
+        console.warn(`⚠️ Failed to fetch latest prompts version from GitHub: ${message}`);
+
+        return null;
+    }
 
     if (!response.ok) {
         if (response.status === 403) {
@@ -20,16 +29,32 @@ export async function getLatestPromptsVersion(repo: string): Promise<string> {
                 token === undefined
                     ? 'GitHub API error: 403 Forbidden. Set GITHUB_TOKEN environment variable to increase rate limit (60 req/hour per IP address without token).'
                     : 'GitHub API error: 403 Forbidden. Check if GITHUB_TOKEN is valid and has required permissions.';
-            throw new Error(message);
+            console.warn(`⚠️ ${message}`);
+
+            return null;
         }
-        throw new Error(`GitHub API error: ${response.status}`);
+        console.warn(`⚠️ GitHub API error: ${response.status}`);
+
+        return null;
     }
 
-    const tags = (await response.json()) as Array<{ name: string }>;
+    let tags: Array<{ name: string }>;
+
+    try {
+        tags = (await response.json()) as Array<{ name: string }>;
+    } catch (error: unknown) {
+        const message: string = error instanceof Error ? error.message : String(error);
+        console.warn(`⚠️ Failed to parse GitHub API response: ${message}`);
+
+        return null;
+    }
+
     const promptTags = tags.filter((t) => t.name.startsWith('prompts/v'));
 
     if (promptTags.length === 0) {
-        throw new Error('No prompts version found');
+        console.warn('⚠️ No prompts version found in GitHub repository');
+
+        return null;
     }
 
     const sortedTags = promptTags.sort((a, b) => {

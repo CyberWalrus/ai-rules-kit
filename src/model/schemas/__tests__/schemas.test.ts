@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { initCommandParamsSchema, replaceAllCommandParamsSchema, updateCommandParamsSchema } from '../command-params';
+import { initCommandParamsSchema, replaceAllCommandParamsSchema, upgradeCommandParamsSchema } from '../command-params';
 import { fileOverrideSchema, rulesConfigSchema, ruleSetSchema } from '../main';
 
 describe('ruleSetSchema', () => {
@@ -229,14 +229,14 @@ describe('replaceAllCommandParamsSchema', () => {
     });
 });
 
-describe('updateCommandParamsSchema', () => {
+describe('upgradeCommandParamsSchema', () => {
     it('должен успешно валидировать корректные параметры', () => {
         const validData = {
             packageDir: '/path/to/package',
             targetDir: '/path/to/target',
         };
 
-        const result = updateCommandParamsSchema.safeParse(validData);
+        const result = upgradeCommandParamsSchema.safeParse(validData);
 
         expect(result.success).toBe(true);
     });
@@ -246,7 +246,7 @@ describe('updateCommandParamsSchema', () => {
             packageDir: '/path/to/package',
         };
 
-        const result = updateCommandParamsSchema.safeParse(invalidData);
+        const result = upgradeCommandParamsSchema.safeParse(invalidData);
 
         expect(result.success).toBe(false);
     });

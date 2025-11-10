@@ -35,6 +35,12 @@ export async function initCommand(packageDir: string, targetDir: string): Promis
     }
 
     const promptsVersion = await getLatestPromptsVersion(GITHUB_REPO);
+    if (promptsVersion === null) {
+        throw new Error(
+            'Failed to fetch latest prompts version from GitHub. No internet connection or GitHub API unavailable.',
+        );
+    }
+
     const tmpDir = join(tmpdir(), `cursor-rules-${Date.now()}`);
 
     try {
@@ -63,6 +69,8 @@ export async function initCommand(packageDir: string, targetDir: string): Promis
             updatedAt: currentTimestamp,
         };
         await writeConfigFile(targetDir, config);
+
+        console.log(`✓ Initialized prompts version ${promptsVersion}`);
     } finally {
         await rm(tmpDir, { force: true, recursive: true });
     }

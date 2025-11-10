@@ -9,6 +9,7 @@ import {
     writeConfigFile,
 } from '../../../lib/file-operations';
 import { fetchPromptsTarball, getLatestPromptsVersion } from '../../../lib/github-fetcher';
+import { askConfirmation } from '../../../lib/helpers';
 import { getPackageVersion } from '../../../lib/version-manager/get-package-version';
 import type { RulesConfig } from '../../../model';
 import { GITHUB_REPO, replaceAllCommandParamsSchema } from '../../../model';
@@ -34,7 +35,28 @@ export async function replaceAllCommand(packageDir: string, targetDir: string): 
 
     const existingConfig = await readConfigFile(targetDir);
     const cliVersion = await getPackageVersion(packageDir);
-    const promptsVersion = await getLatestPromptsVersion(GITHUB_REPO);
+    let promptsVersion = await getLatestPromptsVersion(GITHUB_REPO);
+
+    if (promptsVersion == null) {
+        if (existingConfig !== null && existingConfig.promptsVersion !== undefined) {
+            console.warn(
+                `⚠️ No internet connection. Cannot fetch latest version from GitHub. Using current local version: ${existingConfig.promptsVersion}`,
+            );
+
+            const shouldUseLocal = await askConfirmation('Do you want to continue with the current local version?');
+
+            if (!shouldUseLocal) {
+                throw new Error('Replace-all cancelled by user');
+            }
+
+            promptsVersion = existingConfig.promptsVersion;
+        } else {
+            throw new Error(
+                'Failed to fetch latest prompts version from GitHub. No internet connection and no existing config found.',
+            );
+        }
+    }
+
     const currentTimestamp = new Date().toISOString();
 
     let config: RulesConfig;
@@ -75,6 +97,8 @@ export async function replaceAllCommand(packageDir: string, targetDir: string): 
         await deleteRulesFromTarget(targetDir);
         await copyRulesToTarget(tmpDir, targetDir, config.ignoreList ?? [], config.fileOverrides ?? []);
         await writeConfigFile(targetDir, config);
+
+        console.log(`✓ Replaced prompts to version ${promptsVersion}`);
     } finally {
         await rm(tmpDir, { force: true, recursive: true });
     }

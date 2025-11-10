@@ -33,6 +33,8 @@ describe('replaceAllCommand', () => {
         mockReadConfigFile.mockResolvedValue(null);
         mockDeleteRulesFromTarget.mockResolvedValue(undefined);
         mockCopyRulesToTarget.mockResolvedValue(undefined);
+        mockGetLatestPromptsVersion.mockResolvedValue('2025.11.10.1');
+        mockFetchPromptsTarball.mockResolvedValue(undefined);
         mockGetPackageVersion.mockResolvedValue('2.0.0');
         mockWriteConfigFile.mockResolvedValue(undefined);
 

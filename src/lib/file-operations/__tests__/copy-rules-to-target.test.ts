@@ -120,11 +120,13 @@ describe('copyRulesToTarget', () => {
     });
 
     it('должен пропускать fileOverrides для несуществующих файлов', async () => {
-        mockPathExists
-            .mockResolvedValueOnce(true)
-            .mockResolvedValueOnce(true)
-            .mockResolvedValueOnce(true)
-            .mockResolvedValueOnce(false);
+        mockPathExists.mockImplementation((path: string) => {
+            if (path.includes('nonexistent.mdc')) {
+                return Promise.resolve(false);
+            }
+
+            return Promise.resolve(true);
+        });
         mockReaddir.mockResolvedValue([{ isDirectory: () => false, isFile: () => true, name: 'file1.mdc' }]);
         mockMkdir.mockResolvedValue(undefined);
         mockCp.mockResolvedValue(undefined);
