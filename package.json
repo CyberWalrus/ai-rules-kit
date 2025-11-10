@@ -13,7 +13,7 @@
         "start": "node --import tsx src/cli.ts",
         "lint": "aifr \"yarn lint:eslint\" \"yarn lint:ts\" \"yarn lint:knip\" \"yarn lint:test-unit\" \"yarn lint:test-e2e\"",
         "lint:test-unit": "cross-env NODE_ENV=test TZ=Europe/Moscow vitest --run --exclude '**/*.e2e.test.ts'",
-        "lint:test-e2e": "yarn build &&cross-env NODE_ENV=test TZ=Europe/Moscow TEST_TYPE=e2e vitest --run",
+        "lint:test-e2e": "yarn build && cross-env NODE_ENV=test TZ=Europe/Moscow TEST_TYPE=e2e vitest --run",
         "lint:ts": "tsc --noEmit",
         "lint:eslint": "yarn eslint --fix --max-warnings 0 --report-unused-disable-directives-severity off src",
         "lint:knip": "knip --no-progress --include exports,files"
