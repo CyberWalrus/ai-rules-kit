@@ -218,7 +218,7 @@ When creating/editing command prompts, apply these criteria:
 - Task execution commands (git workflows, changelog generation, analysis reports)
 - Direct instructions for specific operations (commit automation, deployment scripts)
 - Files in `.cursor/commands/` directory
-- Imperative style instructions ("Ты — [роль]", "Команда для...")
+- Imperative style instructions ("You are [role]", "Command for...")
 - Simple operational workflows without meta-structure
 - Target size: 50-200 lines (task instructions only)
 
@@ -232,7 +232,7 @@ When creating/editing command prompts, apply these criteria:
 
 **Structural requirements:**
 
-- NO YAML frontmatter (commands are standalone instructions)
+- YAML frontmatter REQUIRED (id, type: command)
 - NO TIER structure (flat Markdown with ## headers)
 - NO XML tags (pure Markdown formatting)
 - NO system anchors [ALGORITHM-BEGIN/END]
@@ -313,14 +313,14 @@ After type determination, verify understanding:
 
 **IF type = COMMAND:**
 
-- [ ] Understand: NO YAML frontmatter
+- [ ] Understand: YAML frontmatter required (id, type)
 - [ ] Understand: NO TIER structure (flat ##)
 - [ ] Understand: NO XML tags
 - [ ] Understand: NO system anchors
-- [ ] Understand: Imperative style (Russian: "Ты — [role]")
+- [ ] Understand: Imperative style (English: "You are [role]")
 - [ ] Understand: Direct instructions with examples
 - [ ] Understand: Target score ≥85 (same as all types)
-- [ ] Understand: Russian language for ALL content (exception to language policy)
+- [ ] Understand: English language for ALL content (standard language policy)
 
 **IF type = ALGORITHM/REFERENCE/COMBO:**
 
@@ -359,11 +359,11 @@ Complete ALL for current step:
 
 **FOR COMMAND TYPE:**
 
-- NO YAML frontmatter (commands are standalone instructions)
+- YAML frontmatter REQUIRED (id, type: command)
 - NO TIER structure (flat Markdown with ## headers)
 - NO XML tags (pure Markdown formatting)
 - NO system anchors [ALGORITHM-BEGIN/END]
-- Start with imperative role definition: "Ты — [роль]. Твоя задача — [задача]."
+- Start with imperative role definition: "You are [role]. Your task is [task]."
 - Structure with ## headers for main sections
 - Use numbered lists for step-by-step instructions
 - Include bash/git command examples in code blocks where applicable
@@ -411,12 +411,12 @@ Complete ALL for Step 2:
 
 **FOR COMMAND TYPE:**
 
-- Define role in first paragraph using imperative style (Russian): "Ты — [role]. Твоя задача — [task]."
-- Use Russian language for all content (commands are user-facing instructions)
+- Define role in first paragraph using imperative style (English): "You are [role]. Your task is [task]."
+- Use English language for all content (commands follow standard language policy)
 - Structure content with clear ## section headers
 - Write step-by-step instructions using numbered lists
 - Include concrete examples (bash commands, git workflows, output formats)
-- Add operational context where needed (example in Russian: "Работа ведётся в корне репозитория")
+- Add operational context where needed (example: "Working in repository root")
 - Specify expected behavior and edge cases
 
 **FOR COMPACT TYPE:**
@@ -971,50 +971,54 @@ Few-shot examples (input → expected structured output):
 
     ```xml
     <prompt_analysis>**Type:** command
-    This is a task execution command requiring imperative style and direct instructions. No YAML/TIER/XML needed.</prompt_analysis>
+    This is a task execution command requiring imperative style and direct instructions. Needs YAML frontmatter.</prompt_analysis>
     <improvements>
-    - **critical:** Use imperative style with role definition
+    - **critical:** Add YAML frontmatter with id, type
+    - **critical:** Use imperative style with role definition in English
     - **critical:** Structure with clear steps and examples
     - **important:** Add bash command examples
     </improvements>
     <result>
     ```markdown
+    ---
+    id: git-commit-workflow
+    type: command
+    ---
+
     # Git Commit Workflow
 
-    **Note:** This is a command type prompt example. Command type prompts use Russian language for ALL content as an exception to language policy.
-    
-    Ты — инженер автоматизации git-процессов. Твоя задача — создать атомарные коммиты с проверкой качества.
+    You are a git process automation engineer. Your task is to create atomic commits with quality checks.
 
-    ## 1. Проверка качества кода
+    ## 1. Quality Check
 
-    Выполни команды последовательно:
+    Run commands sequentially:
 
     ```bash
     yarn lint && yarn test && yarn typecheck
     ```
 
-    Если любая упадет — остановись.
+    If any fails, stop immediately.
 
-   ## 2. Разделение изменений
+   ## 2. Split Changes
 
-    Раздели изменения на логически обособленные части.
+    Divide changes into logically separate parts.
 
-   ## 3. Создание коммитов
+   ## 3. Create Commits
 
-    Для каждой части создай отдельный commit с типом:
-    - `feat` — новая функциональность
-    - `fix` — исправление бага
-    - `refactor` — рефакторинг
+    For each part, create a separate commit with type:
+    - `feat` — new functionality
+    - `fix` — bug fix
+    - `refactor` — refactoring
 
-   ## 4. Формат сообщения
+   ## 4. Message Format
 
     ```
     {task-id}: [{type}] {message}
     ```
 
-    Примеры:
-    - `PB-1234: [feat] Добавит модуль email`
-    - `PB-1234: [fix] Исправит баг загрузки`
+    Examples:
+    - `PB-1234: [feat] Add email module`
+    - `PB-1234: [fix] Fix loading bug`
 
     ```
     ```
@@ -1117,16 +1121,18 @@ Quality gates:
 
 For command type prompts, MCP validator may report warnings about:
 
-- Missing YAML frontmatter (expected behavior, ignore)
 - Missing TIER structure (expected behavior, ignore)
 - Missing XML tags (expected behavior, ignore)
 - Missing system anchors (expected behavior, ignore)
 
+**YAML frontmatter IS REQUIRED for command type** (id, type, alwaysApply)
+
 **Focus areas for command:**
 
-- Clarity of instructions (imperative style)
+- Clarity of instructions (imperative style in English)
 - Actionability (concrete execution steps)
 - Completeness (all necessary details)
+- YAML frontmatter presence
 
 **Target score for command: ≥85** (same as algorithm/reference/combo/compact)
 
@@ -1138,6 +1144,7 @@ For command type prompts, MCP validator may report warnings about:
 
 **Critical errors must be 0:**
 
+- Missing YAML frontmatter
 - Unclear role definition
 - Missing execution steps
 - Ambiguous instructions
@@ -1239,7 +1246,7 @@ Before completing, verify ALL critical elements are present:
 - **LANGUAGE POLICY APPLIED**: Prompt content is in English; ONLY adds Russian phrase "**ВАЖНО: Все ответы должны быть на русском языке.**" if user-facing output expected; examples show English structure with Russian output samples
 - **SYSTEM ANCHORS are MANDATORY placed**: [ALGORITHM-BEGIN/END] for algorithm type, [REFERENCE-BEGIN/END] for reference type
 - **COMPACT TYPE VERIFICATION**: If type=compact, verify: ONE semantic XML tag (not multiple), NO TIER structure, NO system anchors, imperative trigger first line (INSTANT optional, not mandatory), numbered lists, minimal YAML (id+type+alwaysApply only), inline fallback, NO Russian language instruction added
-- **COMMAND TYPE VERIFICATION**: If type=command, verify: NO YAML frontmatter, NO TIER structure, NO XML tags, NO system anchors, imperative style (Russian: "Ты — [role]"), direct instructions with ## headers, optional bash examples
+- **COMMAND TYPE VERIFICATION**: If type=command, verify: YAML frontmatter required (id, type), NO TIER structure, NO XML tags, NO system anchors, imperative style (English: "You are [role]"), direct instructions with ## headers, optional bash examples
 - Output format section matches the required structure with prefill examples
 - The model's response begins with `<prompt_analysis>**Type:** ...` and includes `<improvements>` and `<result>` sections
 - No prohibited content (bash commands, unsupported elements) is present

@@ -1,121 +1,126 @@
+---
+id: changelog-generator
+type: command
+---
+
 # Changelog Generator
 
-Ты — опытный инженер сопровождения и генерации changelog-файлов, работающий в крупной команде разработки. Твоя задача — **автоматически обновлять файл `CHANGELOG.md`**, соблюдая следующие строгие требования.
+You are an experienced changelog maintenance and generation engineer working in a large development team. Your task is to **automatically update the `CHANGELOG.md` file**, following strict requirements.
 
-## 🎯 Цель
+## 🎯 Goal
 
-Автоматически обновить `CHANGELOG.md` для **всех пропущенных версий** между последней записью в changelog и текущей версией, используя историю git и файлы версий (`version.json` или `package.json`).
+Automatically update `CHANGELOG.md` for **all missing versions** between the last entry in changelog and current version, using git history and version files (`version.json` or `package.json`).
 
-## 🧠 Контекст
+## 🧠 Context
 
-- Работай в корне репозитория; все команды выполняй там
-- Файл версии: приоритет `version.json` → если отсутствует, используй `package.json`
-- Если оба файла отсутствуют → вывести ошибку и завершить работу
-- В `CHANGELOG.md` уже описаны некоторые версии, но могут быть пропуски
-- Если `CHANGELOG.md` пустой или не содержит `## [X.Y.Z]` → считать, что предыдущей версии нет
-- Все изменения версий зафиксированы в git истории
-- Коммиты могут следовать conventional commits или иметь произвольный формат — группируй по смыслу
-- Незакоммиченные изменения обрабатывай только для текущей версии из выбранного файла версии
-- **По умолчанию создаются записи только для релизных версий** (формат `X.Y.Z` без суффиксов)
+- Work in repository root; execute all commands there
+- Version file: priority `version.json` → if absent, use `package.json`
+- If both files absent → output error and finish work
+- In `CHANGELOG.md` some versions are already described, but there may be gaps
+- If `CHANGELOG.md` is empty or does not contain `## [X.Y.Z]` → consider there is no previous version
+- All version changes are recorded in git history
+- Commits may follow conventional commits or have arbitrary format — group by meaning
+- Process uncommitted changes only for current version from selected version file
+- **By default, create entries only for release versions** (format `X.Y.Z` without suffixes)
 
-## ✅ Алгоритм работы
+## ✅ Work algorithm
 
-### 1. Определи файл версии и текущую версию
+### 1. Determine version file and current version
 
-- Проверь наличие `version.json` в корне — если есть, используй его
-- Если `version.json` отсутствует — используй `package.json`
-- Если оба файла отсутствуют — выведи ошибку "Файл версии не найден" и завершить работу
-- Извлеки текущую версию из выбранного файла
-- Если извлечение не удалось — выведи ошибку и завершить работу
+- Check for `version.json` in root — if exists, use it
+- If `version.json` absent, use `package.json`
+- If both files absent, output error "Version file not found" and finish work
+- Extract current version from selected file
+- If extraction failed, output error and finish work
 
-### 2. Найди последнюю версию в CHANGELOG.md
+### 2. Find last version in CHANGELOG.md
 
-- Открой `CHANGELOG.md` и найди первую строку формата `## [X.Y.Z]`
-- Если такой строки нет → это первый changelog:
-    - Если есть заголовок `# Changelog` → вставь запись после него
-    - Если заголовка нет → вставь запись в самое начало файла
-- Если найдена → это последняя задокументированная версия
-- Найди хеш коммита, где была установлена эта версия через `git log -- <VERSION_FILE>` и используй его как начальную точку диапазона
+- Open `CHANGELOG.md` and find first line of format `## [X.Y.Z]`
+- If no such line → this is first changelog:
+    - If there is header `# Changelog` → insert entry after it
+    - If no header → insert entry at the very beginning of file
+- If found → this is last documented version
+- Find commit hash where this version was set via `git log -- <VERSION_FILE>` and use it as starting point of range
 
-### 3. Получи все версии между последней и текущей
+### 3. Get all versions between last and current
 
-- Используй `git log` по файлу версии, чтобы найти все коммиты изменения версий
-- Для каждого коммита извлеки версию через `git show <commit>:<VERSION_FILE>`
-- Проверь код возврата: `if [ $? -ne 0 ]; then echo "Ошибка получения версии из коммита $commit" >&2; continue; fi`
-- **Фильтруй версии (ВАЖНО):**
-    - По умолчанию оставляй только стандартные релизные версии формата `X.Y.Z`
-    - Игнорируй версии с суффиксами: `-dev`, `-beta`, `-alpha`, `-rc`, `-snapshot`, `-canary`, `-next`
-    - Игнорируй версии, содержащие метки сборки (например, `+build.123`)
-    - **Исключение:** если текущая версия (из файла версии) содержит суффикс — включи ТОЛЬКО эту текущую версию, все релизные версии БЕЗ суффиксов также включай, другие версии С суффиксами игнорируй
-- Определи все версии между последней в CHANGELOG и текущей (включительно)
-- Если текущая версия уже есть в CHANGELOG и есть незакоммиченные файлы — добавь их в существующий блок, не создавая новый
+- Use `git log` on version file to find all version change commits
+- For each commit extract version via `git show <commit>:<VERSION_FILE>`
+- Check return code: `if [ $? -ne 0 ]; then echo "Error getting version from commit $commit" >&2; continue; fi`
+- **Filter versions (IMPORTANT):**
+    - By default keep only standard release versions of format `X.Y.Z`
+    - Ignore versions with suffixes: `-dev`, `-beta`, `-alpha`, `-rc`, `-snapshot`, `-canary`, `-next`
+    - Ignore versions containing build tags (e.g., `+build.123`)
+    - **Exception:** if current version (from version file) contains suffix — include ONLY this current version, all release versions WITHOUT suffixes also include, other versions WITH suffixes ignore
+- Determine all versions between last in CHANGELOG and current (inclusive)
+- If current version already exists in CHANGELOG and there are uncommitted files, add them to existing block without creating new one
 
-### 4. Для КАЖДОЙ пропущенной версии создай запись
+### 4. For EACH missing version create entry
 
-Для каждой версии из списка:
+For each version from list:
 
-- Найди последний коммит, где в файле версии поле `version` изменилось на эту версию
-- Найди предыдущий коммит изменения версии (начало диапазона)
-- Получи все коммиты между этими точками через `git log <prev>..<current> --no-merges`
-- Проверь код возврата: `if [ $? -ne 0 ]; then echo "Ошибка получения коммитов для версии $version" >&2; continue; fi`
-- Исключи коммиты, содержащие слова: merge, bump, release, version, format, typo, whitespace
-- **Сгруппируй коммиты:**
-    - **Приоритет группировки (по убыванию):** feat → fix → refactor → style → chore → docs → test
-    - Группируй по типу в указанном порядке приоритета
-    - Внутри типа группируй коммиты по общему пути файла (первые 2 уровня директории, например `src/ui/`)
-    - Объединяй коммиты с одинаковым типом и путём в один пункт с перечислением хешей
-    - **Соответствие типов секциям:** feat → Added, fix → Fixed, refactor/style/chore → Changed, docs → Docs, test → Tests
-- **Создай лаконичные записи:**
-    - Формат: `- **<Краткий заголовок>** – <краткое описание>`
-    - В конце добавь ссылку: `<a href="https://github.com/owner/repo/commit/HASH" target="_blank">HASH</a>`
-    - Обобщай изменения, не копируя детали коммитов
+- Find last commit where in version file field `version` changed to this version
+- Find previous version change commit (range start)
+- Get all commits between these points via `git log <prev>..<current> --no-merges`
+- Check return code: `if [ $? -ne 0 ]; then echo "Error getting commits for version $version" >&2; continue; fi`
+- Exclude commits containing words: merge, bump, release, version, format, typo, whitespace
+- **Group commits:**
+    - **Grouping priority (descending):** feat → fix → refactor → style → chore → docs → test
+    - Group by type in specified priority order
+    - Within type group commits by common file path (first 2 directory levels, e.g. `src/ui/`)
+    - Combine commits with same type and path into one item with hash listing
+    - **Type to section mapping:** feat → Added, fix → Fixed, refactor/style/chore → Changed, docs → Docs, test → Tests
+- **Create concise entries:**
+    - Format: `- **<Brief title>** – <brief description>`
+    - At end add link: `<a href="https://github.com/owner/repo/commit/HASH" target="_blank">HASH</a>`
+    - Generalize changes, do not copy commit details
 
-### 5. Учти незакоммиченные изменения
+### 5. Consider uncommitted changes
 
-- Выполни `git status --short` чтобы найти незакоммиченные файлы
-- Проверь, что текущая версия из файла версии совпадает с обрабатываемой версией
-- Если совпадает И есть изменения:
-    - Добавь в секцию `### Changed` запись: `- **Изменения в <путь/к/файлу>** – незакоммиченные изменения`
-    - Для каждого измененного файла создай отдельную запись
-- Если не совпадает — игнорируй незакоммиченные изменения
+- Execute `git status --short` to find uncommitted files
+- Check that current version from version file matches processed version
+- If matches AND there are changes:
+    - Add to section `### Changed` entry: `- **Changes in <path/to/file>** – uncommitted changes`
+    - Create separate entry for each modified file
+- If does not match, ignore uncommitted changes
 
-### 6. Сформируй блоки для новых версий
+### 6. Form blocks for new versions
 
-Для каждой версии создай блок:
+For each version create block:
 
-- Заголовок: `## [X.Y.Z] - YYYY-MM-DD`
-- Дата: `<small>dd.MM.yyyy HH:mm</small>` — извлечь через `git log -1 --pretty=format:"%ad" --date=format:"%d.%m.%Y %H:%M" <commit>`
-- Секции: `### Added` (feat), `### Changed` (refactor/chore/style), `### Fixed` (fix), `### Removed` (только если есть изменения)
-- Списки изменений с группировкой и ссылками на коммиты
+- Header: `## [X.Y.Z] - YYYY-MM-DD`
+- Date: `<small>dd.MM.yyyy HH:mm</small>` — extract via `git log -1 --pretty=format:"%ad" --date=format:"%d.%m.%Y %H:%M" <commit>`
+- Sections: `### Added` (feat), `### Changed` (refactor/chore/style), `### Fixed` (fix), `### Removed` (only if there are changes)
+- Change lists with grouping and commit links
 
-### 7. Вставь блоки в CHANGELOG.md
+### 7. Insert blocks into CHANGELOG.md
 
-- Вставь новые блоки сразу после заголовка файла (или в начало, если заголовка нет), чтобы новые версии шли сверху
-- Помести новые записи в порядке от новых к старым по дате коммита версии
-- Сохрани все существующие записи без изменений
-- Убедись, что форматирование соответствует стилю файла
+- Insert new blocks right after file header (or at beginning if no header), so new versions go on top
+- Place new entries in order from new to old by version commit date
+- Save all existing entries unchanged
+- Ensure formatting matches file style
 
-## 📐 Формат и стиль
+## 📐 Format and style
 
-- Пиши **на русском языке**, лаконично и понятно
-- Используй **одинаковую структуру**, как в существующих записях
-- Обобщай изменения, не копируя детали коммитов
-- Соблюдай логичную группировку: по компонентам, по типу работ (UI, конфиг, документация)
-- Исключай коммиты, где сообщение начинается с: format, typo, whitespace, merge, bump, release
+- Write **in English**, concisely and clearly
+- Use **same structure** as in existing entries
+- Generalize changes, do not copy commit details
+- Follow logical grouping: by components, by type of work (UI, config, documentation)
+- Exclude commits where message starts with: format, typo, whitespace, merge, bump, release
 
-## ⚠️ Правила поведения
+## ⚠️ Behavior rules
 
-- Старайся обеспечить полную и точную запись изменений
-- Проверяй границы версий — не включай старые или нерелевантные коммиты
-- Показывай только реальные изменения из git истории
-- Следи за качеством языка — всё должно быть понятно для команды
+- Strive to ensure complete and accurate record of changes
+- Check version boundaries — do not include old or irrelevant commits
+- Show only real changes from git history
+- Monitor language quality — everything should be understandable for team
 
-## 🛠️ Базовые команды
+## 🛠️ Basic commands
 
-### Определение файла версии
+### Determining version file
 
 ```bash
-# Проверка наличия version.json, иначе используем package.json
+# Check for version.json, otherwise use package.json
 if [ -f version.json ]; then
     VERSION_FILE="version.json"
 else
@@ -123,72 +128,72 @@ else
 fi
 ```
 
-### Извлечение версий
+### Extracting versions
 
 ```bash
-# Текущая версия из version.json
+# Current version from version.json
 jq -r '.version' version.json
 
-# Текущая версия из package.json
+# Current version from package.json
 grep '"version"' package.json | head -1 | sed 's/.*"\([0-9.]*\)".*/\1/'
 
-# Последняя версия в CHANGELOG.md
+# Last version in CHANGELOG.md
 grep -m 1 '^## \[' CHANGELOG.md | sed 's/## \[\(.*\)\].*/\1/'
 ```
 
-### Получение истории версий
+### Getting version history
 
 ```bash
-# Все коммиты изменения версии (для version.json)
+# All version change commits (for version.json)
 git log --all --pretty=format:"%H %ad %s" --date=iso-strict -- version.json
 
-# Все коммиты изменения версии (для package.json)
+# All version change commits (for package.json)
 git log --all --pretty=format:"%H %ad %s" --date=iso-strict -- package.json | grep -i "version\|bump"
 
-# Извлечь версию из конкретного коммита
+# Extract version from specific commit
 git show <commit_hash>:version.json | jq -r '.version'
 git show <commit_hash>:package.json | grep '"version"' | head -1 | sed 's/.*"\([0-9.]*\)".*/\1/'
 
-# Фильтрация нестандартных версий (игнорировать dev/beta/alpha/rc/snapshot/canary/next)
-# Проверка, является ли версия релизной
+# Filtering non-standard versions (ignore dev/beta/alpha/rc/snapshot/canary/next)
+# Check if version is release version
 echo "$VERSION" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' > /dev/null
 if [ $? -eq 0 ]; then
-    echo "Релизная версия: $VERSION"
+    echo "Release version: $VERSION"
 else
-    echo "Нестандартная версия (игнорируется): $VERSION"
+    echo "Non-standard version (ignored): $VERSION"
 fi
 ```
 
-### Получение коммитов между версиями
+### Getting commits between versions
 
 ```bash
-# Все коммиты между двумя версиями (исключая merge)
+# All commits between two versions (excluding merge)
 git log <old_commit>..<new_commit> --pretty=format:"%h | %s" --no-merges
 
-# Исключить bump/version коммиты
+# Exclude bump/version commits
 git log <old_commit>..<new_commit> --pretty=format:"%h | %s" --no-merges | grep -v -i "bump\|version\|release"
 
-# Получить дату и время коммита версии
+# Get version commit date and time
 git log -1 --pretty=format:"%ad" --date=format:"%d.%m.%Y %H:%M" <commit_hash>
 ```
 
-### Обработка незакоммиченных файлов
+### Processing uncommitted files
 
 ```bash
-# Список незакоммиченных файлов
+# List of uncommitted files
 git status --short
 
-# Проверка наличия незакоммиченных изменений
+# Check for uncommitted changes
 if [ -n "$(git status --short)" ]; then
-    echo "Есть незакоммиченные изменения"
+    echo "There are uncommitted changes"
 fi
 ```
 
-### Получение URL репозитория
+### Getting repository URL
 
 ```bash
-# Извлечь URL репозитория для ссылок на коммиты
+# Extract repository URL for commit links
 git config --get remote.origin.url | sed 's/\.git$//' | sed 's/git@github.com:/https:\/\/github.com\//'
 ```
 
-Используй git, jq, grep, awk, sed, head, tail. Проверяй коды возврата: `if [ $? -ne 0 ]; then echo "Ошибка: <описание>" >&2; continue; fi`
+Use git, jq, grep, awk, sed, head, tail. Check return codes: `if [ $? -ne 0 ]; then echo "Error: <description>" >&2; continue; fi`

@@ -1,194 +1,199 @@
+---
+id: commit-workflow
+type: command
+---
+
 # Git Commit Workflow
 
-Ты — инженер автоматизации git-коммитов. Твоя задача — автоматически группировать изменения и создавать атомарные коммиты согласно плану группировки.
+You are a git commit automation engineer. Your task is to automatically group changes and create atomic commits according to the grouping plan.
 
-## 1. Проверка качества кода
+## 1. Code quality check
 
-**Извлеки команды качества в порядке приоритета:**
+**Extract quality commands in priority order:**
 
-1. **Из `package-ai-docs.md`** (секция `<development_commands>` → "⚡ Обязательные команды качества:")
-2. **Из `package.json`** (секция `scripts`: `lint`, `test`, `typecheck`, `build`)
-3. **Стандартные:** `yarn lint && yarn test && yarn typecheck`
+1. **From `package-ai-docs.md`** (section `<development_commands>` → "⚡ Mandatory quality commands:")
+2. **From `package.json`** (section `scripts`: `lint`, `test`, `typecheck`, `build`)
+3. **Standard:** `yarn lint && yarn test && yarn typecheck`
 
-**Выполни команды последовательно. Если любая упадет — остановись.**
+**Execute commands sequentially. If any fails, stop.**
 
-Если всё успешно — проанализируй **незакоммиченные изменения в текущем git-репозитории** (включая staged и unstaged).
+If all successful, analyze **uncommitted changes in the current git repository** (including staged and unstaged).
 
 ---
 
-## 2. Анализ и планирование группировки
+## 2. Change analysis and grouping planning
 
-**ОБЯЗАТЕЛЬНЫЙ ЭТАП:** Перед созданием коммитов ты ДОЛЖЕН проанализировать все изменения и создать план группировки. **НЕ ПЕРЕХОДИ к созданию коммитов без этого этапа.**
+**MANDATORY STAGE:** Before creating commits, you MUST analyze all changes and create a grouping plan. **DO NOT PROCEED to creating commits without this stage.**
 
-### 2.1. Анализ изменений
+### 2.1. Change analysis
 
-Проанализируй все незакоммиченные изменения:
+Analyze all uncommitted changes:
 
-- Какие файлы изменены
-- Какие функции/компоненты/модули затронуты
-- Какие зависимости между изменениями (один файл зависит от другого)
-- Есть ли тесты для изменений
+- Which files changed
+- Which functions/components/modules affected
+- What dependencies between changes (one file depends on another)
+- Are there tests for changes
 
-### 2.2. Определение фич и задач
+### 2.2. Feature and task determination
 
-Определи, какие **фичи** или **задачи** реализованы в изменениях:
+Determine which **features** or **tasks** are implemented in changes:
 
-- Одна фича может затрагивать несколько файлов
-- Разные фичи должны быть в разных коммитах
-- Связанные изменения одной фичи объединяй
+- One feature may affect multiple files
+- Different features should be in different commits
+- Group related changes of one feature
 
-**Критерии определения фичи:**
+**Feature determination criteria:**
 
-- Изменения решают одну задачу или добавляют одну функциональность
-- Файлы логически связаны (например, компонент + его стили + тесты)
-- Изменения можно описать одним предложением
+- Changes solve one task or add one functionality
+- Files are logically related (e.g., component + its styles + tests)
+- Changes can be described in one sentence
 
-### 2.3. Группировка по логике
+### 2.3. Grouping by logic
 
-Сгруппируй изменения по следующим правилам:
+Group changes according to following rules:
 
-**Объединять в один коммит:**
+**Combine into one commit:**
 
-- Все файлы, относящиеся к одной фиче, объединять в один коммит (даже если их много)
-- Тесты к фиче идут в тот же коммит что и фича
-- Все связанные изменения исправления бага (все файлы в один `fix`)
-- Стилистические правки (импорты, форматирование) объединяй в один `style`
+- All files related to one feature, combine into one commit (even if there are many)
+- Tests for feature go into the same commit as the feature
+- All related bug fix changes (all files in one `fix`)
+- Style fixes (imports, formatting) combine into one `style`
 
-**Разделять на разные коммиты:**
+**Separate into different commits:**
 
-- Разные фичи → разные коммиты
-- Фича + рефакторинг → два коммита (сначала фича, потом рефакторинг)
-- Фича + исправление бага → два коммита
-- Фича + стилистические правки → два коммита (сначала фича, потом style)
+- Different features → different commits
+- Feature + refactoring → two commits (first feature, then refactoring)
+- Feature + bug fix → two commits
+- Feature + style fixes → two commits (first feature, then style)
 
-**Важно:** Одна фича = один коммит. НЕ разбивай одну фичу на несколько коммитов, даже если она большая.
+**Important:** One feature = one commit. DO NOT split one feature into multiple commits, even if it's large.
 
-**Уточнение по рефакторингу:** Если рефакторинг относится к той же функции, что и новая фича, всё равно делай два коммита: сначала `feat` (новая функциональность), затем `refactor` (улучшение структуры).
+**Clarification on refactoring:** If refactoring relates to the same function as new feature, still make two commits: first `feat` (new functionality), then `refactor` (structure improvement).
 
-### 2.4. Определение типов коммитов
+### 2.4. Commit type determination
 
-Для каждой группы определи тип коммита по следующим критериям:
+For each group, determine commit type by following criteria:
 
-- **`feat`** — новая функциональность (даже если состоит из многих файлов). Приоритет: если добавляется новая возможность для пользователя или системы.
-- **`fix`** — исправление бага. Все связанные изменения бага в один коммит. Приоритет: если исправляется ошибка в существующей функциональности.
-- **`style`** — только стилистика без изменения логики (отступы, импорты, форматирование, удаление неиспользуемого кода). Приоритет: если изменения НЕ влияют на поведение программы.
-- **`refactor`** — изменение структуры кода без изменения поведения. Приоритет: если код переписывается, но функциональность не меняется.
-- **`test`** — только если тесты добавляются отдельно от фичи (например, улучшение покрытия существующих тестов). Если тесты к новой фиче — используй `feat` и включи тесты в тот же коммит.
-- **`docs`** — документация и промпты (`.mdc`, `.md`, любые инструкции и руководства). Приоритет: если изменяется только документация.
-- **`chore`** — обслуживание, зависимости, конфиги, сборка. Приоритет: если изменяются только конфигурационные файлы или зависимости.
+- **`feat`** — new functionality (even if consists of many files). Priority: if new capability is added for user or system.
+- **`fix`** — bug fix. All related bug changes in one commit. Priority: if error in existing functionality is fixed.
+- **`style`** — only styling without logic changes (indents, imports, formatting, removing unused code). Priority: if changes DO NOT affect program behavior.
+- **`refactor`** — code structure change without behavior change. Priority: if code is rewritten but functionality does not change.
+- **`test`** — only if tests are added separately from feature (e.g., improving coverage of existing tests). If tests for new feature, use `feat` and include tests in the same commit.
+- **`docs`** — documentation and prompts (`.mdc`, `.md`, any instructions and guides). Priority: if only documentation is changed.
+- **`chore`** — maintenance, dependencies, configs, build. Priority: if only configuration files or dependencies are changed.
 
-**При неоднозначности:**
+**When ambiguous:**
 
-1. Если фича + рефакторинг в одном изменении → раздели на два коммита (`feat` + `refactor`)
-2. Если исправление бага + улучшение → используй `fix` (исправление приоритетнее)
-3. Если новая функциональность + тесты → используй `feat` (тесты включи в коммит)
-4. **Если изменения включают и баг, и новую функцию:** приоритет — `fix` (сначала исправление бага), а `feat`-коммит создаётся только если нет исправления бага в этих же изменениях. Если баг и фича в разных файлах — два коммита (`fix` + `feat`).
+1. If feature + refactoring in one change → split into two commits (`feat` + `refactor`)
+2. If bug fix + improvement → use `fix` (fix has priority)
+3. If new functionality + tests → use `feat` (include tests in commit)
+4. **If changes include both bug and new function:** priority is `fix` (first bug fix), and `feat` commit is created only if there is no bug fix in the same changes. If bug and feature in different files, two commits (`fix` + `feat`).
 
-### 2.5. Вывод плана в чат
+### 2.5. Output plan to chat
 
-**ОБЯЗАТЕЛЬНО выведи план группировки в чат перед созданием коммитов. Используй следующий шаблон:**
+**MANDATORY output grouping plan to chat before creating commits. Use following template:**
 
 ```markdown
-План группировки изменений:
+Change grouping plan:
 
-Коммит 1: [тип] Описание фичи/задачи
-  - Файлы: список файлов
-  - Причина группировки: почему эти файлы вместе
+Commit 1: [type] Feature/task description
+  - Files: list of files
+  - Grouping reason: why these files together
 
-Коммит 2: [тип] Описание фичи/задачи
-  - Файлы: список файлов
-  - Причина группировки: почему эти файлы вместе
+Commit 2: [type] Feature/task description
+  - Files: list of files
+  - Grouping reason: why these files together
 
 ...
 ```
 
-**КРИТИЧНО:** План ДОЛЖЕН быть выведен в чат ДО выполнения любых git-команд для создания коммитов. Только после вывода плана переходи к секции 3.
+**CRITICAL:** Plan MUST be output to chat BEFORE executing any git commands to create commits. Only after outputting plan proceed to section 3.
 
 ---
 
-## 3. Разделение изменений
+## 3. Splitting changes
 
-**После вывода плана (секция 2) сразу переходи к этому шагу.** Раздели изменения согласно плану группировки, который ты создал и вывел в чат в секции 2.
+**After outputting plan (section 2), immediately proceed to this step.** Split changes according to the grouping plan you created and output to chat in section 2.
 
-Каждая часть из плана должна стать отдельным коммитом:
+Each part from the plan should become a separate commit:
 
-- Одна фича = один коммит (не разбивай)
-- Разные фичи = разные коммиты
-- Следуй логике группировки из плана
+- One feature = one commit (do not split)
+- Different features = different commits
+- Follow grouping logic from plan
 
-## 4. Создание коммитов
+## 4. Creating commits
 
-**Используй план из секции 2.** Для каждой группы из плана:
+**Use plan from section 2.** For each group from plan:
 
-- Создай **отдельный git commit**
-- Используй **тип коммита**, который ты определил в плане (секция 2.4)
+- Create **separate git commit**
+- Use **commit type** you determined in plan (section 2.4)
 
-**Типы коммитов (для справки):**
+**Commit types (for reference):**
 
-- **`feat`** — новая функциональность (даже если состоит из многих файлов)
-- **`fix`** — исправление бага (все связанные изменения в один коммит)
-- **`style`** — только стилистика без изменения логики (отступы, импорты, форматирование)
-- **`refactor`** — изменение структуры кода без изменения поведения
-- **`test`** — только если тесты добавляются отдельно от фичи (иначе используй `feat` с тестами)
-- **`docs`** — документация и промпты (`.mdc`, `.md`, любые инструкции и руководства)
-- **`chore`** — обслуживание, зависимости, конфиги, сборка
+- **`feat`** — new functionality (even if consists of many files)
+- **`fix`** — bug fix (all related changes in one commit)
+- **`style`** — only styling without logic changes (indents, imports, formatting)
+- **`refactor`** — code structure change without behavior change
+- **`test`** — only if tests are added separately from feature (otherwise use `feat` with tests)
+- **`docs`** — documentation and prompts (`.mdc`, `.md`, any instructions and guides)
+- **`chore`** — maintenance, dependencies, configs, build
 
-**Важно:** Тип коммита должен соответствовать плану из секции 2.4. Если в плане указан тип — используй его.
+**Important:** Commit type must match plan from section 2.4. If type is specified in plan, use it.
 
-## 5. Формат сообщения коммита
+## 5. Commit message format
 
-Название коммита строго по шаблону:
+Commit name strictly according to template:
 
 ```
 {task-id}: [{commit-type}] {commit-message}
 ```
 
-Где:
+Where:
 
-- `{task-id}` — номер задачи из названия ветки. Извлеки через: `git rev-parse --abbrev-ref HEAD | grep -o '[A-Z]\+-[0-9]\+' || echo MAIN`. Если ветки нет или номер не найден — используй `MAIN` (как в предыдущих коммитах)
-- `{commit-type}` — тип коммита (см. секцию 4)
-- `{commit-message}` — описание на **русском**, с заглавной буквы, в **3-м лице**, начиная с глагола:
-  `Добавит`, `Обновит`, `Исправит`, `Удалит`, `Упростит` и т.д.
-- **Ограничение длины:** Вся строка коммита (`{task-id}: [{commit-type}] {commit-message}`) **не должна превышать 120 символов**. Если сообщение слишком длинное — сократи его, сохранив смысл. **Проверяй длину перед созданием коммита.**
+- `{task-id}` — task number from branch name. Extract via: `git rev-parse --abbrev-ref HEAD | grep -o '[A-Z]\+-[0-9]\+' || echo MAIN`. If no branch or number not found, use `MAIN` (as in previous commits)
+- `{commit-type}` — commit type (see section 4)
+- `{commit-message}` — description in **English**, capitalized, in **3rd person**, starting with verb:
+  `Add`, `Update`, `Fix`, `Remove`, `Simplify`, etc.
+- **Length limit:** Entire commit line (`{task-id}: [{commit-type}] {commit-message}`) **must not exceed 120 characters**. If message is too long, shorten it while preserving meaning. **Check length before creating commit.**
 
-**Примеры (все ≤120 символов):**
+**Examples (all ≤120 characters):**
 
-- `PB-1234: [feat] Добавит модуль отправки email` (47 символов)
-- `PB-1234: [fix] Исправит баг при загрузке профиля` (52 символа)
-- `PB-1234: [style] Удалит лишние отступы и сортировку импортов` (66 символов)
+- `PB-1234: [feat] Add email sending module` (40 characters)
+- `PB-1234: [fix] Fix profile loading bug` (42 characters)
+- `PB-1234: [style] Remove extra indents and sort imports` (58 characters)
 
 ---
 
-## 6. Выполнение коммитов
+## 6. Executing commits
 
-**Следуй плану из секции 2.** Выполни коммиты согласно плану группировки, который ты создал и вывел в чат.
+**Follow plan from section 2.** Execute commits according to the grouping plan you created and output to chat.
 
-**Порядок выполнения:**
+**Execution order:**
 
-1. Проверь соответствие плану: каждый коммит должен точно соответствовать группе из плана
-2. Для каждой группы из плана:
-   - Используй `git add -p` или `git add -i` **только** для файлов, перечисленных в этой группе плана
-   - Если `git add` завершился с ошибкой → выведи сообщение об ошибке и останови процесс
-   - Создай коммит с типом и сообщением согласно плану
-   - Проверь длину сообщения (≤120 символов). Если длина >120 символов → сократи, сохранив смысл
-3. После каждого коммита проверь, что он соответствует плану
+1. Check plan compliance: each commit must exactly match group from plan
+2. For each group from plan:
+   - Use `git add -p` or `git add -i` **only** for files listed in this plan group
+   - If `git add` finished with error → output error message and stop process
+   - Create commit with type and message according to plan
+   - Check message length (≤120 characters). If length >120 characters → shorten while preserving meaning
+3. After each commit check that it matches plan
 
-**Важно:** НЕ создавай коммиты, которых нет в плане. Если обнаружил ошибку в плане — остановись, выведи исправленный план в чат, затем продолжай.
+**Important:** DO NOT create commits that are not in plan. If found error in plan, stop, output corrected plan to chat, then continue.
 
-**Обработка ошибок:**
+**Error handling:**
 
-- Если любая команда (`lint`, `test`, `typecheck`, `git add`, `git commit`) завершилась с ошибкой → выведи сообщение об ошибке и останови процесс
-- Не продолжай выполнение при ошибках
+- If any command (`lint`, `test`, `typecheck`, `git add`, `git commit`) finished with error → output error message and stop process
+- Do not continue execution with errors
 
-### Примеры сообщений (все ≤120 символов)
+### Example messages (all ≤120 characters)
 
-- `PB-1234: [feat] Добавит модуль отправки email` (47 символов)
-- `PB-1234: [fix] Исправит баг при загрузке профиля` (52 символа)
-- `PB-1234: [style] Удалит лишние отступы и сортировку импортов` (66 символов)
+- `PB-1234: [feat] Add email sending module` (40 characters)
+- `PB-1234: [fix] Fix profile loading bug` (42 characters)
+- `PB-1234: [style] Remove extra indents and sort imports` (58 characters)
 
-## ⚠️ Важно
+## ⚠️ Important
 
-1. **Обязательный план:** Сначала создай план группировки (секция 2) и выведи его в чат. Только после этого создавай коммиты.
-2. **Атомарность:** Одна фича = один коммит (не разбивай). Разные фичи = разные коммиты.
-3. **Следование плану:** Строго следуй плану из секции 2. Не создавай коммиты, которых нет в плане.
-4. **Длина сообщения:** Строго соблюдай лимит в 120 символов для всей строки коммита. Проверяй длину перед созданием коммита.
+1. **Mandatory plan:** First create grouping plan (section 2) and output it to chat. Only after that create commits.
+2. **Atomicity:** One feature = one commit (do not split). Different features = different commits.
+3. **Follow plan:** Strictly follow plan from section 2. Do not create commits that are not in plan.
+4. **Message length:** Strictly observe 120 character limit for entire commit line. Check length before creating commit.

@@ -13,7 +13,7 @@ alwaysApply: false
 **Prompt Type Classification:**
 
 1. **compact** - Routing/detection, simple logic (1-3 steps), ≤150 lines
-2. **command** - Task execution, imperative instructions, 50-200 lines, Russian language
+2. **command** - Task execution, imperative instructions, 50-200 lines, English language
 3. Otherwise → DEFAULT: use compact type for simple routing
 4. **algorithm** - Multi-step workflows, TIER structure, 100-600 lines
 5. **reference** - Documentation, examples, 100-1000 lines
@@ -35,9 +35,9 @@ alwaysApply: false
 
 **COMMAND:**
 
-- NO YAML frontmatter, NO TIER structure, NO XML tags, NO system anchors
-- Imperative style: "Ты — [role]. Твоя задача — [task]."
-- Russian language for ALL content
+- YAML required (id, type), NO TIER structure, NO XML tags, NO system anchors
+- Imperative style: "You are [role]. Your task is [task]."
+- English language for ALL content
 - Direct instructions with numbered lists, bash/git examples in code blocks
 
 **ALGORITHM/REFERENCE/COMBO:**
@@ -54,7 +54,7 @@ alwaysApply: false
 1. Prompt logic MUST be in English (NO EXCEPTIONS)
 2. Allowed Russian: User output instruction (algorithm/reference/combo only, NOT compact/command), examples showing Russian output
 3. FORBIDDEN in Russian: algorithms, instructions, steps, XML tags, YAML, headers
-4. Command type: ALL content in Russian (exception)
+4. Command type: English language for ALL content (standard policy)
 
 **Writing Style (CRITICAL - ZERO TOLERANCE):**
 
@@ -75,6 +75,8 @@ type: compact|command|algorithm|reference|combo
 alwaysApply: false
 ---
 ```
+
+**Note:** YAML is required for ALL types including command (changed from previous versions)
 
 **XML Tags:**
 

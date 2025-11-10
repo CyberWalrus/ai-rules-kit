@@ -10,28 +10,26 @@ alwaysApply: false
 
 **ACTIVATION:** Run only when "Plan mode is active" in system_reminder; otherwise skip.
 
-**CRITICAL FIRST ACTION**
+**NOTE:** Mode announcement handled by `.cursor/rules/01-chat-mode-router.mdc`.
 
-Before ANY response:
-
-1. Check: Did I announce activity type?
-   - NO → BLOCKING VIOLATION → Classify NOW
-   - YES → Proceed
-
-PROHIBITION: Do not run semantic analysis before code check.
-
-CONSEQUENCE: Plan aborts.
+**FIRST ACTION:** Classify activity type before ANY response. Skipping = plan aborts.
 
 **BLOCKING GATE BEFORE create_plan**
 
 PROHIBIT create_plan unless all checks pass:
 
 [ ] Type classified
-[ ] Type announced: "Identified activity types: [type]"
-[ ] Workflow read: read_file('[name].mdc') in same batch
+[ ] Type announced: "📋 [type] → 📄 .cursor/rules/[name].mdc → Following as primary instructions"
+[ ] Workflow read: read_file('.cursor/rules/[name].mdc') in same batch
 [ ] Content received
 
 IF any check fails → abort, retry max 3 times, then report error
+
+**AFTER PLAN EXECUTION (CRITICAL):**
+
+When user approves plan and execution starts:
+
+1. Output: `[MODE_INITIALIZED: AGENT_MODE] → 📄 .cursor/rules/07-agent-mode-workflow.mdc → Following as primary instructions (already loaded)`
 
 **Classification Algorithm**
 
@@ -40,66 +38,35 @@ IF any check fails → abort, retry max 3 times, then report error
 3. IF no code → check file extensions → match from table
 4. IF no match → analyze keywords and context → select highest density
 5. SELECT type → IF tie → first from Activity Types table
-6. ANNOUNCE: "Identified activity types: [type], reading file [name].mdc"
-7. READ: read_file('[name].mdc') in same batch
+6. ANNOUNCE: `📋 [type] → 📄 .cursor/rules/[name].mdc → Following as primary instructions`
+7. READ: read_file('.cursor/rules/[name].mdc') in same batch
 8. VERIFY: content received → IF failed → abort, report error with file path
 9. PROCEED: create_plan
 
 IF no match at step 5 → DEFAULT to Code Development
 
-**Semantic Analysis (Step 3-4):**
+**Priority:** Codes > Extensions > Keywords > Context > Default (tie: first from table)
 
-1. File extensions: `.mdc`/`.cursor/` = Prompt Engineering | `.ts`/`.tsx` = Code Development
-2. Keywords: match table triggers → highest density wins (ANY language - translate to English if needed)
-3. Context: action verbs (improve/fix/create/analyze) → detect intent regardless of language
-
-Priority: Codes > Extensions > Keywords > Context > Default
-
-Tie-breaker: first from Activity Types table
-
-**Language support:** Analyze requests in ANY language - detect intent patterns, not exact word matches
+**Language support:** Analyze requests in ANY language - detect intent patterns, not exact matches
 
 **Activity Types**
 
 | Activity | Codes | Key Triggers | File |
 |:---|:---|:---|:---|
-| Prompt Engineering | `tdprompt` `тдпромпт` | `.cursor/`, `.mdc`, "prompt", "промт", "промпт", "rules", "правила", "AI behavior", "workflow", "dispatcher", "improve prompt", "улучшить промт", "rewrite prompt", "переписать промт" | `prompt-workflow.mdc` |
-| Code Development | `tdcode` `тдкод` | `.ts`, `.tsx`, `.js`, `.jsx`, "bug", "баг", "fix", "исправить", "implement", "реализовать", "function", "функция", "refactor", "рефакторинг" | `code-workflow.mdc` |
-| UI Development | `tdui` `тдюай` | "ui", "interface", "интерфейс", "visual", "стили", "styles", "component", "компонент", "layout", "верстка", "design", "дизайн" | `ui-workflow.mdc` |
-| AI Documentation | `tdaidoc` `тдаидок` | "ai-docs", "package-ai-docs", "module-ai-docs", "module documentation", "документация", "YAML", "Diátaxis", "update documentation", "обновить документацию" | `ai-docs-workflow.mdc` |
-| Technical Critique | `tdcritic` `тдкритик` | "critique", "review", "evaluate", "code review", "analysis" | `critique-workflow.mdc` |
-| JIRA Task | `tdjira` `тдджира` | "JIRA task", "technical spec", "create task" | `jira-task-creator.mdc` |
-| Auxiliary Dev | `tdaux` `тдвсп` | "script", "deploy", "automation", "CI/CD", "config" | `auxiliary-code-workflow.mdc` |
+| Prompt Engineering | `tdprompt` | `.cursor/`, `.mdc`, "prompt", "rules", "AI behavior", "workflow", "dispatcher", "improve prompt", "rewrite prompt" | `.cursor/rules/prompt-workflow.mdc` |
+| Code Development | `tdcode` | `.ts`, `.tsx`, `.js`, `.jsx`, "bug", "fix", "implement", "function", "refactor" | `.cursor/rules/code-workflow.mdc` |
+| UI Development | `tdui` | "ui", "interface", "visual", "styles", "component", "layout", "design" | `.cursor/rules/ui-workflow.mdc` |
+| AI Documentation | `tdaidoc` | "ai-docs", "package-ai-docs", "module-ai-docs", "module documentation", "YAML", "Diátaxis", "update documentation" | `.cursor/rules/ai-docs-workflow.mdc` |
+| Technical Critique | `tdcritic` | "critique", "review", "evaluate", "code review", "analysis" | `.cursor/rules/critique-workflow.mdc` |
+| JIRA Task | `tdjira` | "JIRA task", "technical spec", "create task" | `.cursor/rules/jira-task-creator.mdc` |
+| Auxiliary Dev | `tdaux` | "script", "deploy", "automation", "CI/CD", "config" | `.cursor/rules/auxiliary-code-workflow.mdc` |
 
-**Self-Verification**
-
-After reading this prompt:
-
-1. First action? → classify type
-2. Create_plan without workflow? → NO
-3. Announce before read_file? → YES: "Identified activity types: [type], reading file [name].mdc"
-
-FORBIDDEN:
+**FORBIDDEN:**
 
 - create_plan before classification
 - Questions before read_file
 - Skip announcement
 
-**Examples**
-
-✅ CORRECT:
-
-```
-Identified activity types: Prompt Engineering, reading file prompt-workflow-compact.mdc
-[read_file same batch]
-[creates plan]
-```
-
-❌ VIOLATION:
-
-```
-[Analyzes without announcement] ← BREAKS CRITICAL FIRST ACTION
-[create_plan without classification] ← BREAKS BLOCKING GATE
-```
+**Example:** `📋 Prompt Engineering → 📄 .cursor/rules/prompt-workflow.mdc → Following as primary instructions`
 
 </plan_mode_dispatcher>

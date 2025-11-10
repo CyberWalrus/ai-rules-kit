@@ -8,134 +8,78 @@ alwaysApply: true
 
 <chat_mode_router>
 
-**🎯 SUCCESS = Mode announced first. FAILURE = Tools called without announcement.**
+**EXECUTE FIRST - ZERO TOLERANCE:**
 
-**⚡ REWARD:** Correct mode detection → smooth execution & trust.  
-**💥 PUNISHMENT:** Skipping announcement → protocol breach, immediate failure, wasted tokens.
+Before ANY tool call, check system_reminder for `[MODE_INITIALIZED:` marker:
 
-🚨 **CRITICAL - FIRST STEP:**
+1. Marker NOT FOUND → First response → Announce mode (step 2)
+2. Marker FOUND → Extract mode → Check if changed (step 3) → If unchanged, skip to step 4
+3. Mode changed triggers:
+   - system_reminder contains "switched from"
+   - system_reminder "Plan mode is active" AND marker = `AGENT_MODE` → switch to PLAN_MODE
+   - system_reminder NO "Plan mode" AND marker = `PLAN_MODE` → switch to AGENT_MODE
+   - mode_specific_rule appears/changes in system_reminder
+4. Execute tools
 
-**MANDATORY PRE-FLIGHT CHECK (before ANY tool call):**
+**MODE PRIORITY (lower = higher):**
 
-**EXPLICIT CHECK MECHANISM:**
+1. mode_specific_rule "custom_ask" OR Ask marker → ASK_MODE
+2. mode_specific_rule (other) → OTHER_MODE
+3. system_reminder "Plan mode is active" → PLAN_MODE
+4. Otherwise → AGENT_MODE
 
-Check system_reminder for evidence of previous responses in this chat:
+**ANNOUNCEMENT FORMAT (one line):**
 
-- If system_reminder is empty OR contains only mode info without chat history markers → FIRST RESPONSE → announce mode (mandatory)
-- If system_reminder contains chat history (previous tool calls, previous responses, conversation markers) → SUBSEQUENT RESPONSE → check mode from system_reminder
+`[MODE_INITIALIZED: {MODE_NAME}] → 📄 {relative_path} → Following as primary instructions`
 
-**CHECKLIST:**
+**Examples:**
 
-- [ ] Checked system_reminder for previous responses in this chat
-- [ ] If FIRST RESPONSE → announce mode (mandatory) → proceed with tools
-- [ ] If SUBSEQUENT RESPONSE → read mode from system_reminder; if empty → AGENT MODE and skip MODE CHANGED check
-- [ ] If SUBSEQUENT RESPONSE and system_reminder not empty → check MODE CHANGED triggers
-- [ ] If mode unchanged → proceed without announcement | If mode changed → announce protocol
+- `[MODE_INITIALIZED: PLAN_MODE] → 📄 .cursor/rules/plan-mode-dispatcher.mdc → Following as primary instructions`
+- `[MODE_INITIALIZED: AGENT_MODE] → 📄 .cursor/rules/07-agent-mode-workflow.mdc → Following as primary instructions (already loaded)`
+- `[MODE_INITIALIZED: ASK_MODE] → 📄 .cursor/rules/ask-mode-workflow.mdc → Following as primary instructions`
 
-❌ Unchecked → STOP, then check
+**After announcement:**
 
-**EXECUTE BEFORE ANY ACTION:**
+- PLAN/ASK MODE: Call `read_file('.cursor/rules/{file}.mdc')` in same batch
+- AGENT MODE: No read_file needed (already loaded)
 
-1. **EXPLICIT CHECK:** Inspect system_reminder for evidence of previous responses in this chat (tool calls, conversation history, response markers)
-2. **IF FIRST RESPONSE** (no evidence in system_reminder) → announce mode (mandatory) → proceed with tools
-3. **IF SUBSEQUENT RESPONSE** (evidence found) → read mode from system_reminder (if empty → AGENT MODE)
-4. **IF SUBSEQUENT RESPONSE** → check MODE CHANGED triggers
-5. If triggered → announce protocol
-6. Otherwise → verify mode unchanged → proceed without announcement
+**SPECIAL CASE - Plan Execution:**
 
-**PROTOCOL (EXECUTE ONLY IF MODE CHANGED):**
+When user approves plan and execution starts:
 
-1. Output: `→ [MODE] detected`
-2. Output: `→ reading .cursor/rules/[file].mdc`
-3. Output: `→ Following [file].mdc as primary instructions`
-4. Call: `read_file([file].mdc)` in same batch (EXCEPTION: AGENT MODE - skip read_file, file already loaded via alwaysApply)
-5. If read_file fails → return ReadError, re-announce mode, and stop execution
-6. If mode announced → proceed with tools | Otherwise → STOP and announce mode
+- Output: `[MODE_INITIALIZED: AGENT_MODE] → 📄 .cursor/rules/07-agent-mode-workflow.mdc → Following as primary instructions (already loaded)`
+- Then execute todos
 
-**ZERO TOLERANCE:** Protocol must run; skipping on mode change causes immediate failure.
+**🚨 BLOCKING RULES:**
 
-**MODE CHANGED triggers:**
+1. NO tool calls before mode announcement (first response)
+2. NO text before announcement line
+3. NO skipping marker check ("task too simple" = WRONG)
+4. System_reminder mode indication ≠ marker presence → ALWAYS check marker FIRST
 
-1. system_reminder contains "switched from"
-2. mode_specific_rule appeared or changed
-3. Plan approval detected (phrases: "approved your plan", "implement", "execute plan") AND system_reminder changed from "Plan mode is active"
-4. system_reminder mode ≠ previous message mode (previous_message_mode = value from system_reminder of last user message; if no previous message → previous_message_mode = null, mode changed if differs from null OR if previous_message_mode = null and current mode is set)
+**⚡ MOTIVATION:**
 
-**MODE UNCHANGED (subsequent messages only):** Proceed without announcement, execute task immediately.
+- ✅ Correct detection → smooth execution, trust
+- ❌ Skip protocol → immediate failure, wasted tokens, rework
 
-**MODE PRIORITY (if mode changed, priority 1 = highest, select lowest number):**
+**ANTI-SHORTCUTS:**
 
-1. Priority 1: mode_specific_rule with "custom_ask" OR system_reminder Ask marker → ASK MODE → read ask-mode-workflow.mdc
-2. Priority 2: mode_specific_rule (other) → OTHER MODE → follow rule directly
-3. Priority 3: system_reminder "Plan mode is active" → PLAN MODE → read plan-mode-dispatcher.mdc
-4. Priority 4: Otherwise → AGENT MODE → announce only (07-agent-mode-workflow.mdc already loaded)
+"Simple task, skip check" → WRONG! Complexity irrelevant.
+"Faster without announcement" → WRONG! Speed without protocol = failure.
+"system_reminder shows mode" → WRONG! Marker check MANDATORY.
 
-**If multiple rules match:** Select rule with highest priority (lowest number). If same priority → select first alphabetically by file name (case-insensitive, without extension; if identical → select first lexicographically).
+**REALITY CHECK:** 90% violations happen on "simple tasks" where check seemed optional. It's NEVER optional.
 
-**ABSOLUTE REQUIREMENT:**
+**FALLBACK:**
 
-Before executing ANY tool (read_file, run_terminal_cmd, grep, search_replace, write, codebase_search, list_dir, glob_file_search, etc.):
-
-1. **EXPLICIT CHECK:** Inspect system_reminder for evidence of previous responses in this chat
-2. **IF FIRST RESPONSE** (no evidence found) → MUST announce mode → STOP IMMEDIATELY if not announced
-3. **IF SUBSEQUENT RESPONSE** (evidence found) → Verify mode comparison completed → Handle announcement (if changed) or skip (if unchanged)
-
-**FORBIDDEN:**
-
-1. Execute tools before announcing mode (first response)
-2. Announce mode when unchanged (subsequent response - do not announce if mode unchanged)
-3. Skip announcement when mode changed
-
-VIOLATION CONSEQUENCE: Protocol breach = task failure
-
-**EXAMPLES:**
-
-✅ First message (Agent mode):
-
-```
-→ AGENT MODE detected
-→ Following 07-agent-mode-workflow.mdc as primary instructions
-Читаю файл для анализа...
-```
-
-✅ Plan mode (changed):
-
-```
-→ PLAN MODE detected
-→ reading .cursor/rules/plan-mode-dispatcher.mdc
-→ Following plan-mode-dispatcher.mdc as primary instructions
-[read_file call]
-```
-
-✅ Agent mode (unchanged):
-
-```
-Читаю файл для анализа...
-[direct task execution]
-```
-
-❌ Violation (first message):
-
-```
-[read_file call without mode announcement]
-```
-
-**Should be:**
-
-```
-→ AGENT MODE detected
-→ Following 07-agent-mode-workflow.mdc as primary instructions
-[read_file executed after announcement]
-```
+No conditions match → DEFAULT to AGENT_MODE → announce + marker (no read_file).
 
 <completion_criteria>
 
-- [ ] Mode announced (if first response or mode changed)
-- [ ] Appropriate rule file loaded (if mode changed, except AGENT MODE)
-- [ ] Pre-flight check completed
-- [ ] All checklist items verified
-- [ ] Mode announced when required (first response or mode changed) - failure if skipped
-- [ ] If read_file fails → error returned and execution stopped
+- [ ] Mode announced (if first response or changed)
+- [ ] Marker output in correct format
+- [ ] File loaded (if PLAN/ASK mode)
+- [ ] No tools called before announcement
 </completion_criteria>
 
 </chat_mode_router>

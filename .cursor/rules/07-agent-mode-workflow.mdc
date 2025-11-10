@@ -8,120 +8,78 @@ alwaysApply: true
 
 <agent_mode_workflow>
 
-<mode_check>
-**CRITICAL CHECK:** This prompt works ONLY in Agent Mode!
-
-**Activation check:**
-
-- If system_reminder contains "Agent mode" or no mode specified → proceed with agent workflow
-- If Plan Mode is active (system_reminder contains "Plan mode is active") → skip 07-agent-mode-workflow.mdc entirely
-- If Ask Mode is active → skip 07-agent-mode-workflow.mdc entirely
-- If other mode active → skip 07-agent-mode-workflow.mdc entirely
-
-**Rule:** Without Agent Mode context, this prompt does not apply.
-</mode_check>
-
-**INSTANT EXECUTION - AUTONOMOUS AGENT MODE**
+**EXECUTE:** Apply ONLY if system_reminder contains "Agent mode" or no mode specified. If Plan Mode (priority) / Ask Mode / other → skip.
 
 **ВАЖНО: Все ответы должны быть на русском языке.**
 
-**FIRST RESPONSE CHECK:** Before any tool call → check `01-chat-mode-router.mdc` → announce mode → then proceed
+**NOTE:** Mode announcement handled by `.cursor/rules/01-chat-mode-router.mdc`. If plan exists → follow todos.
 
-**PROTOCOL PRIORITY:** Protocol over speed. Execute fast WITHOUT violating mandatory steps.
+**🚨 DOCS (read AS NEEDED before modify):**
 
-**PLAN-FIRST:** If plan exists → enumerate todos from plan context → execute each sequentially → report progress after each.
+**Triggers (check before modify, read if needed):**
 
-**DOCS READING TRIGGERS:**
+- ANY `.md/.mdc` → `.cursor/rules/prompt-structure-guide.mdc`
+- `*.test.ts` → `.cursor/rules/testing.md`
+- New `.ts/.tsx` → `.cursor/rules/architecture.md`, `.cursor/rules/naming.md`
+- Edit `.ts/.tsx` (≥20 lines) → `.cursor/rules/code-standards.md`, `.cursor/rules/naming.md`
+- AI docs → `.cursor/rules/ai-docs-workflow.mdc`
 
-**BLOCKING CHECK before file modification:**
+**Exceptions:** README.md, CHANGELOG.md, `*.config.ts`
 
-BEFORE calling search_replace/write/edit_notebook → check file path → IF matches pattern below → STOP → read required docs FIRST → THEN modify. ELSE → continue without reading docs.
+**Self-check:** Before editing `.md/.mdc` → inspect YAML → if `type:` exists → prompt file → trigger applies
 
-**FILE-BASED TRIGGERS (automatic):**
+**EXTERNAL:**
 
-**Prompt file detection:** ANY `.md/.mdc` with YAML frontmatter containing `type:` field (check file content, not directory path) | Exclude: see VALIDATION EXCEPTIONS
+1. Context7: Before package → resolve-library-id + get-library-docs
+2. Web Search: Error persists 2+ attempts → search → retry
 
-- Prompt files (including `user-rules/*.md`, `prompts/**/*.md`, `.cursor/**/*.mdc`) → `.cursor/rules/prompt-structure-guide.mdc`
-- `*.test.ts` (new/edit) → `.cursor/rules/testing.md`
-- Creating new `.ts/.tsx` files → `.cursor/rules/architecture.md`, `.cursor/rules/naming.md`
-- Editing `*.ts/*.tsx` (≥20 lines changes) → `.cursor/rules/code-standards.md`, `.cursor/rules/naming.md`
-- AI docs update (package-ai-docs.md, module-ai-docs.md) → `.cursor/rules/ai-docs-workflow.mdc`
+**TESTS:**
 
-**Self-check:** Before editing `.md/.mdc` → inspect YAML → if `type:` field exists → prompt file → trigger applies
+- Unit: All `.ts/.tsx` need tests in `__tests__/` (except `*.types.ts`, `*.constants.ts`, `*.schema.ts`)
+- E2E: New/modified features → e2e test in `src/__tests__/e2e/` with mock data
 
-**EXTERNAL DEPENDENCIES:**
+**🚨 VALIDATION (MANDATORY after EACH modification):**
 
-1. **Context7:** Before external package → call `mcp_context7_resolve-library-id` + `mcp_context7_get-library-docs` → verify version/API
-2. **Web Search:** Unknown error persists 2+ attempts → call `web_search` → analyze → retry. If web_search fails → log and continue without external data.
+**REQUIRED for:**
 
-**UNIT TESTS:** All `.ts/.tsx` MUST have tests in `__tests__/` | EXCLUDE: `*.types.ts`, `*.constants.ts`, `*.schema.ts`
+- `.ts/.tsx` → `code`
+- `*.test.ts` → `tests`
+- `.mdc/.md` → `prompts`
+- `architecture.xml` → `architecture`
+- AI docs → `documentation`
 
-**VALIDATION EXCEPTIONS:**
+**SKIP:** README.md, CHANGELOG.md, `*.config.ts`, `package.json`, `tsconfig.json`
 
-- README.md, CHANGELOG.md (documentation files, not prompts/AI-docs - skip MCP validation and triggers)
-- `*.config.ts`, `*.config.js` (configuration files - skip MCP validation and triggers)
+**Steps:**
 
-**VALIDATION PROTOCOL:**
-
-After EACH file modification (search_replace/write/edit_notebook):
-
-**MANDATORY (ZERO EXCEPTIONS):**
-
-1. **VALIDATE:** Call `mcp_mcp-validator_validate` (skip files in VALIDATION EXCEPTIONS):
-   - `.ts/.tsx/.js/.jsx` → `'code'`
-   - `.test.ts/.spec.ts` → `'tests'`
-   - `.mdc/.md` (in `.cursor/`) → `'prompts'`
-   - `architecture.xml` → `'architecture'`
-   - `package-ai-docs.md, module-ai-docs.md` → `'documentation'`
-
-2. **CHECK SCORE:** Target ≥85 | Score <85 → apply fixes, re-validate (max 3 iterations)
-
-3. **VERBALIZE:** `[OK] File: [name] | Score: [X]/100 | Status: PASSED ✓`
-
-**BLOCKED:** If validation fails (score <85) → fix issues, re-validate (max 3 iterations); do NOT respond until score ≥85. After 3 failures → escalate to human-in-the-loop.
+1. Call MCP with absolute path + type
+2. Target ≥85 | If <85 → fix, retry (max 3x)
+3. Report: `[OK] File: [name] | Score: [X]/100 | PASSED ✓`
 
 **ANTI-PATTERN:** search_replace → lint (❌) | **CORRECT:** search_replace → MCP → lint (✓)
 
-**ALGORITHM:**
+**Pre-response:** [ ] All validated? [ ] All ≥85? ❌ → STOP
 
-1. Check plan → follow todos sequentially
-2. Check triggers → read docs conditionally (see DOCS READING TRIGGERS)
-3. Check external deps → Context7 for packages, web search for errors
-4. Execute task → functional style, unit tests
-5. Validate EACH file → MCP protocol (≥85)
-6. Final checks → lint/typecheck/tests (0 errors)
-7. AI docs → if code/architecture changed → read `.cursor/docs/ai-docs-workflow.mdc` → update docs
-8. **PRE-RESPONSE BARRIER:**
+3 failures → escalate.
 
-   - [ ] All files validated via MCP (≥85)?
-   - [ ] Linter/type/test: 0 errors?
-   - [ ] AI docs updated (if applicable)?
-   - [ ] SUMMARY prepared?
+**WORKFLOW:**
 
-   ❌ ANY unchecked → FORBIDDEN to respond
+1. Check plan → follow todos
+2. Check triggers → read docs
+3. External deps → Context7/web search
+4. Execute → functional style, unit tests
+5. Validate EACH → MCP (≥85)
+6. E2E tests → new/modified features with mocks
+7. Final → lint/type/test (0 errors)
+8. AI docs → update if changed
+9. Report → files with scores
 
-9. Report → list files with scores
-
-**FALLBACKS:** MCP unavailable → lint/typecheck/tests | Validation fails → iterate 3x | Unclear → ask
+**FALLBACKS:** MCP unavailable → lint/type/test | Validation <85 → iterate 3x | Unclear → ask
 
 <completion_criteria>
-**MANDATORY GATE:**
+All validated (≥85), e2e tests pass, lint/type/test: 0 errors, todos done.
 
-- [ ] All modified files validated via MCP (≥85)?
-- [ ] Lint/type/test: 0 errors?
-
-❌ ANY unchecked → FORBIDDEN | ✓ ALL checked → Proceed
-
-**SUCCESS:** All todos + ALL files validated (≥85) + verbalized + lint/type/test pass (0 errors)
-
-**FAILURE:** NOT validated | Score <85 | Errors | Missing scores
-
-**FINAL STATEMENT:**
-
-```
-[OK] SUMMARY: Modified [N] files | Validated [N] | All ≥85: YES | Lint/Type/Test: 0 errors | COMPLETE
-```
-
+Format: `[OK] Modified [N] | Validated [N] | ≥85: YES | E2E: PASS | Errors: 0 | COMPLETE`
 </completion_criteria>
 
 </agent_mode_workflow>
