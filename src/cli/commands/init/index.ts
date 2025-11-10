@@ -1,9 +1,14 @@
+import { rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+
 import { copyRulesToTarget } from '../../../lib/file-operations/copy-rules-to-target';
 import { writeConfigFile } from '../../../lib/file-operations/write-config-file';
+import { fetchPromptsTarball, getLatestPromptsVersion } from '../../../lib/github-fetcher';
 import { getCurrentVersion } from '../../../lib/version-manager/get-current-version';
 import { getPackageVersion } from '../../../lib/version-manager/get-package-version';
 import type { RulesConfig } from '../../../model';
-import { initCommandParamsSchema } from '../../../model';
+import { GITHUB_REPO, initCommandParamsSchema } from '../../../model';
 
 /** Команда инициализации правил */
 export async function initCommand(packageDir: string, targetDir: string): Promise<void> {
@@ -29,27 +34,36 @@ export async function initCommand(packageDir: string, targetDir: string): Promis
         throw new Error(`Rules already initialized with version ${existingVersion}`);
     }
 
-    await copyRulesToTarget(packageDir, targetDir);
+    const promptsVersion = await getLatestPromptsVersion(GITHUB_REPO);
+    const tmpDir = join(tmpdir(), `cursor-rules-${Date.now()}`);
 
-    const version = await getPackageVersion(packageDir);
-    const currentTimestamp = new Date().toISOString();
-    const config: RulesConfig = {
-        configVersion: '1.0.0',
-        fileOverrides: [],
-        ignoreList: [],
-        installedAt: currentTimestamp,
-        ruleSets: [
-            {
-                id: 'base',
-                update: true,
+    try {
+        await fetchPromptsTarball(GITHUB_REPO, promptsVersion, tmpDir);
+        await copyRulesToTarget(tmpDir, targetDir);
+
+        const cliVersion = await getPackageVersion(packageDir);
+        const currentTimestamp = new Date().toISOString();
+        const config: RulesConfig = {
+            cliVersion,
+            configVersion: '1.0.0',
+            fileOverrides: [],
+            ignoreList: [],
+            installedAt: currentTimestamp,
+            promptsVersion,
+            ruleSets: [
+                {
+                    id: 'base',
+                    update: true,
+                },
+            ],
+            settings: {
+                language: 'ru',
             },
-        ],
-        settings: {
-            language: 'ru',
-        },
-        source: 'cursor-rules',
-        updatedAt: currentTimestamp,
-        version,
-    };
-    await writeConfigFile(targetDir, config);
+            source: 'cursor-rules',
+            updatedAt: currentTimestamp,
+        };
+        await writeConfigFile(targetDir, config);
+    } finally {
+        await rm(tmpDir, { force: true, recursive: true });
+    }
 }

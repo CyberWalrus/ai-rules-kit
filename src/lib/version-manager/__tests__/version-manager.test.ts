@@ -1,3 +1,4 @@
+import { createTestConfig } from '../../../__tests__/helpers/create-test-config';
 import { readConfigFile } from '../../file-operations/read-config-file';
 import { compareVersions } from '../compare-versions';
 import { getCurrentVersion } from '../get-current-version';
@@ -22,26 +23,11 @@ describe('version-manager', () => {
 
     describe('getCurrentVersion', () => {
         it('должен возвращать версию если файл существует', async () => {
-            mockReadConfigFile.mockResolvedValue({
-                configVersion: '1.0.0',
-                installedAt: '2025-11-01T12:00:00.000Z',
-                ruleSets: [
-                    {
-                        id: 'base',
-                        update: true,
-                    },
-                ],
-                settings: {
-                    language: 'ru',
-                },
-                source: 'cursor-rules',
-                updatedAt: '2025-11-01T12:00:00.000Z',
-                version: '1.0.0',
-            });
+            mockReadConfigFile.mockResolvedValue(createTestConfig());
 
             const version = await getCurrentVersion('/target');
 
-            expect(version).toBe('1.0.0');
+            expect(version).toBe('2025.11.10.1');
             expect(mockReadConfigFile).toHaveBeenCalledWith('/target');
         });
 

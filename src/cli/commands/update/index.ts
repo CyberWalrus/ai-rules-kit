@@ -1,9 +1,13 @@
+import { rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+
 import { calculateDiff } from '../../../lib/diff-calculator/calculate-diff';
 import { copyRulesToTarget, readConfigFile, writeConfigFile } from '../../../lib/file-operations';
-import { compareVersions } from '../../../lib/version-manager/compare-versions';
+import { fetchPromptsTarball, getLatestPromptsVersion } from '../../../lib/github-fetcher';
 import { getCurrentVersion } from '../../../lib/version-manager/get-current-version';
 import { getPackageVersion } from '../../../lib/version-manager/get-package-version';
-import { updateCommandParamsSchema } from '../../../model';
+import { GITHUB_REPO, updateCommandParamsSchema } from '../../../model';
 
 /** Команда обновления правил */
 export async function updateCommand(packageDir: string, targetDir: string): Promise<void> {
@@ -29,13 +33,6 @@ export async function updateCommand(packageDir: string, targetDir: string): Prom
         throw new Error('Rules not initialized. Run init command first.');
     }
 
-    const packageVersion = await getPackageVersion(packageDir);
-
-    const comparison = compareVersions(currentVersion, packageVersion);
-    if (comparison.changeType === 'none') {
-        return;
-    }
-
     const config = await readConfigFile(targetDir);
     if (config === null) {
         throw new Error('Config file not found');
@@ -56,11 +53,30 @@ export async function updateCommand(packageDir: string, targetDir: string): Prom
         );
     }
 
-    await calculateDiff(packageDir, targetDir);
+    const latestPromptsVersion = await getLatestPromptsVersion(GITHUB_REPO);
+    const currentPromptsVersion = config.promptsVersion ?? config.version;
 
-    await copyRulesToTarget(packageDir, targetDir, config.ignoreList ?? [], config.fileOverrides ?? []);
+    if (currentPromptsVersion === latestPromptsVersion) {
+        console.log('✓ Prompts are up to date');
 
-    config.version = packageVersion;
-    config.updatedAt = new Date().toISOString();
-    await writeConfigFile(targetDir, config);
+        return;
+    }
+
+    const tmpDir = join(tmpdir(), `cursor-rules-${Date.now()}`);
+
+    try {
+        await fetchPromptsTarball(GITHUB_REPO, latestPromptsVersion, tmpDir);
+        await calculateDiff(tmpDir, targetDir);
+        await copyRulesToTarget(tmpDir, targetDir, config.ignoreList ?? [], config.fileOverrides ?? []);
+
+        const cliVersion = await getPackageVersion(packageDir);
+        config.cliVersion = cliVersion;
+        config.promptsVersion = latestPromptsVersion;
+        config.updatedAt = new Date().toISOString();
+        await writeConfigFile(targetDir, config);
+
+        console.log(`✓ Prompts updated to ${latestPromptsVersion}`);
+    } finally {
+        await rm(tmpDir, { force: true, recursive: true });
+    }
 }

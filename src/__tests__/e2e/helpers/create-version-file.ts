@@ -6,20 +6,22 @@ import type { RulesConfig } from '../../../model';
 import { VERSION_FILE_NAME } from '../../../model';
 
 /** Создает файл .cursor/cursor-rules-config.json */
-export async function createVersionFile(targetDir: string, version: string): Promise<void> {
+export async function createVersionFile(targetDir: string, promptsVersion: string): Promise<void> {
     if (isEmptyString(targetDir)) {
         throw new Error('targetDir is required');
     }
-    if (isEmptyString(version)) {
-        throw new Error('version is required');
+    if (isEmptyString(promptsVersion)) {
+        throw new Error('promptsVersion is required');
     }
 
     const currentTimestamp = new Date().toISOString();
     const config: RulesConfig = {
+        cliVersion: '1.0.0',
         configVersion: '1.0.0',
         fileOverrides: [],
         ignoreList: [],
         installedAt: currentTimestamp,
+        promptsVersion,
         ruleSets: [
             {
                 id: 'base',
@@ -31,7 +33,6 @@ export async function createVersionFile(targetDir: string, version: string): Pro
         },
         source: 'cursor-rules',
         updatedAt: currentTimestamp,
-        version,
     };
 
     const cursorDir = join(targetDir, '.cursor');

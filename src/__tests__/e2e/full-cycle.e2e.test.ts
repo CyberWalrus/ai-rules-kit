@@ -1,6 +1,6 @@
 import { access, constants, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { initCommand } from '../../cli/commands/init/index';
 import { replaceAllCommand } from '../../cli/commands/replace-all/index';
@@ -9,12 +9,24 @@ import type { RulesConfig } from '../../model';
 import { VERSION_FILE_NAME } from '../../model';
 import { tempDir } from './helpers/temp-dir';
 
+vi.mock('../../lib/github-fetcher', () => ({
+    fetchPromptsTarball: vi.fn(async (_repo: string, _version: string, targetDir: string) => {
+        const { copyRulesFixtures } = await import('./helpers/copy-rules-fixtures');
+        await copyRulesFixtures(targetDir);
+    }),
+    getLatestPromptsVersion: vi.fn().mockResolvedValue('2025.11.10.1'),
+}));
+
 describe('Full Cycle E2E', () => {
     let tempDirPath: string;
     const packageDir = process.cwd();
 
     beforeAll(async () => {
         tempDirPath = await tempDir.create();
+    });
+
+    beforeEach(() => {
+        vi.clearAllMocks();
     });
 
     afterAll(async () => {
@@ -31,7 +43,7 @@ describe('Full Cycle E2E', () => {
         await expect(access(configFilePath, constants.F_OK)).resolves.toBeUndefined();
 
         const configAfterInit = JSON.parse(await readFile(configFilePath, 'utf-8')) as RulesConfig;
-        expect(configAfterInit).toHaveProperty('version');
+        expect(configAfterInit).toHaveProperty('promptsVersion');
         expect(configAfterInit).toHaveProperty('installedAt');
         expect(configAfterInit).toHaveProperty('updatedAt');
         expect(configAfterInit).toHaveProperty('source', 'cursor-rules');
@@ -47,7 +59,7 @@ describe('Full Cycle E2E', () => {
 
         const configAfterUpdate = JSON.parse(await readFile(configFilePath, 'utf-8')) as RulesConfig;
 
-        expect(configAfterUpdate.version).toBe(configAfterInit.version);
+        expect(configAfterUpdate.promptsVersion).toBe(configAfterInit.promptsVersion);
 
         await new Promise<void>((resolve) => {
             setTimeout(() => resolve(), 10);
@@ -58,7 +70,7 @@ describe('Full Cycle E2E', () => {
         const configAfterReplace = JSON.parse(await readFile(configFilePath, 'utf-8')) as RulesConfig;
         const timestampAfterReplace = new Date(configAfterReplace.updatedAt).getTime();
 
-        expect(configAfterReplace.version).toBe(configAfterInit.version);
+        expect(configAfterReplace.promptsVersion).toBe(configAfterInit.promptsVersion);
         expect(timestampAfterReplace).toBeGreaterThan(timestampAfterInit);
 
         await expect(access(cursorDir, constants.F_OK)).resolves.toBeUndefined();

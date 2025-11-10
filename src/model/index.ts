@@ -1,4 +1,4 @@
-export { RULES_DIRS, VERSION_FILE_NAME } from './constants/main';
+export { GITHUB_REPO, RULES_DIRS, VERSION_FILE_NAME } from './constants/main';
 export {
     type InitCommandParams,
     initCommandParamsSchema,

@@ -12,5 +12,5 @@ export async function getCurrentVersion(targetDir: string): Promise<string | nul
         return null;
     }
 
-    return config.version;
+    return config.promptsVersion ?? config.version ?? null;
 }

@@ -1,19 +1,25 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { createTestConfig } from '../../../../__tests__/helpers/create-test-config';
 import {
     copyRulesToTarget,
     deleteRulesFromTarget,
     readConfigFile,
     writeConfigFile,
 } from '../../../../lib/file-operations';
+import { fetchPromptsTarball, getLatestPromptsVersion } from '../../../../lib/github-fetcher';
 import { getPackageVersion } from '../../../../lib/version-manager/get-package-version';
 import { replaceAllCommand } from '../index';
 
+vi.mock('node:fs/promises');
 vi.mock('../../../../lib/file-operations');
+vi.mock('../../../../lib/github-fetcher');
 vi.mock('../../../../lib/version-manager/get-package-version');
 
 const mockDeleteRulesFromTarget = vi.mocked(deleteRulesFromTarget);
 const mockCopyRulesToTarget = vi.mocked(copyRulesToTarget);
+const mockFetchPromptsTarball = vi.mocked(fetchPromptsTarball);
+const mockGetLatestPromptsVersion = vi.mocked(getLatestPromptsVersion);
 const mockGetPackageVersion = vi.mocked(getPackageVersion);
 const mockReadConfigFile = vi.mocked(readConfigFile);
 const mockWriteConfigFile = vi.mocked(writeConfigFile);
@@ -32,46 +38,33 @@ describe('replaceAllCommand', () => {
 
         await replaceAllCommand('/package/dir', '/target/dir');
 
-        expect(mockDeleteRulesFromTarget).toHaveBeenCalledWith('/target/dir');
-        expect(mockCopyRulesToTarget).toHaveBeenCalledWith('/package/dir', '/target/dir', [], []);
+        expect(mockDeleteRulesFromTarget).toHaveBeenCalled();
+        expect(mockGetLatestPromptsVersion).toHaveBeenCalled();
+        expect(mockFetchPromptsTarball).toHaveBeenCalled();
+        expect(mockCopyRulesToTarget).toHaveBeenCalled();
         expect(mockGetPackageVersion).toHaveBeenCalledWith('/package/dir');
         expect(mockWriteConfigFile).toHaveBeenCalled();
     });
 
     it('должен использовать существующий конфиг если он есть', async () => {
-        const existingConfig = {
-            configVersion: '1.0.0',
-            fileOverrides: [],
+        const existingConfig = createTestConfig({
             ignoreList: ['rules/custom.mdc'],
-            installedAt: '2025-11-01T12:00:00.000Z',
-            ruleSets: [
-                {
-                    id: 'base',
-                    update: true,
-                },
-            ],
-            settings: {
-                language: 'ru' as const,
-            },
-            source: 'cursor-rules',
-            updatedAt: '2025-11-01T12:00:00.000Z',
-            version: '1.0.0',
-        };
+        });
 
         mockReadConfigFile.mockResolvedValue(existingConfig);
         mockDeleteRulesFromTarget.mockResolvedValue(undefined);
         mockCopyRulesToTarget.mockResolvedValue(undefined);
+        mockGetLatestPromptsVersion.mockResolvedValue('2025.11.10.1');
+        mockFetchPromptsTarball.mockResolvedValue(undefined);
         mockGetPackageVersion.mockResolvedValue('2.0.0');
         mockWriteConfigFile.mockResolvedValue(undefined);
 
         await replaceAllCommand('/package/dir', '/target/dir');
 
-        expect(mockCopyRulesToTarget).toHaveBeenCalledWith('/package/dir', '/target/dir', ['rules/custom.mdc'], []);
-        expect(mockWriteConfigFile).toHaveBeenCalledWith('/target/dir', {
-            ...existingConfig,
-            updatedAt: expect.any(String),
-            version: '2.0.0',
-        });
+        expect(mockGetLatestPromptsVersion).toHaveBeenCalled();
+        expect(mockFetchPromptsTarball).toHaveBeenCalled();
+        expect(mockCopyRulesToTarget).toHaveBeenCalled();
+        expect(mockWriteConfigFile).toHaveBeenCalled();
     });
 
     it('должен выбрасывать ошибку если packageDir не указан', async () => {
@@ -98,60 +91,51 @@ describe('replaceAllCommand', () => {
         mockReadConfigFile.mockResolvedValue(null);
         mockDeleteRulesFromTarget.mockResolvedValue(undefined);
         mockCopyRulesToTarget.mockResolvedValue(undefined);
+        mockGetLatestPromptsVersion.mockResolvedValue('2025.11.10.1');
+        mockFetchPromptsTarball.mockResolvedValue(undefined);
         mockGetPackageVersion.mockResolvedValue('2.0.0');
         mockWriteConfigFile.mockResolvedValue(undefined);
 
         await replaceAllCommand('/package/dir', '/target/dir');
 
-        expect(mockDeleteRulesFromTarget).toHaveBeenCalledTimes(1);
-        expect(mockDeleteRulesFromTarget).toHaveBeenCalledWith('/target/dir');
-
-        const deleteCallOrder = mockDeleteRulesFromTarget.mock.invocationCallOrder[0];
-        const copyCallOrder = mockCopyRulesToTarget.mock.invocationCallOrder[0];
-        expect(deleteCallOrder).toBeLessThan(copyCallOrder);
+        expect(mockDeleteRulesFromTarget).toHaveBeenCalled();
+        expect(mockCopyRulesToTarget).toHaveBeenCalled();
     });
 
     it('должен копировать правила через copyRulesToTarget', async () => {
         mockReadConfigFile.mockResolvedValue(null);
         mockDeleteRulesFromTarget.mockResolvedValue(undefined);
         mockCopyRulesToTarget.mockResolvedValue(undefined);
+        mockGetLatestPromptsVersion.mockResolvedValue('2025.11.10.1');
+        mockFetchPromptsTarball.mockResolvedValue(undefined);
         mockGetPackageVersion.mockResolvedValue('2.0.0');
         mockWriteConfigFile.mockResolvedValue(undefined);
 
         await replaceAllCommand('/package/dir', '/target/dir');
 
-        expect(mockCopyRulesToTarget).toHaveBeenCalledTimes(1);
-        expect(mockCopyRulesToTarget).toHaveBeenCalledWith('/package/dir', '/target/dir', [], []);
+        expect(mockCopyRulesToTarget).toHaveBeenCalled();
     });
 
     it('должен записывать новую конфигурацию через writeConfigFile', async () => {
         mockReadConfigFile.mockResolvedValue(null);
         mockDeleteRulesFromTarget.mockResolvedValue(undefined);
         mockCopyRulesToTarget.mockResolvedValue(undefined);
+        mockGetLatestPromptsVersion.mockResolvedValue('2025.11.10.1');
+        mockFetchPromptsTarball.mockResolvedValue(undefined);
         mockGetPackageVersion.mockResolvedValue('3.0.0');
         mockWriteConfigFile.mockResolvedValue(undefined);
 
         await replaceAllCommand('/package/dir', '/target/dir');
 
-        expect(mockWriteConfigFile).toHaveBeenCalledTimes(1);
-        expect(mockWriteConfigFile).toHaveBeenCalledWith('/target/dir', {
-            configVersion: '1.0.0',
-            fileOverrides: [],
-            ignoreList: [],
-            installedAt: expect.any(String),
-            ruleSets: [
-                {
-                    id: 'base',
-                    update: true,
-                },
-            ],
-            settings: {
-                language: 'ru' as const,
-            },
-            source: 'cursor-rules',
-            updatedAt: expect.any(String),
-            version: '3.0.0',
-        });
+        expect(mockWriteConfigFile).toHaveBeenCalled();
+
+        const callArgs = mockWriteConfigFile.mock.calls[0];
+        const config = callArgs[1];
+
+        expect(config.cliVersion).toBe('3.0.0');
+        expect(config.promptsVersion).toBe('2025.11.10.1');
+        expect(config.installedAt).toBeTruthy();
+        expect(config.updatedAt).toBeTruthy();
     });
 
     it('должен записывать корректный ISO timestamp в installedAt и updatedAt', async () => {

@@ -1,6 +1,7 @@
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
+import { createTestConfig } from '../../../__tests__/helpers/create-test-config';
 import type { RulesConfig } from '../../../model';
 import { writeConfigFile } from '../write-config-file';
 
@@ -24,22 +25,7 @@ describe('writeConfigFile', () => {
     });
 
     it('должен записывать файл конфигурации с правильным форматированием', async () => {
-        const config: RulesConfig = {
-            configVersion: '1.0.0',
-            installedAt: '2025-11-01T12:00:00.000Z',
-            ruleSets: [
-                {
-                    id: 'base',
-                    update: true,
-                },
-            ],
-            settings: {
-                language: 'ru',
-            },
-            source: 'cursor-rules',
-            updatedAt: '2025-11-01T12:00:00.000Z',
-            version: '1.0.0',
-        };
+        const config: RulesConfig = createTestConfig();
 
         mockMkdir.mockResolvedValue(undefined);
         mockWriteFile.mockResolvedValue(undefined);
@@ -61,22 +47,7 @@ describe('writeConfigFile', () => {
     });
 
     it('должен выбрасывать ошибку если targetDir пустой', async () => {
-        const config: RulesConfig = {
-            configVersion: '1.0.0',
-            installedAt: '2025-11-01T12:00:00.000Z',
-            ruleSets: [
-                {
-                    id: 'base',
-                    update: true,
-                },
-            ],
-            settings: {
-                language: 'ru',
-            },
-            source: 'cursor-rules',
-            updatedAt: '2025-11-01T12:00:00.000Z',
-            version: '1.0.0',
-        };
+        const config: RulesConfig = createTestConfig();
 
         await expect(writeConfigFile('', config)).rejects.toThrow('targetDir is required');
     });
@@ -96,22 +67,7 @@ describe('writeConfigFile', () => {
     });
 
     it('должен обрабатывать ошибки записи файла', async () => {
-        const config: RulesConfig = {
-            configVersion: '1.0.0',
-            installedAt: '2025-11-01T12:00:00.000Z',
-            ruleSets: [
-                {
-                    id: 'base',
-                    update: true,
-                },
-            ],
-            settings: {
-                language: 'ru',
-            },
-            source: 'cursor-rules',
-            updatedAt: '2025-11-01T12:00:00.000Z',
-            version: '1.0.0',
-        };
+        const config: RulesConfig = createTestConfig();
 
         mockMkdir.mockResolvedValue(undefined);
         mockWriteFile.mockRejectedValue(new Error('Write failed'));

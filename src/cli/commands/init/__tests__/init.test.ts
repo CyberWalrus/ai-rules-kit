@@ -2,12 +2,15 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { copyRulesToTarget } from '../../../../lib/file-operations/copy-rules-to-target';
 import { writeConfigFile } from '../../../../lib/file-operations/write-config-file';
+import { fetchPromptsTarball, getLatestPromptsVersion } from '../../../../lib/github-fetcher';
 import { getCurrentVersion } from '../../../../lib/version-manager/get-current-version';
 import { getPackageVersion } from '../../../../lib/version-manager/get-package-version';
 import { initCommand } from '../index';
 
+vi.mock('node:fs/promises');
 vi.mock('../../../../lib/file-operations/copy-rules-to-target');
 vi.mock('../../../../lib/file-operations/write-config-file');
+vi.mock('../../../../lib/github-fetcher');
 vi.mock('../../../../lib/version-manager/get-current-version');
 vi.mock('../../../../lib/version-manager/get-package-version');
 
@@ -15,6 +18,8 @@ const mockGetCurrentVersion = vi.mocked(getCurrentVersion);
 const mockCopyRulesToTarget = vi.mocked(copyRulesToTarget);
 const mockGetPackageVersion = vi.mocked(getPackageVersion);
 const mockWriteConfigFile = vi.mocked(writeConfigFile);
+const mockFetchPromptsTarball = vi.mocked(fetchPromptsTarball);
+const mockGetLatestPromptsVersion = vi.mocked(getLatestPromptsVersion);
 
 describe('initCommand', () => {
     beforeEach(() => {
@@ -23,20 +28,30 @@ describe('initCommand', () => {
 
     it('должен успешно инициализировать правила в чистой директории', async () => {
         mockGetCurrentVersion.mockResolvedValue(null);
-        mockGetPackageVersion.mockResolvedValue('1.0.0');
+        mockGetLatestPromptsVersion.mockResolvedValue('2025.11.10.1');
+        mockFetchPromptsTarball.mockResolvedValue(undefined);
         mockCopyRulesToTarget.mockResolvedValue(undefined);
+        mockGetPackageVersion.mockResolvedValue('1.0.0');
         mockWriteConfigFile.mockResolvedValue(undefined);
 
         await initCommand('/package/dir', '/target/dir');
 
         expect(mockGetCurrentVersion).toHaveBeenCalledWith('/target/dir');
-        expect(mockCopyRulesToTarget).toHaveBeenCalledWith('/package/dir', '/target/dir');
+        expect(mockGetLatestPromptsVersion).toHaveBeenCalledWith('CyberWalrus/cursor-rules');
+        expect(mockFetchPromptsTarball).toHaveBeenCalledWith(
+            'CyberWalrus/cursor-rules',
+            '2025.11.10.1',
+            expect.stringContaining('cursor-rules-'),
+        );
+        expect(mockCopyRulesToTarget).toHaveBeenCalled();
         expect(mockGetPackageVersion).toHaveBeenCalledWith('/package/dir');
         expect(mockWriteConfigFile).toHaveBeenCalledWith('/target/dir', {
+            cliVersion: '1.0.0',
             configVersion: '1.0.0',
             fileOverrides: [],
             ignoreList: [],
             installedAt: expect.any(String),
+            promptsVersion: '2025.11.10.1',
             ruleSets: [
                 {
                     id: 'base',
@@ -48,7 +63,6 @@ describe('initCommand', () => {
             },
             source: 'cursor-rules',
             updatedAt: expect.any(String),
-            version: '1.0.0',
         });
     });
 
@@ -76,20 +90,25 @@ describe('initCommand', () => {
         );
     });
 
-    it('должен копировать правила через copyRulesToTarget', async () => {
+    it('должен скачивать и копировать правила через GitHub', async () => {
         mockGetCurrentVersion.mockResolvedValue(null);
+        mockGetLatestPromptsVersion.mockResolvedValue('2025.11.10.1');
+        mockFetchPromptsTarball.mockResolvedValue(undefined);
         mockGetPackageVersion.mockResolvedValue('1.0.0');
         mockCopyRulesToTarget.mockResolvedValue(undefined);
         mockWriteConfigFile.mockResolvedValue(undefined);
 
         await initCommand('/package/dir', '/target/dir');
 
+        expect(mockGetLatestPromptsVersion).toHaveBeenCalledTimes(1);
+        expect(mockFetchPromptsTarball).toHaveBeenCalledTimes(1);
         expect(mockCopyRulesToTarget).toHaveBeenCalledTimes(1);
-        expect(mockCopyRulesToTarget).toHaveBeenCalledWith('/package/dir', '/target/dir');
     });
 
     it('должен записывать конфигурацию через writeConfigFile', async () => {
         mockGetCurrentVersion.mockResolvedValue(null);
+        mockGetLatestPromptsVersion.mockResolvedValue('2025.11.10.1');
+        mockFetchPromptsTarball.mockResolvedValue(undefined);
         mockGetPackageVersion.mockResolvedValue('2.0.0');
         mockCopyRulesToTarget.mockResolvedValue(undefined);
         mockWriteConfigFile.mockResolvedValue(undefined);
@@ -98,10 +117,12 @@ describe('initCommand', () => {
 
         expect(mockWriteConfigFile).toHaveBeenCalledTimes(1);
         expect(mockWriteConfigFile).toHaveBeenCalledWith('/target/dir', {
+            cliVersion: '2.0.0',
             configVersion: '1.0.0',
             fileOverrides: [],
             ignoreList: [],
             installedAt: expect.any(String),
+            promptsVersion: '2025.11.10.1',
             ruleSets: [
                 {
                     id: 'base',
@@ -113,12 +134,13 @@ describe('initCommand', () => {
             },
             source: 'cursor-rules',
             updatedAt: expect.any(String),
-            version: '2.0.0',
         });
     });
 
     it('должен записывать корректный ISO timestamp в installedAt и updatedAt', async () => {
         mockGetCurrentVersion.mockResolvedValue(null);
+        mockGetLatestPromptsVersion.mockResolvedValue('2025.11.10.1');
+        mockFetchPromptsTarball.mockResolvedValue(undefined);
         mockGetPackageVersion.mockResolvedValue('1.0.0');
         mockCopyRulesToTarget.mockResolvedValue(undefined);
         mockWriteConfigFile.mockResolvedValue(undefined);

@@ -1,19 +1,29 @@
 import { access, constants, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { initCommand } from '../../cli/commands/init/index';
 import { replaceAllCommand } from '../../cli/commands/replace-all/index';
 import type { RulesConfig } from '../../model';
 import { VERSION_FILE_NAME } from '../../model';
+import { copyRulesFixtures } from './helpers/copy-rules-fixtures';
 import { createVersionFile } from './helpers/create-version-file';
 import { tempDir } from './helpers/temp-dir';
+
+vi.mock('../../lib/github-fetcher', () => ({
+    fetchPromptsTarball: vi.fn(async (_repo: string, _version: string, targetDir: string) => {
+        const { copyRulesFixtures: copyFixtures } = await import('./helpers/copy-rules-fixtures');
+        await copyFixtures(targetDir);
+    }),
+    getLatestPromptsVersion: vi.fn().mockResolvedValue('2025.11.10.1'),
+}));
 
 describe('Replace-All Command E2E', () => {
     let tempDirPathPath: string;
     const packageDir = process.cwd();
 
     beforeEach(async () => {
+        vi.clearAllMocks();
         tempDirPathPath = await tempDir.create();
     });
 
@@ -36,7 +46,7 @@ describe('Replace-All Command E2E', () => {
         const configFilePathAfter = join(tempDirPathPath, '.cursor', VERSION_FILE_NAME);
         const contentAfter = JSON.parse(await readFile(configFilePathAfter, 'utf-8')) as RulesConfig;
 
-        expect(contentAfter.version).toBe(contentBefore.version);
+        expect(contentAfter.promptsVersion).toBe(contentBefore.promptsVersion);
         expect(new Date(contentAfter.updatedAt).getTime()).toBeGreaterThan(new Date(contentBefore.updatedAt).getTime());
     });
 
@@ -57,19 +67,20 @@ describe('Replace-All Command E2E', () => {
     });
 
     it('должен создавать новый config файл после замены', async () => {
-        await createVersionFile(tempDirPathPath, '0.0.1');
+        await copyRulesFixtures(tempDirPathPath);
+        await createVersionFile(tempDirPathPath, '2025.11.9.1');
 
         await replaceAllCommand(packageDir, tempDirPathPath);
 
         const configFilePath = join(tempDirPathPath, '.cursor', VERSION_FILE_NAME);
         const content = JSON.parse(await readFile(configFilePath, 'utf-8')) as RulesConfig;
 
-        expect(content).toHaveProperty('version');
+        expect(content).toHaveProperty('promptsVersion');
         expect(content).toHaveProperty('installedAt');
         expect(content).toHaveProperty('updatedAt');
         expect(content).toHaveProperty('source', 'cursor-rules');
         expect(content).toHaveProperty('configVersion', '1.0.0');
-        expect(content.version).not.toBe('0.0.1');
+        expect(content.promptsVersion).not.toBe('2025.11.9.1');
     });
 
     it('должен копировать все необходимые директории', async () => {
@@ -81,7 +92,8 @@ describe('Replace-All Command E2E', () => {
     });
 
     it('должен обновлять updatedAt при замене', async () => {
-        await createVersionFile(tempDirPathPath, '0.0.1');
+        await copyRulesFixtures(tempDirPathPath);
+        await createVersionFile(tempDirPathPath, '2025.11.9.1');
 
         const configFilePath = join(tempDirPathPath, '.cursor', VERSION_FILE_NAME);
         const contentBefore = JSON.parse(await readFile(configFilePath, 'utf-8')) as RulesConfig;

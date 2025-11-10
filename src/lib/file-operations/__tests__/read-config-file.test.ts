@@ -1,6 +1,7 @@
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
+import { createTestConfig } from '../../../__tests__/helpers/create-test-config';
 import type { RulesConfig } from '../../../model';
 import { readConfigFile } from '../read-config-file';
 
@@ -27,22 +28,7 @@ describe('readConfigFile', () => {
     });
 
     it('должен читать и парсить файл конфигурации', async () => {
-        const config: RulesConfig = {
-            configVersion: '1.0.0',
-            installedAt: '2025-11-01T12:00:00.000Z',
-            ruleSets: [
-                {
-                    id: 'base',
-                    update: true,
-                },
-            ],
-            settings: {
-                language: 'ru',
-            },
-            source: 'cursor-rules',
-            updatedAt: '2025-11-01T12:00:00.000Z',
-            version: '1.0.0',
-        };
+        const config: RulesConfig = createTestConfig();
 
         mockPathExists.mockResolvedValue(true);
         mockReadFile.mockResolvedValue(JSON.stringify(config));

@@ -1,17 +1,26 @@
 import { access, constants } from 'node:fs/promises';
 import { join } from 'node:path';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { initCommand } from '../../cli/commands/init/index';
 import { VERSION_FILE_NAME } from '../../model';
 import { createVersionFile } from './helpers/create-version-file';
 import { tempDir } from './helpers/temp-dir';
 
+vi.mock('../../lib/github-fetcher', () => ({
+    fetchPromptsTarball: vi.fn(async (_repo: string, _version: string, targetDir: string) => {
+        const { copyRulesFixtures } = await import('./helpers/copy-rules-fixtures');
+        await copyRulesFixtures(targetDir);
+    }),
+    getLatestPromptsVersion: vi.fn().mockResolvedValue('2025.11.10.1'),
+}));
+
 describe('Init Command E2E', () => {
     let tempDirPath: string;
     const packageDir = process.cwd();
 
     beforeEach(async () => {
+        vi.clearAllMocks();
         tempDirPath = await tempDir.create();
     });
 
@@ -20,11 +29,9 @@ describe('Init Command E2E', () => {
     });
 
     it('должен выбрасывать ошибку при инициализации если правила уже установлены', async () => {
-        await createVersionFile(tempDirPath, '1.0.0');
+        await createVersionFile(tempDirPath, '2025.11.9.1');
 
-        await expect(initCommand(packageDir, tempDirPath)).rejects.toThrow(
-            'Rules already initialized with version 1.0.0',
-        );
+        await expect(initCommand(packageDir, tempDirPath)).rejects.toThrow('Rules already initialized with version');
     });
 
     it('должен выбрасывать ошибку если package директория не существует', async () => {

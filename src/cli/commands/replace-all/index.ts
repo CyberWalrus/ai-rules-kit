@@ -1,12 +1,17 @@
+import { rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+
 import {
     copyRulesToTarget,
     deleteRulesFromTarget,
     readConfigFile,
     writeConfigFile,
 } from '../../../lib/file-operations';
+import { fetchPromptsTarball, getLatestPromptsVersion } from '../../../lib/github-fetcher';
 import { getPackageVersion } from '../../../lib/version-manager/get-package-version';
 import type { RulesConfig } from '../../../model';
-import { replaceAllCommandParamsSchema } from '../../../model';
+import { GITHUB_REPO, replaceAllCommandParamsSchema } from '../../../model';
 
 /** Команда полной замены правил */
 export async function replaceAllCommand(packageDir: string, targetDir: string): Promise<void> {
@@ -28,7 +33,8 @@ export async function replaceAllCommand(packageDir: string, targetDir: string): 
     }
 
     const existingConfig = await readConfigFile(targetDir);
-    const version = await getPackageVersion(packageDir);
+    const cliVersion = await getPackageVersion(packageDir);
+    const promptsVersion = await getLatestPromptsVersion(GITHUB_REPO);
     const currentTimestamp = new Date().toISOString();
 
     let config: RulesConfig;
@@ -36,15 +42,18 @@ export async function replaceAllCommand(packageDir: string, targetDir: string): 
     if (existingConfig !== null) {
         config = {
             ...existingConfig,
+            cliVersion,
+            promptsVersion,
             updatedAt: currentTimestamp,
-            version,
         };
     } else {
         config = {
+            cliVersion,
             configVersion: '1.0.0',
             fileOverrides: [],
             ignoreList: [],
             installedAt: currentTimestamp,
+            promptsVersion,
             ruleSets: [
                 {
                     id: 'base',
@@ -56,13 +65,17 @@ export async function replaceAllCommand(packageDir: string, targetDir: string): 
             },
             source: 'cursor-rules',
             updatedAt: currentTimestamp,
-            version,
         };
     }
 
-    await deleteRulesFromTarget(targetDir);
+    const tmpDir = join(tmpdir(), `cursor-rules-${Date.now()}`);
 
-    await copyRulesToTarget(packageDir, targetDir, config.ignoreList ?? [], config.fileOverrides ?? []);
-
-    await writeConfigFile(targetDir, config);
+    try {
+        await fetchPromptsTarball(GITHUB_REPO, promptsVersion, tmpDir);
+        await deleteRulesFromTarget(targetDir);
+        await copyRulesToTarget(tmpDir, targetDir, config.ignoreList ?? [], config.fileOverrides ?? []);
+        await writeConfigFile(targetDir, config);
+    } finally {
+        await rm(tmpDir, { force: true, recursive: true });
+    }
 }

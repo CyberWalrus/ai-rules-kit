@@ -3,10 +3,14 @@ export type CommandType = 'init' | 'replace-all' | 'update';
 
 /** Конфигурация правил */
 export type RulesConfig = {
+    /** Версия CLI тулзы */
+    cliVersion: string;
     /** Версия формата конфигурации */
     configVersion: string;
     /** Дата установки */
     installedAt: string;
+    /** Версия промптов */
+    promptsVersion: string;
     /** Наборы правил */
     ruleSets: RuleSet[];
     /** Настройки */
@@ -18,12 +22,12 @@ export type RulesConfig = {
     source: string;
     /** Дата последнего обновления */
     updatedAt: string;
-    /** Версия правил */
-    version: string;
     /** Переопределения YAML параметров для файлов */
     fileOverrides?: FileOverride[];
     /** Список файлов для игнорирования */
     ignoreList?: string[];
+    /** Версия правил (deprecated, используйте promptsVersion) */
+    version?: string;
 };
 
 /** Набор правил */
