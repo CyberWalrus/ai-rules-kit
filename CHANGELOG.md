@@ -1,5 +1,58 @@
 # Changelog
 
+## [0.4.1] - 2025-11-10
+
+<small>10.11.2025 18:57</small>
+
+### Added
+
+- **CalVer version comparison and askConfirmation helper**
+    - Added `compareCalVerVersions` function for comparing CalVer format versions (YYYY.M.D.N)
+    - Added `askConfirmation` helper function for interactive user confirmation prompts
+    - Integrated CalVer comparison into upgrade command for version validation
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/cf0d86aed5adb2e05d528403e8fc58e955fa25e2" target="_blank">cf0d86a</a>
+
+- **PromptsVersion support and upgrade logic improvements**
+    - Added `promptsVersion` field to configuration for tracking prompts releases separately from CLI version
+    - Improved upgrade command to fetch latest prompts version from GitHub releases
+    - Enhanced version comparison logic with CalVer support
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/45a8fbd77152596df63a6de7ae7c54a80cccea2c" target="_blank">45a8fbd</a>
+
+- **GitHub API token support**
+    - Added support for GitHub API token authentication in `get-latest-prompts-version`
+    - Improved reliability of version fetching from GitHub releases
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/08b738277fb8df8395355b5f8ff056bb148e2365" target="_blank">08b7382</a>
+
+### Changed
+
+- **Rename update command to upgrade**
+    - Renamed `update` command to `upgrade` for better clarity
+    - Updated all references, tests, and documentation
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/8081d647156d2ada566a33a9e1d85cd07c648c9f" target="_blank">8081d64</a>
+
+- **Workflows and configuration updates**
+    - Updated GitHub Actions workflows for publish and release-prompts
+    - Updated knip configuration
+    - Added cursor-rules config for project itself
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/620f8cfeb7f9ecb70f6b601ed2973af2498fbd38" target="_blank">620f8cf</a>
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/19c3f3edc947851c75af6eba47b157cede850700" target="_blank">19c3f3e</a>
+
+- **Test helpers simplification**
+    - Simplified copy-rules-fixtures helper by removing unused filter
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/be48b9403ee000f0e660836c8fd3a6412bd59305" target="_blank">be48b94</a>
+
+### Docs
+
+- **Documentation and architecture updates**
+    - Updated package AI documentation with new features
+    - Updated architecture XML with new modules
+    - Updated chat mode router rules
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/d174e3017b1607c895b9df333b8cbf2141d58363" target="_blank">d174e30</a>
+
+- **GitHub API token usage documentation**
+    - Added documentation for GitHub API token usage in get-latest-prompts-version
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/3ce4e3130d3ccf9d3593454607780d6f43af5f96" target="_blank">3ce4e31</a>
+
 ## [0.4.0] - 2025-11-10
 
 <small>10.11.2025 14:50</small>
