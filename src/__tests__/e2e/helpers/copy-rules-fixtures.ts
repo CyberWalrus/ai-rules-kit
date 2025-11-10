@@ -3,7 +3,6 @@ import { join } from 'node:path';
 
 import { pathExists } from '../../../lib/file-operations/path-exists';
 import { isEmptyString } from '../../../lib/helpers';
-import { VERSION_FILE_NAME } from '../../../model';
 
 /** Копирует .cursor правила из корня проекта во временную директорию */
 export async function copyRulesFixtures(targetDir: string): Promise<void> {
@@ -17,11 +16,6 @@ export async function copyRulesFixtures(targetDir: string): Promise<void> {
 
     const cursorExists = await pathExists(cursorSourceDir);
     if (cursorExists) {
-        await cp(cursorSourceDir, cursorTargetDir, {
-            errorOnExist: false,
-            filter: (source) => !source.endsWith(VERSION_FILE_NAME),
-            force: true,
-            recursive: true,
-        });
+        await cp(cursorSourceDir, cursorTargetDir, { recursive: true });
     }
 }
