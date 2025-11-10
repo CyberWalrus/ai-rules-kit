@@ -1,3 +1,4 @@
+export { compareCalVerVersions } from './compare-calver-versions';
 export { compareVersions } from './compare-versions';
 export { getCurrentVersion } from './get-current-version';
 export { getNpmVersion } from './get-npm-version';
