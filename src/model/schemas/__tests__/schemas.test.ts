@@ -83,8 +83,10 @@ describe('fileOverrideSchema', () => {
 describe('rulesConfigSchema', () => {
     it('должен успешно валидировать корректные данные конфигурации', () => {
         const validData = {
+            cliVersion: '1.0.0',
             configVersion: '1.0.0',
             installedAt: '2025-11-01T12:00:00.000Z',
+            promptsVersion: '2025.11.10.1',
             ruleSets: [
                 {
                     id: 'base',
@@ -96,7 +98,6 @@ describe('rulesConfigSchema', () => {
             },
             source: 'cursor-rules',
             updatedAt: '2025-11-01T12:00:00.000Z',
-            version: '1.0.0',
         };
 
         const result = rulesConfigSchema.safeParse(validData);
