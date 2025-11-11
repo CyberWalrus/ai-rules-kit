@@ -68,7 +68,6 @@
 
 - **CI/CD workflow for automatic prompts versioning**
     - Added GitHub Actions workflow for automatic CalVer versioning of prompts
-    - Created prompts-version.json file for tracking prompts releases
     - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/1cd9633d0022c3d0b56c2e3a4eabdf1485304c47" target="_blank">1cd9633</a>
 
 ### Changed

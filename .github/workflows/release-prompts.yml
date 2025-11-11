@@ -38,21 +38,6 @@ jobs:
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
           echo "Generated version: ${VERSION}"
 
-      - name: Update prompts-version.json
-        run: |
-          cat > .cursor/prompts-version.json <<EOF
-          {
-            "version": "${{ steps.version.outputs.version }}",
-            "released": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
-            "changelog": "Auto-generated release"
-          }
-          EOF
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-          git add .cursor/prompts-version.json
-          git commit -m "chore(prompts): auto-version ${{ steps.version.outputs.version }}" || exit 0
-          git push
-
       - name: Create Git Tag
         run: |
           git tag prompts/v${{ steps.version.outputs.version }}
