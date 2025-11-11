@@ -129,15 +129,14 @@ Where:
 
 - `{task-id}` — task number from branch name. Extract via: `git rev-parse --abbrev-ref HEAD | grep -o '[A-Z]\+-[0-9]\+' || echo MAIN`. If no branch or number not found, use `MAIN` (as in previous commits)
 - `{commit-type}` — commit type (see section 2)
-- `{commit-message}` — description in **English**, capitalized, in **3rd person**, starting with verb:
-  `Add`, `Update`, `Fix`, `Remove`, `Simplify`, etc.
+- `{commit-message}` — description **in Russian**, capitalized, in **3rd person**, starting with verb (e.g., "Добавляет", "Обновляет", "Исправляет", "Удаляет", "Упрощает")
 - **Length limit:** Entire commit line (`{task-id}: [{commit-type}] {commit-message}`) **must not exceed 120 characters**. If message is too long, shorten it while preserving meaning. **Check length before creating commit.**
 
-**Examples (all ≤120 characters):**
+**Examples (all ≤120 characters, for illustration only):**
 
-- `PB-1234: [feat] Add email sending module` (40 characters)
-- `PB-1234: [fix] Fix profile loading bug` (42 characters)
-- `PB-1234: [style] Remove extra indents and sort imports` (58 characters)
+- `PB-1234: [feat] Добавляет модуль отправки email` (47 characters)
+- `PB-1234: [fix] Исправляет ошибку загрузки профиля` (52 characters)
+- `PB-1234: [style] Удаляет лишние отступы и сортирует импорты` (65 characters)
 
 ---
 
@@ -172,25 +171,25 @@ git rev-parse --abbrev-ref HEAD | grep -o '[A-Z]\+-[0-9]\+' || echo MAIN
 git add src/components/Button.tsx src/components/Button.test.tsx
 
 # Create commit
-git commit -m "PB-1234: [feat] Add Button component"
+git commit -m "PB-1234: [feat] Добавляет компонент Button"
 ```
 
 ### Example messages (all ≤120 characters)
 
-- `PB-1234: [feat] Add email sending module` (40 characters)
-- `PB-1234: [fix] Fix profile loading bug` (42 characters)
-- `PB-1234: [style] Remove extra indents and sort imports` (58 characters)
+- `PB-1234: [feat] Добавляет модуль отправки email` (47 characters)
+- `PB-1234: [fix] Исправляет ошибку загрузки профиля` (52 characters)
+- `PB-1234: [style] Удаляет лишние отступы и сортирует импорты` (65 characters)
 
 ### Example grouping plan
 
 ```markdown
 Change grouping plan:
 
-Commit 1: [feat] Add Button component
+Commit 1: [feat] Добавляет компонент Button
   - Files: src/components/Button.tsx, src/components/Button.test.tsx, src/components/Button.module.css
   - Grouping reason: all files belong to one Button component
 
-Commit 2: [style] Fix formatting in utils
+Commit 2: [style] Исправляет форматирование в utils
   - Files: src/utils/helpers.ts, src/utils/validators.ts
   - Grouping reason: style fixes in one directory
 ```
