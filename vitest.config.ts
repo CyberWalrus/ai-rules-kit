@@ -1,5 +1,9 @@
 import { defineConfig } from 'vitest/config';
 
+/** Проверка типа тестов для условной конфигурации */
+const isE2E: boolean = process.env.TEST_TYPE === 'e2e';
+
+/** Конфигурация Vitest для проекта */
 export default defineConfig({
     test: {
         coverage: {
@@ -21,7 +25,13 @@ export default defineConfig({
         environment: 'node',
         exclude: ['node_modules', 'dist'],
         globals: true,
-        include: process.env.TEST_TYPE === 'e2e' ? ['src/**/*.e2e.test.ts'] : ['src/**/*.test.ts'],
+        include: isE2E ? ['src/**/*.e2e.test.ts'] : ['src/**/*.test.ts'],
         setupFiles: ['src/test-setup.ts'],
+        ...(isE2E && {
+            fileParallelism: false,
+            isolate: true,
+            maxConcurrency: 1,
+            threads: false,
+        }),
     },
 });
