@@ -7,6 +7,8 @@ type: command
 
 You are a git commit automation engineer. Your task is to automatically group changes and create atomic commits according to the grouping plan.
 
+**Working directory:** repository root. Execute all commands from repository root.
+
 ## 1. Code quality check
 
 **Extract quality commands in priority order:**
@@ -17,7 +19,130 @@ You are a git commit automation engineer. Your task is to automatically group ch
 
 **Execute commands sequentially. If any fails, stop.**
 
-If all successful, analyze **uncommitted changes in the current git repository** (including staged and unstaged).
+If all successful, proceed to version check and changelog update (section 1.5), then analyze **uncommitted changes in the current git repository** (including staged and unstaged).
+
+---
+
+## 1.5. Version check and changelog update
+
+**MANDATORY STAGE:** Before analyzing changes, check if version was updated and update CHANGELOG if needed.
+
+### 1.5.1. Determine version file
+
+Check for version file in priority order:
+
+1. **Check for `version.json`** in repository root — if exists, use it
+2. **If `version.json` absent**, use `package.json`
+3. **If both files absent** → skip this section (no version file found)
+
+**Commands:**
+
+```bash
+# Determine version file
+if [ -f version.json ]; then
+    VERSION_FILE="version.json"
+else
+    VERSION_FILE="package.json"
+fi
+```
+
+### 1.5.2. Extract and compare versions
+
+Extract current version from file and version from last commit (HEAD):
+
+**For `version.json`:**
+
+```bash
+# Current version
+CURRENT_VERSION=$(jq -r '.version' "$VERSION_FILE")
+
+# Version from HEAD
+HEAD_VERSION=$(git show HEAD:"$VERSION_FILE" 2>/dev/null | jq -r '.version' 2>/dev/null)
+```
+
+**For `package.json`:**
+
+```bash
+# Current version
+CURRENT_VERSION=$(grep '"version"' "$VERSION_FILE" | head -1 | sed 's/.*"\([0-9.]*\)".*/\1/')
+
+# Version from HEAD
+HEAD_VERSION=$(git show HEAD:"$VERSION_FILE" 2>/dev/null | grep '"version"' | head -1 | sed 's/.*"\([0-9.]*\)".*/\1/' 2>/dev/null)
+```
+
+**Compare versions:**
+
+- If `CURRENT_VERSION` equals `HEAD_VERSION` → version not changed, skip to section 2
+- If `CURRENT_VERSION` differs from `HEAD_VERSION` → version changed, proceed to section 1.5.3
+- If `HEAD_VERSION` is empty (file not in HEAD) → treat as version changed, proceed to section 1.5.3
+
+### 1.5.3. Check CHANGELOG.md existence
+
+Check if `CHANGELOG.md` exists in repository root:
+
+```bash
+if [ ! -f CHANGELOG.md ]; then
+    # CHANGELOG.md not found, skip changelog update
+    CHANGELOG_EXISTS=false
+else
+    CHANGELOG_EXISTS=true
+fi
+```
+
+If `CHANGELOG_EXISTS=false` → skip changelog update (sections 1.5.4 and 1.5.5), proceed to section 2.
+
+### 1.5.4. Execute changelog update
+
+**Prerequisites:** Version changed (from section 1.5.2) AND `CHANGELOG_EXISTS=true` (from section 1.5.3).
+
+If both conditions met, execute changelog update following algorithm from `.cursor/commands/changelog.md`:
+
+**Algorithm summary (see changelog.md for details):**
+
+1. Determine version file and current version (already done in 1.5.1-1.5.2)
+2. Find last version in CHANGELOG.md and commit hash where it was set
+3. Get all versions between last and current (filter release versions only, ignore suffixes)
+4. For each missing version: extract commits, group by type and path, create entries
+5. Consider uncommitted changes for current version
+6. Form version blocks with headers, dates, and sections (Added/Changed/Fixed/Removed)
+7. Insert blocks into CHANGELOG.md (newest first, preserve existing entries)
+
+**Implementation:** Use commands from `.cursor/commands/changelog.md` section "🛠️ Basic commands". Follow algorithm steps 1-7 from changelog.md.
+
+**Error handling:**
+
+- If changelog update command finished with error → output error message and stop process
+- Do not continue execution with errors
+
+### 1.5.5. Check CHANGELOG.md changes
+
+**Prerequisites:** `CHANGELOG_EXISTS=true` (from section 1.5.3) AND changelog update was executed (section 1.5.4).
+
+If `CHANGELOG_EXISTS=false`, skip this section and proceed to section 2.
+
+After changelog update execution, check if `CHANGELOG.md` was modified:
+
+```bash
+# Check if CHANGELOG.md has uncommitted changes
+if [ "$CHANGELOG_EXISTS" = "true" ]; then
+    if git diff --quiet CHANGELOG.md; then
+        # No changes in CHANGELOG.md
+        CHANGELOG_UPDATED=false
+    else
+        # CHANGELOG.md was updated
+        CHANGELOG_UPDATED=true
+    fi
+else
+    CHANGELOG_UPDATED=false
+fi
+```
+
+If `CHANGELOG.md` was updated (`CHANGELOG_UPDATED=true`):
+
+- Mark `CHANGELOG.md` for inclusion in change analysis (section 2)
+- Note that `CHANGELOG.md` should be grouped with version file update in same commit (type `chore` or `docs`)
+
+If `CHANGELOG.md` was not updated → proceed to section 2 normally.
 
 ---
 
@@ -33,6 +158,12 @@ Analyze all uncommitted changes:
 - Which functions/components/modules affected
 - What dependencies between changes (one file depends on another)
 - Are there tests for changes
+
+**IMPORTANT:** If `CHANGELOG.md` was updated in section 1.5 (`CHANGELOG_UPDATED=true`):
+
+- Include `CHANGELOG.md` in change analysis
+- `CHANGELOG.md` is related to version file update (`version.json` or `package.json`)
+- These files should be grouped together in same commit (see section 2.3 for grouping rules)
 
 ### 2.2. Feature and task determination
 
@@ -58,6 +189,7 @@ Group changes according to following rules:
 - Tests for feature go into the same commit as the feature
 - All related bug fix changes (all files in one `fix`)
 - Style fixes (imports, formatting) combine into one `style`
+- **Version file update (`version.json` or `package.json`) + `CHANGELOG.md`** → combine into one commit (type `chore` or `docs`)
 
 **Separate into different commits:**
 
@@ -79,8 +211,8 @@ For each group, determine commit type by following criteria:
 - **`style`** — only styling without logic changes (indents, imports, formatting, removing unused code). Priority: if changes DO NOT affect program behavior.
 - **`refactor`** — code structure change without behavior change. Priority: if code is rewritten but functionality does not change.
 - **`test`** — only if tests are added separately from feature (e.g., improving coverage of existing tests). If tests for new feature, use `feat` and include tests in the same commit.
-- **`docs`** — documentation and prompts (`.mdc`, `.md`, any instructions and guides). Priority: if only documentation is changed.
-- **`chore`** — maintenance, dependencies, configs, build. Priority: if only configuration files or dependencies are changed.
+- **`docs`** — documentation and prompts (`.mdc`, `.md`, any instructions and guides). Priority: if only documentation is changed. **If `CHANGELOG.md` is updated together with version file, prefer `chore` type (version update is maintenance task). If `CHANGELOG.md` is updated separately (without version change), use `docs` type.**
+- **`chore`** — maintenance, dependencies, configs, build, version updates. Priority: if only configuration files, dependencies, or version files are changed. **If version file (`version.json` or `package.json`) is updated, use `chore` type. If `CHANGELOG.md` is updated together with version file, use `chore` type (version update is maintenance task).**
 
 **When ambiguous:**
 
