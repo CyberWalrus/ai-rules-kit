@@ -69,6 +69,7 @@ jobs:
 
   check-version-and-publish:
     needs: [lint-linux, lint-windows, lint-macos]
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     outputs:
       published: ${{ steps.publish.outputs.published }}
@@ -101,15 +102,15 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Install dependencies
-        if: steps.check.outputs.should-publish == 'true'
+        if: github.ref == 'refs/heads/main' && steps.check.outputs.should-publish == 'true'
         run: yarn install --frozen-lockfile
 
       - name: Build package
-        if: steps.check.outputs.should-publish == 'true'
+        if: github.ref == 'refs/heads/main' && steps.check.outputs.should-publish == 'true'
         run: yarn build
 
       - name: Publish to npm
-        if: steps.check.outputs.should-publish == 'true'
+        if: github.ref == 'refs/heads/main' && steps.check.outputs.should-publish == 'true'
         id: publish
         run: |
           npm publish
@@ -118,7 +119,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Create Git Tag
-        if: steps.check.outputs.should-publish == 'true'
+        if: github.ref == 'refs/heads/main' && steps.check.outputs.should-publish == 'true'
         run: |
           VERSION="${{ steps.check.outputs.version }}"
           git config user.name github-actions
@@ -127,7 +128,7 @@ jobs:
           git push origin cli/v$VERSION
 
       - name: Extract changelog
-        if: steps.check.outputs.should-publish == 'true'
+        if: github.ref == 'refs/heads/main' && steps.check.outputs.should-publish == 'true'
         run: |
           VERSION="${{ steps.check.outputs.version }}"
           echo "Extracting changelog for version: $VERSION"
@@ -166,7 +167,7 @@ jobs:
           fi
 
       - name: Create GitHub Release
-        if: steps.check.outputs.should-publish == 'true'
+        if: github.ref == 'refs/heads/main' && steps.check.outputs.should-publish == 'true'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: cli/v${{ steps.check.outputs.version }}

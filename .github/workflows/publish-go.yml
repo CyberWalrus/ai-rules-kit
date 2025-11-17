@@ -121,6 +121,7 @@ jobs:
 
   build-and-publish:
     needs: [test-linux, test-windows, test-macos]
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     outputs:
       published: ${{ steps.publish.outputs.published }}
@@ -172,7 +173,7 @@ jobs:
           fi
 
       - name: Build for all platforms
-        if: steps.check.outputs.should-publish == 'true'
+        if: github.ref == 'refs/heads/main' && steps.check.outputs.should-publish == 'true'
         run: |
           mkdir -p bin
           VERSION="${{ steps.check.outputs.version }}"
@@ -196,7 +197,7 @@ jobs:
           ls -lh bin/
 
       - name: Prepare npm package
-        if: steps.check.outputs.should-publish == 'true'
+        if: github.ref == 'refs/heads/main' && steps.check.outputs.should-publish == 'true'
         run: |
           VERSION="${{ steps.check.outputs.version }}"
           mkdir -p npm-package
@@ -295,7 +296,7 @@ jobs:
           "
 
       - name: Publish to npm
-        if: steps.check.outputs.should-publish == 'true'
+        if: github.ref == 'refs/heads/main' && steps.check.outputs.should-publish == 'true'
         id: publish
         working-directory: npm-package
         run: |
@@ -305,7 +306,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Create Git Tag
-        if: steps.check.outputs.should-publish == 'true'
+        if: github.ref == 'refs/heads/main' && steps.check.outputs.should-publish == 'true'
         run: |
           VERSION="${{ steps.check.outputs.version }}"
           git config user.name github-actions
@@ -321,7 +322,7 @@ jobs:
           fi
 
       - name: Extract changelog
-        if: steps.check.outputs.should-publish == 'true'
+        if: github.ref == 'refs/heads/main' && steps.check.outputs.should-publish == 'true'
         run: |
           VERSION="${{ steps.check.outputs.version }}"
           echo "Extracting changelog for version: $VERSION"
@@ -363,7 +364,7 @@ jobs:
           fi
 
       - name: Create GitHub Release
-        if: steps.check.outputs.should-publish == 'true'
+        if: github.ref == 'refs/heads/main' && steps.check.outputs.should-publish == 'true'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: cli/v${{ steps.check.outputs.version }}
