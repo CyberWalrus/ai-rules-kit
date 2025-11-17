@@ -9,7 +9,6 @@ vi.mock('picocolors', () => ({
     cyan: (str: string) => str,
     green: (str: string) => str,
     red: (str: string) => str,
-    yellow: (str: string) => str,
 }));
 
 vi.mock('../get-npm-version');
@@ -21,7 +20,7 @@ describe('notifyIfUpdateAvailable', () => {
         vi.spyOn(console, 'log').mockImplementation(() => {});
     });
 
-    it('должен вывести таблицу с ровным форматированием при patch обновлении', async () => {
+    it('должен вывести сообщение о доступном обновлении при patch обновлении', async () => {
         vi.mocked(getNpmVersion).mockResolvedValue('0.3.7');
         vi.mocked(compareVersions).mockReturnValue({
             changeType: 'patch',
@@ -31,15 +30,10 @@ describe('notifyIfUpdateAvailable', () => {
 
         await notifyIfUpdateAvailable('cursor-rules-cli', '0.3.6');
 
+        expect(vi.mocked(console.log)).toHaveBeenCalled();
         const logs = vi.mocked(console.log).mock.calls.map((call) => call[0] as string);
-        const borderLines = logs.filter((line) => line.includes('│'));
-        const lineLengths = borderLines.map((line) => line.length);
-        const firstLength = lineLengths[0];
-
-        expect(firstLength).toBe(49);
-        lineLengths.forEach((len) => {
-            expect(len).toBe(firstLength);
-        });
+        expect(logs.some((log) => log.includes('Update available!'))).toBe(true);
+        expect(logs.some((log) => log.includes('0.3.6') && log.includes('0.3.7'))).toBe(true);
     });
 
     it('должен не выводить ничего если обновлений нет', async () => {
@@ -61,7 +55,7 @@ describe('notifyIfUpdateAvailable', () => {
         await expect(notifyIfUpdateAvailable('cursor-rules-cli', '0.3.6')).resolves.toBeUndefined();
     });
 
-    it('должен правильно форматировать версии разной длины при minor обновлении', async () => {
+    it('должен вывести сообщение при minor обновлении', async () => {
         vi.mocked(getNpmVersion).mockResolvedValue('1.0.0');
         vi.mocked(compareVersions).mockReturnValue({
             changeType: 'minor',
@@ -71,17 +65,13 @@ describe('notifyIfUpdateAvailable', () => {
 
         await notifyIfUpdateAvailable('cursor-rules-cli', '0.3.6');
 
+        expect(vi.mocked(console.log)).toHaveBeenCalled();
         const logs = vi.mocked(console.log).mock.calls.map((call) => call[0] as string);
-        const borderLines = logs.filter((line) => line.includes('│'));
-        const firstLength = borderLines[0]?.length;
-
-        expect(firstLength).toBe(49);
-        borderLines.forEach((line) => {
-            expect(line.length).toBe(firstLength);
-        });
+        expect(logs.some((log) => log.includes('Update available!'))).toBe(true);
+        expect(logs.some((log) => log.includes('0.3.6') && log.includes('1.0.0'))).toBe(true);
     });
 
-    it('должен вывести таблицу при major обновлении', async () => {
+    it('должен вывести сообщение при major обновлении', async () => {
         vi.mocked(getNpmVersion).mockResolvedValue('2.0.0');
         vi.mocked(compareVersions).mockReturnValue({
             changeType: 'major',
@@ -93,13 +83,7 @@ describe('notifyIfUpdateAvailable', () => {
 
         expect(vi.mocked(console.log)).toHaveBeenCalled();
         const logs = vi.mocked(console.log).mock.calls.map((call) => call[0] as string);
-        const borderLines = logs.filter((line) => line.includes('│'));
-
-        expect(borderLines.length).toBeGreaterThan(0);
-        const firstLength = borderLines[0]?.length;
-        expect(firstLength).toBe(49);
-        borderLines.forEach((line) => {
-            expect(line.length).toBe(firstLength);
-        });
+        expect(logs.some((log) => log.includes('Update available!'))).toBe(true);
+        expect(logs.some((log) => log.includes('1.0.0') && log.includes('2.0.0'))).toBe(true);
     });
 });
