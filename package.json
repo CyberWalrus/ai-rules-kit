@@ -1,6 +1,6 @@
 {
     "name": "cursor-rules-cli",
-    "version": "0.4.2",
+    "version": "0.4.3",
     "description": "CLI tool for managing .cursor rules in projects",
     "bin": {
         "cursor-rules-cli": "./dist/cli.cjs",
@@ -34,6 +34,7 @@
     "author": "Пахомов Андрей Николаевич <andrey.pahomov@ligastavok.ru>",
     "license": "MIT",
     "dependencies": {
+        "@clack/prompts": "^0.11.0",
         "citty": "0.1.6",
         "gray-matter": "4.0.3",
         "micromatch": "4.0.8",

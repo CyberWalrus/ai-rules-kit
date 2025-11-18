@@ -1,5 +1,41 @@
 # Changelog
 
+## [0.4.3] - 2025-11-18
+
+<small>18.11.2025 10:48</small>
+
+### Added
+
+- **Interactive menu for CLI**
+    - Added interactive menu for selecting commands when CLI is run without arguments
+    - Added `showInteractiveMenu` function with @clack/prompts integration
+    - Added `InteractiveMenuAction` type for menu actions
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/UNCOMMITTED" target="_blank">UNCOMMITTED</a>
+
+### Changed
+
+- **CLI main entry point**
+    - Updated `runCli` to show interactive menu when no arguments provided
+    - Updated imports to use shorter paths for commands
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/UNCOMMITTED" target="_blank">UNCOMMITTED</a>
+
+- **Dependencies**
+    - Added @clack/prompts dependency for interactive prompts
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/UNCOMMITTED" target="_blank">UNCOMMITTED</a>
+
+### Tests
+
+- **Interactive menu tests**
+    - Added comprehensive unit tests for `showInteractiveMenu` function
+    - Updated main.test.ts to include interactive menu mocking
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/UNCOMMITTED" target="_blank">UNCOMMITTED</a>
+
+### Docs
+
+- **Commit command documentation**
+    - Added version check and changelog update section to commit command
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/ee687da" target="_blank">ee687da</a>
+
 ## [0.4.2] - 2025-11-18
 
 <small>18.11.2025 02:04</small>
