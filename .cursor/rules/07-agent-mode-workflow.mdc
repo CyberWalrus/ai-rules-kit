@@ -8,7 +8,7 @@ alwaysApply: true
 
 <agent_mode_workflow>
 
-**EXECUTE:** Apply ONLY if system_reminder contains "Agent mode" or no mode specified. If Plan Mode (priority) / Ask Mode / other → skip.
+**EXECUTE:** Apply ONLY if system_reminder contains "Agent mode" OR "Debug mode" OR no mode specified. If Plan Mode (priority) / Ask Mode / other → skip.
 
 **ZERO TOLERANCE - MANDATORY EXECUTION:**
 

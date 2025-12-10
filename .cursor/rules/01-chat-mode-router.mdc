@@ -24,9 +24,10 @@ Before ANY tool call, check system_reminder for `[MODE_INITIALIZED:` marker:
 **MODE PRIORITY (lower = higher):**
 
 1. mode_specific_rule "custom_ask" OR Ask marker → ASK_MODE
-2. mode_specific_rule (other) → OTHER_MODE
-3. system_reminder "Plan mode is active" → PLAN_MODE
-4. Otherwise → AGENT_MODE
+2. system_reminder contains "Debug mode" OR "DEBUG MODE" → DEBUG_MODE
+3. mode_specific_rule (other) → OTHER_MODE
+4. system_reminder "Plan mode is active" → PLAN_MODE
+5. Otherwise → AGENT_MODE
 
 **ANNOUNCEMENT FORMAT (one line):**
 
@@ -46,6 +47,7 @@ Creating plan before classification = VIOLATION.
 
 - `[MODE_INITIALIZED: PLAN_MODE] → 📄 .cursor/rules/plan-mode-dispatcher.mdc → Reading core instructions now`
 - `[MODE_INITIALIZED: AGENT_MODE] → 📄 .cursor/rules/07-agent-mode-workflow.mdc → Reading and strictly following core instructions (already loaded)`
+- `[MODE_INITIALIZED: DEBUG_MODE] → 📄 .cursor/rules/07-agent-mode-workflow.mdc → Reading and strictly following core instructions (already loaded)`
 - `[MODE_INITIALIZED: ASK_MODE] → 📄 .cursor/rules/ask-mode-workflow.mdc → Reading and strictly following core instructions`
 
 **After announcement:**
@@ -53,6 +55,7 @@ Creating plan before classification = VIOLATION.
 - PLAN MODE: Call `read_file('.cursor/rules/plan-mode-dispatcher.mdc')` in same batch, then output blocking reminder (see PLAN MODE CRITICAL OUTPUT FORMAT step 2)
 - ASK MODE: Call `read_file('.cursor/rules/ask-mode-workflow.mdc')` in same batch
 - AGENT MODE: No read_file needed (already loaded)
+- DEBUG MODE: No read_file needed (uses same workflow as AGENT MODE)
 
 **ZERO TOLERANCE:** PLAN/ASK mode read_file is NON-NEGOTIABLE. "Task is obvious" = WRONG REASONING. read_file MANDATORY even if familiar with content. PLAN MODE blocking reminder output is MANDATORY after reading file.
 
