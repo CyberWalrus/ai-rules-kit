@@ -8,19 +8,35 @@ alwaysApply: true
 
 <agent_mode_workflow>
 
-**EXECUTE:** Apply ONLY if system_reminder contains "Agent mode" OR "Debug mode" OR no mode specified. If Plan Mode (priority) / Ask Mode / other → skip.
-
-**ZERO TOLERANCE - MANDATORY EXECUTION:**
+**EXECUTE:** Apply when system_reminder contains "Agent mode" / "Debug mode" / unset. Skip for Plan/Ask mode.
 
 **ВАЖНО: Все ответы должны быть на русском языке.**
 
-**NOTE:** Mode announcement handled by `.cursor/rules/01-chat-mode-router.mdc`. If plan exists → follow todos.
+**NOTE:** Mode announcement in `.cursor/rules/01-chat-mode-router.mdc`. If plan exists → follow todos.
 
-**🚨 DOCS (MANDATORY - read BEFORE modify):**
+**🚨 ENFORCEMENT:**
 
-**Triggers (check before modify, read if needed):**
+1. Before EACH step → verbalize: "Checking step N: [condition] → [result]"
+2. Skip step = INSTANT VIOLATION → restart from step 1
+3. Uncertain about rule? → Re-read rule text → Apply literally
+4. "Task is simple" / "I know this" = WRONG REASONING → Follow protocol EXACTLY
 
-**BLOCKING:** FORBIDDEN to modify file until required docs read.
+**⚡ MOTIVATION:**
+
+- ✅ Correct detection → smooth execution, trust
+- ❌ Skip protocol → immediate failure, wasted tokens, rework
+
+**ANTI-SHORTCUTS:**
+
+"Simple task, skip check" → WRONG! Complexity irrelevant.
+"Faster without announcement" → WRONG! Speed without protocol = failure.
+"system_reminder shows mode" → WRONG! Marker check MANDATORY.
+
+**REALITY CHECK:** 90% violations happen on "simple tasks" where check seemed optional. It's NEVER optional.
+
+**🚨 DOCS (read BEFORE modify):**
+
+**Triggers:** FORBIDDEN to modify until docs read.
 
 - ANY `.md/.mdc` → `.cursor/rules/prompt-structure-guide.mdc`
 - `*.test.ts` → `.cursor/rules/testing.md`
@@ -42,9 +58,9 @@ alwaysApply: true
 - Unit: All `.ts/.tsx` need tests in `__tests__/` (except `*.types.ts`, `*.constants.ts`, `*.schema.ts`)
 - E2E: New/modified features → e2e test in `src/__tests__/e2e/` with mock data
 
-**🚨 VALIDATION (MANDATORY after EACH modification - BLOCKING):**
+**🚨 VALIDATION (after modifications):**
 
-**REQUIRED for:**
+**REQUIRED:**
 
 - `.ts/.tsx` → `code`
 - `*.test.ts` → `tests`
@@ -56,17 +72,11 @@ alwaysApply: true
 
 **Steps:**
 
-1. Call MCP with absolute path + type
-2. Target ≥85 | If <85 → fix, retry (max 3x)
-3. Report: `[OK] File: [name] | Score: [X]/100 | PASSED ✓`
+1. Batch ALL changed files → call MCP in PARALLEL (one call per file)
+2. Target ≥85 | If <85 → fix → re-validate (max 3x per file)
+3. ALL files ≥85 → proceed to lint
 
-**ANTI-PATTERN:** search_replace → lint (❌) | **CORRECT:** search_replace → MCP → lint (✓)
-
-**Pre-response:** [ ] All validated? [ ] All ≥85? ❌ → STOP
-
-**BLOCKING:** FORBIDDEN to respond until all files validated (≥85). Incomplete validation = STOP.
-
-3 failures → escalate.
+**ZERO TOLERANCE:** MCP validation is NON-NEGOTIABLE. Never skip, never postpone. 3 failures → escalate.
 
 **WORKFLOW:**
 
@@ -74,15 +84,13 @@ alwaysApply: true
 2. Check triggers → read docs
 3. External deps → Context7/web search
 4. Execute → functional style, unit tests
-5. Validate EACH → MCP (≥85)
-6. E2E tests → new/modified features with mocks
-7. Final → run `yarn lint` (if no such command → check `package.json` scripts for available checks) (0 errors REQUIRED)
-8. AI docs → MANDATORY update if code/architecture changed (read `.cursor/rules/ai-docs-workflow.mdc`)
+5. E2E tests → new/modified features with mocks
+6. Validate ALL → MCP batch in PARALLEL (≥85 for each file)
+7. Final → run `yarn lint` (0 errors REQUIRED)
+8. AI docs → update if new functions/API changes (read `.cursor/rules/ai-docs-workflow.mdc`)
 9. Report → files with scores
 
-**PRE-RESPONSE BARRIER:**
-
-BEFORE responding verify ALL:
+**PRE-RESPONSE BARRIER:** Verify ALL before responding:
 
 - [ ] Required docs read (if triggers matched)
 - [ ] All files validated via MCP (≥85)
@@ -94,8 +102,6 @@ BEFORE responding verify ALL:
 ❌ ANY unchecked → FORBIDDEN to respond | ✓ ALL checked → proceed
 
 **FALLBACKS:** MCP unavailable → lint/type/test | Validation <85 → iterate 3x | Unclear → ask
-
-**MANDATORY GATE (ZERO EXCEPTIONS):**
 
 <completion_criteria>
 All validated (≥85), e2e tests pass, lint/type/test: 0 errors, todos done.

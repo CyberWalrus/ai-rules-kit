@@ -55,46 +55,51 @@ alwaysApply: false
     - **Relative Path:** `.cursor/rules/ask-mode-workflow.mdc`
     - **When to read:** When in Ask Mode for analysis, recommendations, and information gathering without file modifications.
 
-10. **auxiliary-dev-workflow.mdc**
+10. **auxiliary-code-workflow.mdc**
     - **Description:** Algorithm workflow for auxiliary/side development tasks that are NOT part of the main project architecture (VPN setup, deployment scripts, VDS configuration, automation tools, cloud setup). Enforces mandatory verification through web search for current best practices and MCP Context7 for package versions, with OS/device compatibility validation (macOS ARM64, Linux, Windows). Includes aggressive requirement gathering in Plan Mode and fallback to code-workflow.mdc if task is actually main project work.
-    - **Relative Path:** `.cursor/rules/auxiliary-dev-workflow.mdc`
+    - **Relative Path:** `.cursor/rules/auxiliary-code-workflow.mdc`
     - **When to read:** When handling infrastructure setup, deployment automation, system configuration, tooling development, or any development task that exists outside the main project codebase. NOT for tasks that modify project files or integrate into project architecture.
 
-11. **critique-workflow.mdc**
+11. **prompt-structure-guide.mdc**
+    - **Description:** Compact reference guide for prompt structure requirements by type (compact/command/algorithm/reference/combo). Defines YAML frontmatter, XML tags, TIER structure, system anchors, and language policies for each prompt type. Essential reference when creating or editing prompts.
+    - **Relative Path:** `.cursor/rules/prompt-structure-guide.mdc`
+    - **When to read:** When creating or editing prompts to ensure correct structure matches prompt type. Referenced by prompt-workflow.mdc for type-specific requirements.
+
+12. **critique-workflow.mdc**
     - **Description:** Algorithm workflow for technical critique and validation. Elite Principal Tech Reviewer for code review, architectural analysis, and technical idea validation. Includes Plan Mode with clarifying questions and Execution Mode with 7-step analysis.
     - **Relative Path:** `.cursor/rules/critique-workflow.mdc`
     - **When to read:** For tasks requiring review, feedback, or quality assessment of code, concepts, or technical ideas.
 
-12. **code-workflow.mdc**
+13. **code-workflow.mdc**
     - **Description:** Algorithm workflow for advanced planning mode with architecture validation. Structured preparation workflow with quality gate enforcement before plan creation. Includes XML architecture validation through MCP with ≥85 score requirement.
     - **Relative Path:** `.cursor/rules/code-workflow.mdc`
     - **When to read:** When planning complex projects requiring architecture validation and systematic preparation.
 
-13. **jira-task-creator.mdc**
+14. **jira-task-creator.mdc**
     - **Description:** Algorithm workflow for interactive JIRA task creation with requirements gathering, solution validation (web search + Context7), and wiki markup generation. Outputs copy-ready JIRA task description in Cursor plan.
     - **Relative Path:** `.cursor/rules/jira-task-creator.mdc`
     - **When to read:** When creating JIRA tasks that are actionable and ready for copy-paste, including for breaking down larger initiatives into JIRA-sized work items.
 
-14. **plan-mode-dispatcher.mdc**
+15. **plan-mode-dispatcher.mdc**
     - **Description:** Combo prompt (algorithm + reference) for Plan Mode task classification and workflow routing. Meta-classifier for lightning-fast activity type determination with classification table and immediate workflow file reading.
     - **Relative Path:** `.cursor/rules/plan-mode-dispatcher.mdc`
     - **When to read:** Automatically applied (alwaysApply: true) in Plan Mode, triggers activity type classification and corresponding workflow routing.
 
-15. **prompt-workflow.mdc**
+16. **prompt-workflow.mdc**
     - **Description:** Combo prompt (algorithm + reference) for prompt engineering. Creates production-ready AI prompts with XML structuring, YAML metadata, and MCP validation (score ≥85). Supports algorithm/reference/combo/compact/command types.
     - **Relative Path:** `.cursor/rules/prompt-workflow.mdc`
     - **When to read:** When the task involves creating, improving, editing, or validating AI prompts.
 
-16. **ui-workflow.mdc**
+17. **ui-workflow.mdc**
     - **Description:** Algorithm workflow for UI planning with browser validation using Playwright MCP tools. Identifies visual problems through browser inspection, clarifies user requirements interactively, creates detailed plans with browser verification checkpoints. Uses package.json and package-ai-docs.md for launch instructions.
     - **Relative Path:** `.cursor/rules/ui-workflow.mdc`
     - **When to read:** When fixing visual/UI problems, validating design implementation, checking responsive layouts, or planning UI improvements through browser-based analysis.
 
 ### Docs Files (.cursor/docs/)
 
-1. **rules-catalog.mdc**
+1. **rules-catalog.md**
     - **Description:** Complete catalog of all rules and docs with detailed descriptions and usage instructions. Use this for comprehensive overview of the .cursor rules setup.
-    - **Relative Path:** `.cursor/docs/rules-catalog.mdc` (current file)
+    - **Relative Path:** `.cursor/docs/rules-catalog.md` (current file)
     - **When to read:** If you need meta-information about how rules are structured or managed, or want to browse all available rules and docs.
 
 2. **ai-module-template.md**
@@ -166,6 +171,38 @@ alwaysApply: false
     - **Description:** Multi App Monolith architecture for fullstack monorepos with multiple isolated applications and shared common layer.
     - **Relative Path:** `.cursor/docs/architecture-multi-app-monolith.md`
     - **When to read:** When working with monorepo projects containing multiple applications.
+
+### Commands Files (.cursor/commands/)
+
+1. **agent-analysis.md**
+    - **Description:** Command prompt for AI agent behavior analysis. Provides honest report on violations and recommendations. Blocks any fixes after analysis - only analysis output, no further actions.
+    - **Relative Path:** `.cursor/commands/agent-analysis.md`
+    - **When to read:** When user requests analysis of agent behavior, violations, or recommendations without execution.
+
+2. **changelog.md**
+    - **Description:** Command prompt for automatic CHANGELOG.md generation. Updates changelog for all missing versions between last entry and current version using git history and version files (version.json or package.json).
+    - **Relative Path:** `.cursor/commands/changelog.md`
+    - **When to read:** When user requests automatic changelog update or generation.
+
+3. **commit-fast.md**
+    - **Description:** Command prompt for fast git commit automation. Quickly groups changes and creates atomic commits according to grouping plan. Skips quality checks for speed.
+    - **Relative Path:** `.cursor/commands/commit-fast.md`
+    - **When to read:** When user requests fast commit creation without full quality validation.
+
+4. **commit.md**
+    - **Description:** Command prompt for git commit automation with quality gates. Groups changes, runs quality checks (lint/test/typecheck), and creates atomic commits. Full validation workflow.
+    - **Relative Path:** `.cursor/commands/commit.md`
+    - **When to read:** When user requests commit creation with mandatory quality validation.
+
+5. **fix.md**
+    - **Description:** Command prompt for automatic lint error fixing. Finds, fixes, and validates linter errors using mandatory validation and external tools. Runs quality checks after fixes.
+    - **Relative Path:** `.cursor/commands/fix.md`
+    - **When to read:** When user requests automatic lint error fixing and validation.
+
+6. **force.md**
+    - **Description:** Command prompt for force mode protocol enforcement. Ensures mode initialization and routing protocol is followed before any tool calls. Blocking protocol check.
+    - **Relative Path:** `.cursor/commands/force.md`
+    - **When to read:** When user requests force mode check or protocol enforcement verification.
 
 ## Usage Instructions
 
