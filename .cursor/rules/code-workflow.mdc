@@ -205,13 +205,22 @@ src/[feature]/
 
 **Fallback:** `yarn lint && yarn typecheck && yarn test`
 
-**MCP Validation:**
-- Code files: ≥85 per .ts/.tsx
-- Test files: ≥85 per test file
+**MCP Validation (PARALLEL):**
+- Run in PARALLEL for ALL changed files (one MCP call per file)
+- Code files (.ts/.tsx): validationType="code", target ≥85
+- Test files (.test.ts): validationType="tests", target ≥85
+- Max 3 retries per file if <85
+- THEN run unified check command
 
-**Docs to update:**
-- `package-ai-docs.md` if architecture changed
-- `module-ai-docs.md` if module structure changed
+**AI Docs (see 07-agent-mode-workflow.mdc for triggers):**
+
+| Trigger | Action |
+|:---|:---|
+| New module/package | CREATE module-ai-docs.md / package-ai-docs.md |
+| Changed public API | UPDATE contract section |
+| Added/removed dependency | UPDATE dependencies section |
+| Fixed behavior bug | UPDATE edge_cases section |
+| Refactoring without API change | DO NOT update |
 
 ## 6. Success Criteria
 
@@ -220,7 +229,7 @@ src/[feature]/
 - [ ] Dependencies installed (if any)
 - [ ] Unified check: 0 errors
 - [ ] MCP: all files ≥85
-- [ ] AI docs updated (if applicable)
+- [ ] AI docs created/updated (per AI Docs triggers above)
 ```
 
 <completion_criteria>

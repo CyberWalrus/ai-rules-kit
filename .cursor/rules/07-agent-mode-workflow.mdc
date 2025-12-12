@@ -44,6 +44,14 @@ alwaysApply: true
 - Edit `.ts/.tsx` (≥20 lines) → `.cursor/rules/code-standards.md`, `.cursor/rules/naming.md`
 - AI docs → `.cursor/rules/ai-docs-workflow.mdc`
 
+**AI DOCS TRIGGERS:**
+
+1. New module/package → CREATE module-ai-docs.md / package-ai-docs.md
+2. Changed public API (signatures, types) → UPDATE contract section
+3. Added/removed dependency → UPDATE dependencies section
+4. Fixed behavior bug → UPDATE edge_cases section
+5. Refactoring without API change → DO NOT update
+
 **Exceptions:** README.md, CHANGELOG.md, `*.config.ts`
 
 **Self-check:** Before editing `.md/.mdc` → inspect YAML → if `type:` exists → prompt file → trigger applies
@@ -70,11 +78,14 @@ alwaysApply: true
 
 **SKIP:** README.md, CHANGELOG.md, `*.config.ts`, `package.json`, `tsconfig.json`
 
-**Steps:**
+**Steps (CRITICAL - PARALLEL EXECUTION):**
 
-1. Batch ALL changed files → call MCP in PARALLEL (one call per file)
-2. Target ≥85 | If <85 → fix → re-validate (max 3x per file)
-3. ALL files ≥85 → proceed to lint
+1. **PARALLEL:** Batch ALL changed files → call MCP validator in PARALLEL (one tool call per file, NOT sequential)
+2. Wait for ALL parallel results → Target ≥85 per file
+3. If any file <85 → fix → re-validate that file (max 3x)
+4. ALL files ≥85 → THEN run `yarn lint` (0 errors REQUIRED)
+
+**WHY PARALLEL:** Sequential validation = N × latency. Parallel = 1 × latency. Always batch MCP calls.
 
 **ZERO TOLERANCE:** MCP validation is NON-NEGOTIABLE. Never skip, never postpone. 3 failures → escalate.
 
@@ -87,7 +98,7 @@ alwaysApply: true
 5. E2E tests → new/modified features with mocks
 6. Validate ALL → MCP batch in PARALLEL (≥85 for each file)
 7. Final → run `yarn lint` (0 errors REQUIRED)
-8. AI docs → update if new functions/API changes (read `.cursor/rules/ai-docs-workflow.mdc`)
+8. AI docs → check AI DOCS TRIGGERS 1-4 → create/update if matched
 9. Report → files with scores
 
 **PRE-RESPONSE BARRIER:** Verify ALL before responding:
@@ -97,7 +108,7 @@ alwaysApply: true
 - [ ] Unit tests written/updated
 - [ ] E2E tests for new features
 - [ ] Lint/type/test: 0 errors
-- [ ] AI docs updated (if code changed)
+- [ ] AI docs created/updated (if AI DOCS TRIGGERS 1-4 matched)
 
 ❌ ANY unchecked → FORBIDDEN to respond | ✓ ALL checked → proceed
 

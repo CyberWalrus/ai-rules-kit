@@ -185,11 +185,13 @@ Mark each group: [SEQUENTIAL] or [PARALLEL]
 
 ## 4. Quality Gates
 
-**MCP Validation:**
+**MCP Validation (PARALLEL):**
 
+- Run in PARALLEL for ALL changed .mdc/.md files (one MCP call per file)
 - Command: `mcp_mcp-validator_validate validationType="prompts"`
 - Target: ≥85
-- Max iterations: 5
+- Max 5 retries per file if <85
+- THEN proceed to final checks
 
 **Type-specific checks:**
 

@@ -110,8 +110,30 @@ If source files contain different terms — add explicit note about corresponden
 - Use structure and templates from corresponding references
 - Follow YAML metadata and XML tags from templates
 
+**Required sections for module-ai-docs.md:**
+
+1. `<module_purpose>` — 2-3 sentences
+2. `<contract>` — behavioral invariants + API contract (CRITICAL)
+3. `<design_decisions>` — WHY this approach
+4. `<business_context>` — business goal, users, criticality
+5. `<edge_cases>` — boundary conditions
+6. `<public_api>` — exports (brief)
+7. `<dependencies>` — categorized imports
+
+**Required sections for package-ai-docs.md:**
+
+1. `<package_purpose>` — purpose and problems
+2. `<package_contract>` — invariants + API contract (CRITICAL)
+3. `<design_decisions>` — architectural choices
+4. `<business_context>` — business goal, users, owner
+5. `<test_coverage>` — what tested, what NOT tested
+6. `<architecture_overview>` — modules + interactions
+7. `<detailed_modules>` — key modules with contracts
+8. `<dependencies>` — with WHY needed
+9. `<development_commands>` — essential commands
+
 <completion_criteria>
-Documentation is created/updated using structure from references
+Documentation is created/updated using structure from references, all required sections present
 </completion_criteria>
 
 <exception_handling>
@@ -135,11 +157,11 @@ If score is below target, fix critical issues and warnings, then re-validate
 </algorithm_steps>
 
 <completion_criteria>
-All steps completed, references read, terminology aligned, document types correctly selected, documentation generated using structure from references and passed MCP validation with score ≥85.
+All steps completed, references read, terminology aligned, document types correctly selected, all required sections present (contract, design_decisions, business_context), documentation passed MCP validation with score ≥85.
 </completion_criteria>
 
 <exception_handling>
-If any step is not completed — stop process and request execution of missed step. If references are unavailable — request their reading before continuing. If MCP validation fails — fix critical issues and re-validate.
+If any step is not completed — stop process and request execution of missed step. If references are unavailable — request their reading before continuing. If MCP validation fails — fix critical issues and re-validate. If contract section missing — STOP and add it.
 </exception_handling>
 
 ## 📚 TIER 3: Terminology Mapping
@@ -290,14 +312,16 @@ AI documentation is compatible with architecture when `module_docs` is correctly
 Terminology is unified: for module documentation — "modular unit" (модульная единица), for package documentation — "architectural module/package" (архитектурный модуль/пакет).
 </conclusion>
 
-## 📏 TIER 9: Completion Criteria
+## TIER 9: Completion Criteria
 
 <completion_criteria>
 
-- Terminology is aligned and documented in `<terminology_mapping>`
-- Correct document type is selected for all cases (`module-ai-docs.md` or `package-ai-docs.md`)
-- `module_docs` policy is described and applicable to project
-- Terminology conflicts are resolved with explicit clarifications
+- Terminology is aligned and documented
+- Correct document type is selected (`module-ai-docs.md` or `package-ai-docs.md`)
+- **All required sections present** (see Step 6)
+- **Contract section filled** (behavioral + API) — CRITICAL
+- **design_decisions section filled** — WHY not WHAT
+- **business_context section filled** — goal, users, criticality
 - Document passes MCP validation with score ≥85
 
 </completion_criteria>

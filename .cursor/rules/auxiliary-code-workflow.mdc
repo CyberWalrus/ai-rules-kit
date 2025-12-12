@@ -201,6 +201,7 @@ Key options:
 - [ ] Dry-run successful
 - [ ] No deprecated options used
 - [ ] All options verified via Context7/Web Search
+- [ ] AI docs updated if config affects main project architecture (rare)
 ```
 
 <completion_criteria>

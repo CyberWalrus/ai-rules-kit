@@ -203,11 +203,21 @@ Mark each: [SEQUENTIAL] or [PARALLEL]
 
 **Check command:** `yarn lint` (or equivalent)
 
-**MCP:** >=85 per file
+**MCP Validation (PARALLEL):**
+- Run in PARALLEL for ALL changed files (one MCP call per file)
+- Component files: validationType="code", target >=85
+- Test files: validationType="tests", target >=85
+- Max 3 retries per file if <85
+- THEN run lint/check command
 
 **Browser verification:**
 - Desktop (1920x1080): [expected]
 - Mobile (375x667): [expected]
+
+**AI Docs (see 07-agent-mode-workflow.mdc for triggers):**
+- New component → CREATE module-ai-docs.md
+- Changed component API → UPDATE contract section
+- Refactoring without API change → DO NOT update
 
 ## 6. Success Criteria
 
@@ -215,6 +225,7 @@ Mark each: [SEQUENTIAL] or [PARALLEL]
 - [ ] Browser verification passed
 - [ ] Unified check: 0 errors
 - [ ] MCP: all files >=85
+- [ ] AI docs created/updated (per triggers above)
 ```
 
 <completion_criteria>
