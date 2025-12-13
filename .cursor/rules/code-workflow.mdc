@@ -67,15 +67,20 @@ Think step-by-step: read context, understand request, design solution, validate,
 
 ### Step 1: Read Context
 
-**Read Project Files (PARALLEL):**
+**🚨 BLOCKING — Read ALL files before proceeding:**
 
-| File | Extract |
-|:---|:---|
-| `package.json` | dependencies, scripts → extract: lint cmd, unit test cmd, e2e test cmd, unified check cmd |
-| `package-ai-docs.md` | development_context, tech_stack, architecture_docs |
-| `architecture.xml` | current structure, layers, modules |
-| `.cursor/docs/code-standards.md` | coding rules |
-| `.cursor/docs/architecture.md` | architecture principles |
+- [ ] `package.json` → extract: dependencies, scripts (lint, test, e2e, unified commands)
+- [ ] `package-ai-docs.md` → extract: development_context, tech_stack, architecture_docs
+- [ ] `architecture.xml` → extract: current structure, layers, modules
+- [ ] `.cursor/docs/code-standards.md` → extract: key coding rules
+- [ ] `.cursor/docs/architecture.md` → extract: architecture principles
+
+**⚠️ VERIFICATION (record actual paths read):**
+
+Files read: [list actual file paths here, e.g., `package.json`, `package-ai-docs.md`, ...]
+
+❌ ANY file not read → FORBIDDEN to proceed to Step 2
+❌ Empty file list → VIOLATION
 
 **Extract Commands from package.json (REQUIRED):**
 
@@ -153,6 +158,17 @@ Files affected: [count] files, [count] modules`
 - Score <85 → fix architecture issues in planned changes first
 - MCP unavailable → manual check against architecture.md
 
+**⚠️ MCP RESULT RECORD (MANDATORY):**
+
+| Field | Value |
+|:---|:---|
+| MCP called | YES / NO |
+| Score | ___/100 |
+| If skipped | Reason: ___ |
+
+❌ Score field empty → FORBIDDEN to proceed to Step 5
+❌ NO without documented reason → VIOLATION
+
 ### Step 5: Determine AI Docs
 
 **Based on designed solution and validated architecture, decide AI docs action:**
@@ -183,16 +199,18 @@ FORBIDDEN to proceed to Step 6 without explicit ai_docs_action decision
 <completion_criteria>
 Steps 1-5 complete when:
 
-- [ ] All 5 project files read
+- [ ] All 5 project files read (actual paths recorded)
 - [ ] Commands extracted from package.json (lint, test, e2e, unified)
 - [ ] AI docs action determined (CREATE/UPDATE/NO UPDATE)
 - [ ] Task understood (can explain what user wants)
 - [ ] Solution designed (can explain HOW to implement)
-- [ ] Dependencies checked via Context7 (or N/A)
-- [ ] Solution verified via Web Search
-- [ ] Architecture validated via MCP (≥85)
+- [ ] Dependencies checked via Context7 (or N/A with reason)
+- [ ] Solution verified via Web Search (or N/A with reason)
+- [ ] Architecture validated via MCP (actual score recorded, ≥85)
+- [ ] MCP RESULT RECORD table filled with actual values
 
-❌ ANY unchecked → FORBIDDEN to proceed to Step 5
+❌ ANY unchecked → FORBIDDEN to proceed to Step 6
+❌ Placeholder values in MCP RESULT RECORD → VIOLATION
 </completion_criteria>
 
 ### Step 6: Create Plan
@@ -304,16 +322,30 @@ Step 6 complete when:
 
 <output_format>
 
-**Before create_plan, output research summary:**
+**Before create_plan, output PRE-CREATE_PLAN VERIFICATION table:**
 
 ```
-✅ Context: [N] files read
-✅ Task: [brief restatement of what user wants]
-✅ Solution: [brief HOW - approach chosen]
-✅ Dependencies: [packages@versions or N/A]
-✅ Web Search: [confirmed/alternative found]
-✅ Architecture: MCP [score]/100
-✅ Ready: calling create_plan
+📋 PRE-CREATE_PLAN VERIFICATION
+
+| Step | Status | Evidence |
+|:---|:---|:---|
+| 1. Files read | ✅/❌ | `package.json`, `package-ai-docs.md`, ... (actual paths) |
+| 2. Task understood | ✅/❌ | [1 sentence restatement] |
+| 3. Solution designed | ✅/❌ | [approach in 1 sentence] |
+| 4. MCP validation | ✅/❌ | Score: NN/100 (actual number) |
+| 5. Web Search | ✅/❌/N/A | [query performed or N/A reason] |
+| 6. Context7 | ✅/❌/N/A | [packages checked or N/A reason] |
+| 7. AI docs decision | ✅/❌ | CREATE/UPDATE/NO UPDATE |
+
+If any ❌ or skipped:
+
+| Skipped Step | Reason |
+|:---|:---|
+| [step name] | [why skipped, what done instead] |
+
+❌ Table incomplete → FORBIDDEN to call create_plan
+❌ ❌ status without reason → VIOLATION
+❌ Placeholder values (e.g., "[N]", "[score]") → VIOLATION
 ```
 
 **Then call create_plan with full plan content.**
@@ -356,8 +388,16 @@ Step 6 complete when:
 - NO → Add missing details
 - YES → Proceed
 
+**PRE-CREATE_PLAN VERIFICATION OUTPUT:**
+
+- [ ] Verification table output in chat before create_plan
+- [ ] All steps show ✅ or have documented reason for ❌/N/A
+- [ ] MCP score is actual number (not placeholder "[score]")
+- [ ] File paths are actual paths (not "[path]" or "[N] files")
+
 All boxes must be checked AND SELF-CHECK must return YES.
 ❌ Otherwise → FORBIDDEN to call create_plan
+❌ Verification table not output → VIOLATION
 
 </completion_criteria>
 
