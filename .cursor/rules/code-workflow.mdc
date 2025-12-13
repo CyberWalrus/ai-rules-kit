@@ -50,7 +50,8 @@ Think step-by-step: read context, understand request, design solution, validate,
 2. **UNDERSTAND TASK** → What user wants, explore implementation options
 3. **DESIGN SOLUTION** → Specific approach, files to change, dependencies
 4. **VALIDATE** → MCP architecture check (≥85), Web Search confirmation
-5. **CREATE PLAN** → Only after steps 1-4 complete
+5. **DETERMINE AI DOCS** → Decide CREATE/UPDATE/NO UPDATE based on changes
+6. **CREATE PLAN** → Only after steps 1-5 complete
 
 **FORBIDDEN (INSTANT VIOLATION):**
 
@@ -125,20 +126,6 @@ From `scripts` section, identify and record:
 2. Verify: proposed approach is current
 3. If outdated → find modern alternative
 
-**Determine AI Docs Update Need:**
-
-Based on designed solution, determine if AI docs update is needed:
-
-| Change Type | AI Docs Action |
-|:---|:---|
-| New module/package | CREATE module-ai-docs.md / package-ai-docs.md |
-| Changed public API (signatures, types) | UPDATE contract section |
-| Added/removed dependency | UPDATE dependencies section |
-| Fixed behavior bug | UPDATE edge_cases section |
-| Refactoring without API change | NO UPDATE needed |
-
-Record decision: `ai_docs_action`: CREATE / UPDATE [section] / NO UPDATE
-
 ### Step 4: Validate
 
 **Prepare DIFF summary from Step 3:**
@@ -166,8 +153,35 @@ Files affected: [count] files, [count] modules`
 - Score <85 → fix architecture issues in planned changes first
 - MCP unavailable → manual check against architecture.md
 
+### Step 5: Determine AI Docs
+
+**Based on designed solution and validated architecture, decide AI docs action:**
+
+| Change Type | AI Docs Action |
+|:---|:---|
+| New module/package | CREATE module-ai-docs.md / package-ai-docs.md |
+| Changed public API (signatures, types) | UPDATE contract section |
+| Added/removed dependency | UPDATE dependencies section |
+| Fixed behavior bug | UPDATE edge_cases section |
+| Refactoring without API change | NO UPDATE needed |
+
+**For detailed instructions:** Read `.cursor/rules/ai-docs-workflow.mdc`
+
+**Record decision:** `ai_docs_action`: CREATE / UPDATE [section] / NO UPDATE
+
 <completion_criteria>
-Steps 1-4 complete when:
+Step 5 complete when:
+
+- [ ] All planned changes reviewed against AI docs triggers
+- [ ] ai_docs_action determined (CREATE/UPDATE/NO UPDATE)
+- [ ] If UPDATE: specific section identified
+- [ ] If CREATE: file path determined
+
+FORBIDDEN to proceed to Step 6 without explicit ai_docs_action decision
+</completion_criteria>
+
+<completion_criteria>
+Steps 1-5 complete when:
 
 - [ ] All 5 project files read
 - [ ] Commands extracted from package.json (lint, test, e2e, unified)
@@ -181,7 +195,7 @@ Steps 1-4 complete when:
 ❌ ANY unchecked → FORBIDDEN to proceed to Step 5
 </completion_criteria>
 
-### Step 5: Create Plan
+### Step 6: Create Plan
 
 **MANDATORY SECTIONS (all 7 required):**
 
@@ -258,7 +272,7 @@ src/[feature]/
 - Skipping broken tests = TASK FAILURE
 
 **AI Docs:**
-- Action: `[ai_docs_action from Step 1]`
+- Action: `[ai_docs_action from Step 5]`
 - If CREATE: specify file path and initial sections
 - If UPDATE: specify which section and what changes
 
@@ -271,11 +285,11 @@ src/[feature]/
 - [ ] E2E tests: 0 failures (if project has e2e)
 - [ ] Lint + typecheck: 0 errors
 - [ ] MCP: all files ≥85
-- [ ] AI docs: [ai_docs_action from Step 1] completed (or N/A if NO UPDATE)
+- [ ] AI docs: [ai_docs_action from Step 5] completed (or N/A if NO UPDATE)
 ```
 
 <completion_criteria>
-Step 5 complete when:
+Step 6 complete when:
 
 - [ ] All 7 sections present (0-6)
 - [ ] Steps have [PARALLEL]/[SEQUENTIAL] markers

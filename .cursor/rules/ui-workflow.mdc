@@ -52,7 +52,8 @@ Think step-by-step: read context, inspect UI, understand styling, clarify with u
 4. **CLARIFY** → Ask 1-2 questions if requirements unclear
 5. **DESIGN SOLUTION** → Specific approach, files, CSS changes
 6. **VALIDATE** → Context7 (new packages), Web Search, MCP (>=85)
-7. **CREATE PLAN** → Only after steps 1-6 complete
+7. **DETERMINE AI DOCS** → Decide CREATE/UPDATE/NO UPDATE based on changes
+8. **CREATE PLAN** → Only after steps 1-7 complete
 
 **FORBIDDEN (INSTANT VIOLATION):**
 
@@ -129,18 +130,6 @@ If requirements are clear → proceed to Step 5.
 - Which components to create/modify
 - Which classes/properties to change
 
-**Determine AI Docs Update Need:**
-
-Based on designed solution, determine if AI docs update is needed:
-
-| Change Type | AI Docs Action |
-|:---|:---|
-| New component | CREATE module-ai-docs.md |
-| Changed component API (props, events) | UPDATE contract section |
-| Refactoring without API change | NO UPDATE needed |
-
-Record decision: `ai_docs_action`: CREATE / UPDATE [section] / NO UPDATE
-
 ### Step 6: Validate
 
 **Context7 (if new UI packages):**
@@ -181,8 +170,34 @@ Files affected: [count] files, [count] components`
 - Score >=85 → proceed to Step 7
 - Score <85 → fix architecture issues in planned changes first
 
+### Step 7: Determine AI Docs
+
+**Based on designed solution and validated architecture, decide AI docs action:**
+
+| Change Type | AI Docs Action |
+|:---|:---|
+| New component | CREATE module-ai-docs.md |
+| Changed component API (props, events) | UPDATE contract section |
+| Added/removed dependency | UPDATE dependencies section |
+| Refactoring without API change | NO UPDATE needed |
+
+**For detailed instructions:** Read `.cursor/rules/ai-docs-workflow.mdc`
+
+**Record decision:** `ai_docs_action`: CREATE / UPDATE [section] / NO UPDATE
+
 <completion_criteria>
-Steps 1-6 complete when:
+Step 7 complete when:
+
+- [ ] All planned changes reviewed against AI docs triggers
+- [ ] ai_docs_action determined (CREATE/UPDATE/NO UPDATE)
+- [ ] If UPDATE: specific section identified
+- [ ] If CREATE: file path determined
+
+FORBIDDEN to proceed to Step 8 without explicit ai_docs_action decision
+</completion_criteria>
+
+<completion_criteria>
+Steps 1-7 complete when:
 
 - [ ] Project files read (package.json, vite.config, app layer)
 - [ ] Commands extracted from package.json (lint, test, e2e, dev)
@@ -195,10 +210,10 @@ Steps 1-6 complete when:
 - [ ] Web Search verified solution
 - [ ] MCP architecture validated (>=85)
 
-❌ ANY unchecked → FORBIDDEN to proceed to Step 7
+❌ ANY unchecked → FORBIDDEN to proceed to Step 8
 </completion_criteria>
 
-### Step 7: Create Plan
+### Step 8: Create Plan
 
 **MANDATORY SECTIONS (7 total):**
 
@@ -263,7 +278,7 @@ Mark each: [SEQUENTIAL] or [PARALLEL]
 - Mobile (375x667): [expected]
 
 **AI Docs:**
-- Action: `[ai_docs_action from Step 1]`
+- Action: `[ai_docs_action from Step 7]`
 - If CREATE: specify file path and initial sections
 - If UPDATE: specify which section and what changes
 
@@ -275,11 +290,11 @@ Mark each: [SEQUENTIAL] or [PARALLEL]
 - [ ] E2E tests: 0 failures (if project has e2e)
 - [ ] Lint + typecheck: 0 errors
 - [ ] MCP: all files >=85
-- [ ] AI docs: [ai_docs_action from Step 1] completed (or N/A if NO UPDATE)
+- [ ] AI docs: [ai_docs_action from Step 7] completed (or N/A if NO UPDATE)
 ```
 
 <completion_criteria>
-Step 7 complete when:
+Step 8 complete when:
 
 - [ ] All 7 sections present (0-6)
 - [ ] Steps have [PARALLEL]/[SEQUENTIAL] markers
