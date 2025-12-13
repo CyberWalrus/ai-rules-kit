@@ -60,23 +60,32 @@ Think step-by-step: read context, understand request, design solution, validate,
 - ❌ create_plan before MCP validation (≥85)
 - ❌ Assuming solution without Web Search verification
 
-**SELF-CHECK:** If you cannot explain the implementation in detail, return to steps 2-3.
+**SELF-CHECK:** If you cannot explain the implementation in detail, return to Step 2-3.
 
-**VIOLATION → Restart from step 1**
+**VIOLATION → Restart from Step 1**
 
-### Step 1: Research Phase
+### Step 1: Read Context
 
-**1.1 Read Project Context (PARALLEL)**
+**Read Project Files (PARALLEL):**
 
 | File | Extract |
 |:---|:---|
-| `package.json` | dependencies, scripts (find unified check command) |
+| `package.json` | dependencies, scripts → extract: lint cmd, unit test cmd, e2e test cmd, unified check cmd |
 | `package-ai-docs.md` | development_context, tech_stack, architecture_docs |
 | `architecture.xml` | current structure, layers, modules |
 | `.cursor/docs/code-standards.md` | coding rules |
 | `.cursor/docs/architecture.md` | architecture principles |
 
-**1.2 Understand Task (CRITICAL - DO NOT SKIP)**
+**Extract Commands from package.json (REQUIRED):**
+
+From `scripts` section, identify and record:
+
+- `lint_cmd`: command for linting (e.g., "lint", "eslint")
+- `unit_test_cmd`: command for unit tests (e.g., "test", "test:unit")
+- `e2e_test_cmd`: command for e2e tests (e.g., "test:e2e", "e2e") — may be absent
+- `unified_check_cmd`: single command that runs all checks (e.g., "ci", "validate", "check")
+
+### Step 2: Understand Task
 
 **What does user actually want?**
 
@@ -95,7 +104,7 @@ Think step-by-step: read context, understand request, design solution, validate,
 - Ask 1-2 specific questions if requirements ambiguous
 - Wait for answer before proceeding
 
-**1.3 Design Solution**
+### Step 3: Design Solution
 
 **How to implement:**
 
@@ -116,34 +125,63 @@ Think step-by-step: read context, understand request, design solution, validate,
 2. Verify: proposed approach is current
 3. If outdated → find modern alternative
 
-**1.4 Validate Solution**
+**Determine AI Docs Update Need:**
+
+Based on designed solution, determine if AI docs update is needed:
+
+| Change Type | AI Docs Action |
+|:---|:---|
+| New module/package | CREATE module-ai-docs.md / package-ai-docs.md |
+| Changed public API (signatures, types) | UPDATE contract section |
+| Added/removed dependency | UPDATE dependencies section |
+| Fixed behavior bug | UPDATE edge_cases section |
+| Refactoring without API change | NO UPDATE needed |
+
+Record decision: `ai_docs_action`: CREATE / UPDATE [section] / NO UPDATE
+
+### Step 4: Validate
+
+**Prepare DIFF summary from Step 3:**
+
+Collect planned changes into diff format:
+
+- NEW: files/modules to be created
+- MODIFIED: files/modules to be changed
+- REMOVED: files/modules to be deleted
 
 ```javascript
 mcp_mcp-validator_validate({
     validationType: 'architecture',
-    input: { type: 'file', data: '/path/to/architecture.xml' },
-    context: 'Validating [proposed solution] for [task]'
+    input: { type: 'file', data: '${PKG_ROOT}/architecture.xml' },
+    context: `Architecture validation: ${architecture_type}; scope=planning; target MCP>=85
+DIFF: Planning mode - focus on changes
+- NEW: [files/modules to be added from Step 3]
+- MODIFIED: [files/modules to be changed from Step 3]
+- REMOVED: [files/modules to be deleted from Step 3]
+Files affected: [count] files, [count] modules`
 })
 ```
 
-- Score ≥85 → proceed to plan
-- Score <85 → fix architecture issues first
+- Score ≥85 → proceed to Step 5
+- Score <85 → fix architecture issues in planned changes first
 - MCP unavailable → manual check against architecture.md
 
 <completion_criteria>
-Step 1 complete when:
+Steps 1-4 complete when:
 
 - [ ] All 5 project files read
+- [ ] Commands extracted from package.json (lint, test, e2e, unified)
+- [ ] AI docs action determined (CREATE/UPDATE/NO UPDATE)
 - [ ] Task understood (can explain what user wants)
 - [ ] Solution designed (can explain HOW to implement)
 - [ ] Dependencies checked via Context7 (or N/A)
 - [ ] Solution verified via Web Search
 - [ ] Architecture validated via MCP (≥85)
 
-❌ ANY unchecked → FORBIDDEN to proceed to Step 2
+❌ ANY unchecked → FORBIDDEN to proceed to Step 5
 </completion_criteria>
 
-### Step 2: Create Plan
+### Step 5: Create Plan
 
 **MANDATORY SECTIONS (all 7 required):**
 
@@ -201,9 +239,10 @@ src/[feature]/
 ## 5. Quality Gates
 
 **Unified Check Command:**
-`[command from package.json - e.g., yarn ci, yarn validate, or npm run check]`
+`[unified_check_cmd from Step 1]`
 
-**Fallback:** `yarn lint && yarn typecheck && yarn test`
+**Fallback (if no unified command):**
+`[lint_cmd] && [typecheck_cmd] && [unit_test_cmd]`
 
 **MCP Validation (PARALLEL):**
 - Run in PARALLEL for ALL changed files (one MCP call per file)
@@ -212,28 +251,31 @@ src/[feature]/
 - Max 3 retries per file if <85
 - THEN run unified check command
 
-**AI Docs (see 07-agent-mode-workflow.mdc for triggers):**
+**Tests (MANDATORY - ZERO TOLERANCE):**
+- Unit tests: `[unit_test_cmd from Step 1]` — 0 failures REQUIRED
+- E2E tests: `[e2e_test_cmd from Step 1]` — 0 failures REQUIRED (skip if project has no e2e)
+- **CRITICAL:** If code changes break ANY existing test (unit OR e2e) → FIX the test BEFORE claiming task completion
+- Skipping broken tests = TASK FAILURE
 
-| Trigger | Action |
-|:---|:---|
-| New module/package | CREATE module-ai-docs.md / package-ai-docs.md |
-| Changed public API | UPDATE contract section |
-| Added/removed dependency | UPDATE dependencies section |
-| Fixed behavior bug | UPDATE edge_cases section |
-| Refactoring without API change | DO NOT update |
+**AI Docs:**
+- Action: `[ai_docs_action from Step 1]`
+- If CREATE: specify file path and initial sections
+- If UPDATE: specify which section and what changes
 
 ## 6. Success Criteria
 
 - [ ] All implementation steps completed
 - [ ] Files created per Architecture Changes
 - [ ] Dependencies installed (if any)
-- [ ] Unified check: 0 errors
+- [ ] Unit tests: 0 failures
+- [ ] E2E tests: 0 failures (if project has e2e)
+- [ ] Lint + typecheck: 0 errors
 - [ ] MCP: all files ≥85
-- [ ] AI docs created/updated (per AI Docs triggers above)
+- [ ] AI docs: [ai_docs_action from Step 1] completed (or N/A if NO UPDATE)
 ```
 
 <completion_criteria>
-Step 2 complete when:
+Step 5 complete when:
 
 - [ ] All 7 sections present (0-6)
 - [ ] Steps have [PARALLEL]/[SEQUENTIAL] markers

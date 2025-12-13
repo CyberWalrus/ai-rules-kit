@@ -42,48 +42,61 @@ Think step-by-step: read context, inspect UI, understand styling, clarify with u
 
 ### Enforcement Block
 
-**Blocking Gate – No Tolerance**
+**🚨 BLOCKING GATE - NO TOLERANCE 🚨**
 
-**Mandatory sequence – no skip or reorder:**
+**MANDATORY SEQUENCE (CANNOT SKIP, CANNOT REORDER):**
 
 1. **READ CONTEXT** → Project files (package.json, AI docs, vite.config, app layer)
 2. **UNDERSTAND TASK** → What user wants, fix/feature/redesign?
 3. **INSPECT UI** → Launch project, browser_snapshot, analyze current state
 4. **CLARIFY** → Ask 1-2 questions if requirements unclear
 5. **DESIGN SOLUTION** → Specific approach, files, CSS changes
-6. **VALIDATE** → Context7 (new packages), Web Search (solution check), MCP (>=85)
+6. **VALIDATE** → Context7 (new packages), Web Search, MCP (>=85)
 7. **CREATE PLAN** → Only after steps 1-6 complete
 
-**Forbidden (violation → restart at step 1):**
+**FORBIDDEN (INSTANT VIOLATION):**
 
-- create_plan without reading project files
-- create_plan without browser_snapshot
-- create_plan without identifying styling approach
-- create_plan before clarifying unclear requirements
-- create_plan before MCP validation (>=85)
+- ❌ create_plan without reading project files
+- ❌ create_plan without browser_snapshot
+- ❌ create_plan without identifying styling approach
+- ❌ create_plan before clarifying unclear requirements
+- ❌ create_plan before MCP validation (>=85)
 
 **Priority:** If multiple violations, report missing visual inspection first (most critical).
 
-**Self-check:** If UI state or styling cannot be described, repeat steps 1-3.
+**SELF-CHECK:** If UI state or styling cannot be described, return to Step 1-3.
 
-### Step 1: Research Phase
+**VIOLATION → Restart from Step 1**
 
-**1.1 Read project files (PARALLEL)**
+### Step 1: Read Context
+
+**Read Project Files (PARALLEL):**
 
 | File | Extract |
 |:---|:---|
-| `package.json` | dependencies (CSS framework), scripts (dev server) |
+| `package.json` | dependencies (CSS framework), scripts → extract: lint cmd, unit test cmd, e2e test cmd, dev server cmd |
 | `package-ai-docs.md` | development_context, tech_stack, styling_approach |
 | `vite.config.*` | CSS configuration, preprocessors, PostCSS plugins |
 | `src/app/` or entry point | styling patterns, imports, design tokens |
 
-**1.2 Understand task**
+**Extract Commands from package.json (REQUIRED):**
+
+From `scripts` section, identify and record:
+
+- `lint_cmd`: command for linting (e.g., "lint", "eslint")
+- `unit_test_cmd`: command for unit tests (e.g., "test", "test:unit")
+- `e2e_test_cmd`: command for e2e tests (e.g., "test:e2e", "e2e") — may be absent
+- `dev_cmd`: command for dev server (e.g., "dev", "start")
+
+### Step 2: Understand Task
 
 - Restate the task in your own words
 - Identify type: fix / feature / redesign / responsive / a11y?
 - What is the expected visual outcome?
 
-**1.3 Visual inspection**
+### Step 3: Inspect UI
+
+**Visual Inspection:**
 
 1. Find dev server command in package.json scripts
 2. Start dev server, extract PORT from output
@@ -92,7 +105,7 @@ Think step-by-step: read context, inspect UI, understand styling, clarify with u
 5. Analyze: layout, spacing, colors, typography, responsive issues
 6. For responsive: `browser_resize({ width: 375, height: 667 })` (mobile), `browser_resize({ width: 1920, height: 1080 })` (desktop)
 
-**1.4 Identify styling approach**
+**Identify Styling Approach:**
 
 From vite.config and app layer, determine:
 
@@ -100,7 +113,7 @@ From vite.config and app layer, determine:
 - Design tokens: CSS variables, theme files
 - Component patterns: how styles are applied in existing components
 
-**1.5 Clarify requirements**
+### Step 4: Clarify Requirements
 
 If requirements unclear:
 
@@ -108,13 +121,27 @@ If requirements unclear:
 - Wait for answer before proceeding
 - Document confirmed requirements
 
-**1.6 Design solution**
+If requirements are clear → proceed to Step 5.
+
+### Step 5: Design Solution
 
 - Concrete approach (specific files, CSS properties)
 - Which components to create/modify
 - Which classes/properties to change
 
-**1.7 Validate**
+**Determine AI Docs Update Need:**
+
+Based on designed solution, determine if AI docs update is needed:
+
+| Change Type | AI Docs Action |
+|:---|:---|
+| New component | CREATE module-ai-docs.md |
+| Changed component API (props, events) | UPDATE contract section |
+| Refactoring without API change | NO UPDATE needed |
+
+Record decision: `ai_docs_action`: CREATE / UPDATE [section] / NO UPDATE
+
+### Step 6: Validate
 
 **Context7 (if new UI packages):**
 
@@ -130,21 +157,36 @@ If requirements unclear:
 
 **MCP Architecture Check:**
 
+**Prepare DIFF summary from Step 5:**
+
+Collect planned UI changes into diff format:
+
+- NEW: components/files to be created
+- MODIFIED: components/files to be changed
+- REMOVED: components/files to be deleted
+
 ```javascript
 mcp_mcp-validator_validate({
     validationType: 'architecture',
-    input: { type: 'file', data: '/path/to/architecture.xml' },
-    context: 'Validating UI solution for [task]'
+    input: { type: 'file', data: '${PKG_ROOT}/architecture.xml' },
+    context: `Architecture validation: ${architecture_type}; scope=planning; target MCP>=85
+DIFF: Planning mode - focus on UI changes
+- NEW: [components/files to be added from Step 5]
+- MODIFIED: [components/files to be changed from Step 5]
+- REMOVED: [components/files to be deleted from Step 5]
+Files affected: [count] files, [count] components`
 })
 ```
 
-- Score >=85 → proceed
-- Score <85 → fix issues first
+- Score >=85 → proceed to Step 7
+- Score <85 → fix architecture issues in planned changes first
 
 <completion_criteria>
-Step 1 complete if:
+Steps 1-6 complete when:
 
 - [ ] Project files read (package.json, vite.config, app layer)
+- [ ] Commands extracted from package.json (lint, test, e2e, dev)
+- [ ] AI docs action determined (CREATE/UPDATE/NO UPDATE)
 - [ ] Dev server launched, browser_snapshot captured
 - [ ] Styling approach identified
 - [ ] Task understood (can describe expected visual outcome)
@@ -153,12 +195,12 @@ Step 1 complete if:
 - [ ] Web Search verified solution
 - [ ] MCP architecture validated (>=85)
 
-Any unchecked → forbidden to proceed to Step 2
+❌ ANY unchecked → FORBIDDEN to proceed to Step 7
 </completion_criteria>
 
-### Step 2: Create Plan
+### Step 7: Create Plan
 
-**Mandatory sections (7 total):**
+**MANDATORY SECTIONS (7 total):**
 
 ```markdown
 ## 0. Overview
@@ -201,7 +243,7 @@ Mark each: [SEQUENTIAL] or [PARALLEL]
 
 ## 5. Quality Gates
 
-**Check command:** `yarn lint` (or equivalent)
+**Check command:** `[lint_cmd from Step 1]`
 
 **MCP Validation (PARALLEL):**
 - Run in PARALLEL for ALL changed files (one MCP call per file)
@@ -210,28 +252,36 @@ Mark each: [SEQUENTIAL] or [PARALLEL]
 - Max 3 retries per file if <85
 - THEN run lint/check command
 
+**Tests (MANDATORY - ZERO TOLERANCE):**
+- Unit tests: `[unit_test_cmd from Step 1]` — 0 failures REQUIRED
+- E2E tests: `[e2e_test_cmd from Step 1]` — 0 failures REQUIRED (skip if project has no e2e)
+- **CRITICAL:** If UI changes break ANY existing test → FIX the test BEFORE claiming completion
+- Skipping broken tests = TASK FAILURE
+
 **Browser verification:**
 - Desktop (1920x1080): [expected]
 - Mobile (375x667): [expected]
 
-**AI Docs (see 07-agent-mode-workflow.mdc for triggers):**
-- New component → CREATE module-ai-docs.md
-- Changed component API → UPDATE contract section
-- Refactoring without API change → DO NOT update
+**AI Docs:**
+- Action: `[ai_docs_action from Step 1]`
+- If CREATE: specify file path and initial sections
+- If UPDATE: specify which section and what changes
 
 ## 6. Success Criteria
 
 - [ ] All steps completed
 - [ ] Browser verification passed
-- [ ] Unified check: 0 errors
+- [ ] Unit tests: 0 failures
+- [ ] E2E tests: 0 failures (if project has e2e)
+- [ ] Lint + typecheck: 0 errors
 - [ ] MCP: all files >=85
-- [ ] AI docs created/updated (per triggers above)
+- [ ] AI docs: [ai_docs_action from Step 1] completed (or N/A if NO UPDATE)
 ```
 
 <completion_criteria>
-Step 2 complete if:
+Step 7 complete when:
 
-- [ ] All 7 sections present
+- [ ] All 7 sections present (0-6)
 - [ ] Steps have [PARALLEL]/[SEQUENTIAL] markers
 - [ ] Styling approach in Project Context
 - [ ] Browser verification in Quality Gates
@@ -247,15 +297,15 @@ Step 2 complete if:
 **Before create_plan, output summary:**
 
 ```
-Context: [N] files read
-Styling: [framework + patterns]
-Current UI: [snapshot summary]
-Task: [restatement]
-Solution: [approach]
-Dependencies: [packages or N/A]
-Web Search: [confirmed/alternative]
-Architecture: MCP [score]/100
-Ready: calling create_plan
+✅ Context: [N] files read
+✅ Styling: [framework + patterns]
+✅ Current UI: [snapshot summary]
+✅ Task: [restatement]
+✅ Solution: [approach]
+✅ Dependencies: [packages or N/A]
+✅ Web Search: [confirmed/alternative]
+✅ Architecture: MCP [score]/100
+✅ Ready: calling create_plan
 ```
 
 **Browser tools:**
@@ -270,7 +320,7 @@ Ready: calling create_plan
 
 <completion_criteria>
 
-**Blocking check – all must be checked:**
+**🚨 BLOCKING CHECK - ALL MUST BE CHECKED 🚨**
 
 **Visual:**
 
@@ -302,10 +352,13 @@ Ready: calling create_plan
 - [ ] Browser verification included
 - [ ] Styling in context
 
-**Self-check:** If agent cannot execute plan without context, add details; otherwise proceed.
+**SELF-CHECK:** Can an agent with zero context execute this plan?
 
-All checked → call create_plan
-Any unchecked → forbidden
+- NO → Add missing details
+- YES → Proceed
+
+All boxes must be checked AND SELF-CHECK must return YES.
+❌ Otherwise → FORBIDDEN to call create_plan
 
 </completion_criteria>
 
