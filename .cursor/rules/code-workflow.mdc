@@ -347,6 +347,13 @@ Step 6 complete when:
 - [ ] Architecture includes folder structure
 - [ ] Quality gates include actual command from package.json
 - [ ] Success criteria are measurable
+- [ ] Quality Gates section contains ACTUAL commands (no placeholders like "[cmd]")
+- [ ] Success Criteria includes ALL mandatory items:
+  - [ ] Unit tests: 0 failures
+  - [ ] Lint + typecheck: 0 errors
+  - [ ] MCP validation: all files >=85
+
+**BLOCKING GATE:** If Quality Gates contains ANY placeholder text (e.g., "[unified_check_cmd]", "[lint_cmd]", "[N]") → VIOLATION → Replace with actual values from Step 1
 </completion_criteria>
 
 </algorithm_steps>
@@ -369,6 +376,7 @@ Step 6 complete when:
 | 5. Web Search | ✅/❌/N/A | [query performed or N/A reason] |
 | 6. Context7 | ✅/❌/N/A | [packages checked or N/A reason] |
 | 7. AI docs decision | ✅/❌ | CREATE/UPDATE/NO UPDATE |
+| 8. Quality Gates filled | ✅/❌ | Commands: `yarn lint`, `yarn test` (actual values) |
 
 If any ❌ or skipped:
 
@@ -379,7 +387,17 @@ If any ❌ or skipped:
 ❌ Table incomplete → FORBIDDEN to call create_plan
 ❌ ❌ status without reason → VIOLATION
 ❌ Placeholder values (e.g., "[N]", "[score]") → VIOLATION
+❌ Quality Gates with placeholders → FORBIDDEN to call create_plan
 ```
+
+**PLACEHOLDER DETECTION (MANDATORY):**
+
+Before create_plan, scan plan content for these FORBIDDEN patterns:
+- `[unified_check_cmd]`, `[lint_cmd]`, `[unit_test_cmd]`, `[e2e_test_cmd]`
+- `[N]`, `[count]`, `[path]`, `[score]`
+- Any `[text_in_brackets]` that should be replaced
+
+If ANY found → DO NOT call create_plan → Replace with actual values first
 
 **Then call create_plan with full plan content.**
 

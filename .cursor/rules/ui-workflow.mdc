@@ -352,6 +352,14 @@ Step 8 complete when:
 - [ ] Styling approach in Project Context
 - [ ] Browser verification in Quality Gates
 - [ ] Success criteria include visual checks
+- [ ] Quality Gates section contains ACTUAL commands (no placeholders)
+- [ ] Success Criteria includes ALL mandatory items:
+  - [ ] Unit tests: 0 failures
+  - [ ] Lint + typecheck: 0 errors
+  - [ ] MCP validation: all files >=85
+  - [ ] Browser verification passed
+
+**BLOCKING GATE:** If Quality Gates contains ANY placeholder → VIOLATION → Replace first
 </completion_criteria>
 
 </algorithm_steps>
@@ -376,6 +384,7 @@ Step 8 complete when:
 | 7. Web Search | ✅/❌/N/A | [query performed or N/A reason] |
 | 8. Context7 | ✅/❌/N/A | [packages checked or N/A reason] |
 | 9. AI docs decision | ✅/❌ | CREATE/UPDATE/NO UPDATE |
+| 10. Quality Gates filled | ✅/❌ | Commands: actual values, no placeholders |
 
 If any ❌ or skipped:
 
@@ -386,7 +395,17 @@ If any ❌ or skipped:
 ❌ Table incomplete → FORBIDDEN to call create_plan
 ❌ ❌ status without reason → VIOLATION
 ❌ Placeholder values (e.g., "[N]", "[score]") → VIOLATION
+❌ Quality Gates with placeholders → FORBIDDEN to call create_plan
 ```
+
+**PLACEHOLDER DETECTION (MANDATORY):**
+
+Before create_plan, scan plan content for these FORBIDDEN patterns:
+- `[unified_check_cmd]`, `[lint_cmd]`, `[unit_test_cmd]`, `[e2e_test_cmd]`
+- `[N]`, `[count]`, `[path]`, `[score]`
+- Any `[text_in_brackets]` that should be replaced
+
+If ANY found → DO NOT call create_plan → Replace with actual values first
 
 **Browser tools:**
 
