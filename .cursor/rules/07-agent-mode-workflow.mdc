@@ -31,6 +31,7 @@ alwaysApply: true
 "Simple task, skip check" → WRONG! Complexity irrelevant.
 "Faster without announcement" → WRONG! Speed without protocol = failure.
 "system_reminder shows mode" → WRONG! Marker check MANDATORY.
+"read_lints passed = MCP done" → WRONG! read_lints ≠ MCP validation.
 
 **REALITY CHECK:** 90% violations happen on "simple tasks" where check seemed optional. It's NEVER optional.
 
@@ -66,7 +67,7 @@ alwaysApply: true
 - Unit: All `.ts/.tsx` need tests in `__tests__/` (except `*.types.ts`, `*.constants.ts`, `*.schema.ts`)
 - E2E: New/modified features → e2e test in `src/__tests__/e2e/` with mock data
 
-**🚨 VALIDATION (after modifications):**
+**🚨⛔ VALIDATION — BLOCKING (after modifications):**
 
 **REQUIRED:**
 
@@ -96,7 +97,7 @@ alwaysApply: true
 3. External deps → Context7/web search
 4. Execute → functional style, unit tests
 5. E2E tests → new/modified features with mocks
-6. Validate ALL → MCP batch in PARALLEL (≥85 for each file)
+6. ⛔ Validate ALL → MCP batch in PARALLEL (≥85) — MUST COMPLETE BEFORE step 7
 7. Final → run `yarn lint` (0 errors REQUIRED)
 8. AI docs → check AI DOCS TRIGGERS 1-4 → create/update if matched
 9. Report → files with scores
