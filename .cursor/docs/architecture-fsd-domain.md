@@ -111,6 +111,79 @@ src/
 
 ---
 
+<modular_unit_here>
+
+## What is a Modular Unit Here?
+
+### Layers vs Domains vs Slices
+
+| Element | Is Modular Unit? | Facade Type |
+|:---|:---|:---|
+| `features/` | NO (layer) | — |
+| `features/user/` | NO (domain container) | — |
+| `features/user/auth/` | YES (slice) | Depends on size |
+| `shared/lib/` | NO (container) | NO index.ts |
+| `shared/lib/format-date.ts` | YES (file-module) | File-facade |
+
+### Domain Containers Need No Facade
+
+Domain folders just group slices, no index.ts needed:
+
+```
+features/
+├── user/                  <- Domain (NO facade needed)
+│   ├── auth/              <- Slice (HAS facade)
+│   │   └── index.ts
+│   └── profile/           <- Slice (HAS facade)
+│       └── index.ts
+└── payments/              <- Domain (NO facade needed)
+    └── payment-form/      <- Slice (HAS facade)
+        └── index.ts
+```
+
+### Slice Facade in Domain
+
+```typescript
+// features/user/auth/index.ts — slice facade
+// Re-exports from files, NOT from segments (segments have NO index.ts)
+export { AuthForm } from './ui/auth-form';
+export { useAuth } from './model/use-auth';
+```
+
+**CRITICAL: Segments have NO index.ts**
+
+Segments (ui/, model/) are organizational folders. Import directly from files inside segments.
+
+### Shared Layer (No Domains)
+
+Same rules as fsd_standard — containers have NO index.ts:
+
+```
+shared/lib/                    <- Container (NO index.ts)
+├── format-date.ts             <- File-module (IS facade)
+└── validate-email/            <- Folder-module
+    └── index.ts               <- Contains function
+```
+
+**Import directly:** `import { formatDate } from '$shared/lib/format-date'`
+
+### CRITICAL: No False Positives
+
+**DO NOT require** `index.ts` for:
+
+- Domain folders (`features/user/`)
+- Segments inside slices (ui/, model/, lib/)
+- File-modules (`shared/lib/format-date.ts`)
+
+**DO require** `index.ts` for:
+
+- Slices within domains (`features/user/auth/`)
+- Folder-modules in shared (`shared/lib/validate-email/`)
+
+</modular_unit_here>
+
+---
+
 <rules>
 
 ## Rules

@@ -104,6 +104,74 @@ src/
 
 ---
 
+<modular_unit_here>
+
+## What is a Modular Unit Here?
+
+### Layers vs Modules
+
+| Element | Is Modular Unit? | Facade Type |
+|:---|:---|:---|
+| `controllers/` | NO (layer) | — |
+| `controllers/auth/` | YES (folder-module) | Folder-facade |
+| `services/auth-service/` | YES (folder-module) | Folder-facade |
+| `lib/format-date.ts` | YES (file-module) | File-facade |
+
+### File-Module Example
+
+Single file in layer = file IS the facade:
+
+```
+lib/
+├── index.ts           <- Barrel (layer container)
+└── format-date.ts     <- File-module (IS facade)
+```
+
+### Folder-Module Example
+
+Module with internal files = index.ts contains function:
+
+```
+services/
+├── auth-service/
+│   ├── index.ts           <- Contains function (NOT re-exports)
+│   ├── auth-service.ts    <- Main implementation (if index.ts re-exports)
+│   ├── types.ts           <- Internal
+│   └── constants.ts       <- Internal
+```
+
+**Two valid patterns:**
+
+1. **index.ts = function:** `index.ts` contains the main function directly
+2. **index.ts = re-exports:** `index.ts` re-exports from `auth-service.ts`
+
+Choose based on module complexity.
+
+### Layer Barrels
+
+Layer containers have barrel index.ts:
+
+```typescript
+// controllers/index.ts — barrel
+export { authController } from './auth';
+export { usersController } from './users';
+```
+
+### CRITICAL: No False Positives
+
+**DO NOT require** separate `index.ts` for:
+
+- `lib/format-date.ts` — file IS the facade
+
+**DO require** `index.ts` for:
+
+- Folder-modules (`services/auth-service/`)
+- Layer containers (`controllers/`)
+
+</modular_unit_here>
+
+---
+
 <rules>
 
 ## Rules

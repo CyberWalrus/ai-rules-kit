@@ -130,6 +130,85 @@ cli-tools/               # Simple structure
 
 ---
 
+<modular_unit_here>
+
+## What is a Modular Unit Here?
+
+### Applications vs Modules
+
+| Element | Is Modular Unit? | Facade Type |
+|:---|:---|:---|
+| `applications/` | NO (container) | — |
+| `applications/admin-frontend/` | NO (application) | Entry point |
+| `applications/common/` | NO (shared app) | Entry point |
+| `applications/common/lib/format-date.ts` | YES (file-module) | File-facade |
+| `applications/common/ui/button/` | YES (folder-module) | Folder-facade |
+
+### Application Entry Points
+
+Each application has `index.ts` as entry point (NOT modular unit facade):
+
+```
+applications/
+├── admin-frontend/
+│   └── index.ts       <- Application entry (NOT module facade)
+├── cli-tools/
+│   └── index.ts       <- Application entry
+└── common/
+    └── index.ts       <- Shared app entry
+```
+
+### Modules Inside Common
+
+Common follows layered_library rules:
+
+```
+common/
+├── index.ts               <- Application entry
+├── lib/
+│   ├── index.ts           <- Layer barrel
+│   ├── format-date.ts     <- File-module (IS facade)
+│   └── validate-email/    <- Folder-module
+│       ├── index.ts       <- Contains function
+│       └── types.ts       <- Internal
+└── ui/
+    ├── index.ts           <- Layer barrel
+    └── button/            <- Folder-module
+        ├── index.ts       <- Contains component
+        └── button.tsx
+```
+
+### Modules Inside Applications
+
+Each app can have its own modular units following its internal architecture:
+
+```
+admin-frontend/
+├── index.ts
+├── features/
+│   └── user-management/   <- Slice (modular unit)
+│       └── index.ts       <- Slice facade
+└── shared/
+    └── admin-layout/      <- Folder-module
+        └── index.ts       <- Contains component
+```
+
+### CRITICAL: No False Positives
+
+**DO NOT require** `index.ts` for:
+
+- `common/lib/format-date.ts` — file IS the facade
+
+**DO require** `index.ts` for:
+
+- Application folders (entry point)
+- Folder-modules in common (`common/lib/validate-email/`)
+- Slices in applications (`admin-frontend/features/user-management/`)
+
+</modular_unit_here>
+
+---
+
 <rules>
 
 ## Rules

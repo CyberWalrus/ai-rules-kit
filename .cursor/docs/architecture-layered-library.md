@@ -116,6 +116,83 @@ Optional layers (add as needed):
 
 ---
 
+<modular_unit_here>
+
+## What is a Modular Unit Here?
+
+### Layers vs Modules
+
+| Element | Is Modular Unit? | Facade Type |
+|:---|:---|:---|
+| `ui/` | NO (layer/container) | Barrel |
+| `ui/button/` | YES (folder-module) | Folder-facade |
+| `lib/format-date.ts` | YES (file-module) | File-facade |
+| `model/` | NO (container) | Barrel |
+| `model/types/` | NO (sub-container) | — |
+| `model/types/main.ts` | YES (file-module) | File-facade |
+
+### File-Module Example
+
+Single file in layer = file IS the facade:
+
+```
+lib/
+├── index.ts           <- Barrel (re-exports)
+└── format-date.ts     <- File-module (IS the facade)
+```
+
+No separate `format-date/index.ts` needed.
+
+### Folder-Module Example
+
+Folder with <6 files = index.ts contains function:
+
+```
+lib/
+├── index.ts               <- Barrel
+└── validate-email/        <- Folder-module
+    ├── index.ts           <- Contains function (NOT re-exports)
+    ├── types.ts           <- Internal
+    └── constants.ts       <- Internal
+```
+
+```typescript
+// lib/validate-email/index.ts — function inside
+import type { ValidationResult } from './types';
+import { EMAIL_REGEX } from './constants';
+
+/** Валидирует email */
+export function validateEmail(email: string): ValidationResult {
+    return { isValid: EMAIL_REGEX.test(email) };
+}
+```
+
+### Container (Layer) Barrel
+
+Layers are containers, their index.ts is a barrel:
+
+```typescript
+// lib/index.ts — ONLY re-exports
+export { formatDate } from './format-date';
+export { validateEmail } from './validate-email';
+```
+
+### CRITICAL: No False Positives
+
+**DO NOT require** separate `index.ts` for:
+
+- `lib/format-date.ts` — file IS the facade
+- `model/types/main.ts` — file IS the facade
+
+**DO require** `index.ts` for:
+
+- `lib/validate-email/` — folder needs facade with function
+- `lib/` — layer needs barrel
+
+</modular_unit_here>
+
+---
+
 <rules>
 
 ## Rules

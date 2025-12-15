@@ -103,29 +103,284 @@ features/auth/auth-form.tsx
 
 ### Internal Structure
 
-| Size | Structure | Example |
-|:---|:---|:---|
-| Small (1-3 files) | Flat, file = facade | `validate-email.ts` |
-| Medium (4-10 files) | Flat with index.ts | `auth/index.ts` + files |
-| Large (10+ files) | Nested segments | `auth/ui/`, `auth/model/` |
+| Size | Structure | Facade | Example |
+|:---|:---|:---|:---|
+| Single file | File-module | File = facade | `validate-email.ts` |
+| 2-5 files | Folder-module | index.ts with function | `validate-email/index.ts` |
+| 6+ files | With segments | index.ts in ROOT only | `auth/index.ts` (segments have NO index.ts) |
+
+**CRITICAL: Segments are NOT modular units**
+
+Segments (ui/, model/, lib/ inside a slice) are organizational folders, NOT modular units:
+
+```
+features/auth/              <- Slice = modular unit
+├── index.ts                <- ONLY facade (in root)
+├── ui/                     <- Segment (NO index.ts)
+│   ├── auth-form.tsx
+│   └── types.ts
+├── model/                  <- Segment (NO index.ts)
+│   ├── auth-store.ts
+│   └── types.ts
+└── __tests__/
+```
 
 ### Facade Rules
 
-1. **Re-exports only** — no logic in index.ts
-2. **Minimal API** — export only what's needed externally
-3. **Hide internals** — consumers don't know internal structure
-4. **Small modules** — file itself is the facade (no index.ts needed)
+1. **Minimal API** — export only what's needed externally
+2. **Hide internals** — consumers don't know internal structure
+3. **File-module** — file itself is the facade (no index.ts needed)
+4. **Folder-module** — index.ts contains function (NOT re-exports)
+5. **Barrel** — index.ts contains ONLY re-exports (for containers)
 
 ```typescript
-// ✅ CORRECT: re-exports only
-export { AuthForm } from './auth-form';
-export type { AuthFormProps } from './types';
+// ✅ File-module: file IS the facade
+// shared/lib/format-date.ts
+export function formatDate(date: Date): string { ... }
 
-// ❌ WRONG: logic in facade
-export function AuthForm() { ... }
+// ✅ Folder-module: index.ts contains function
+// shared/lib/validate-email/index.ts
+export function validateEmail(email: string): ValidationResult { ... }
+
+// ✅ Barrel: ONLY re-exports (for slices with segments)
+// features/auth/index.ts
+export { AuthForm } from './ui/auth-form';
+export { useAuth } from './model/use-auth';
 ```
 
 </modular_unit>
+
+---
+
+<modular_unit_types>
+
+## Modular Unit Types
+
+### File-Module vs Folder-Module
+
+| Type | Structure | Facade | When to use |
+|:---|:---|:---|:---|
+| **File-module** | Single file `validate-email.ts` | File itself = facade | 1 file, no helpers needed |
+| **Folder-module** | Folder with <6 files | `index.ts` with function | 2-5 files, has types/constants |
+
+### File-Module
+
+When module = 1 file, the file IS the facade:
+
+```
+shared/lib/format-date.ts    <- This IS the facade (no index.ts needed)
+```
+
+**Rules:**
+
+- File exports the main function directly
+- No separate index.ts required
+- Importing: `import { formatDate } from './format-date'`
+
+### Folder-Module
+
+When module = folder with <6 files, index.ts contains the function (NOT re-exports):
+
+```
+shared/lib/validate-email/
+├── index.ts       <- Facade: contains the main function
+├── types.ts       <- Internal: NOT exported through facade
+└── constants.ts   <- Internal: NOT exported through facade
+```
+
+**Rules:**
+
+- `index.ts` contains the main function implementation
+- Internal files (types.ts, constants.ts) are NOT re-exported
+- Only the main function is exported from facade
+- Importing: `import { validateEmail } from './validate-email'`
+
+### When to Upgrade File → Folder
+
+Upgrade to folder-module when:
+
+- Need separate types.ts (types > 10 lines)
+- Need constants.ts (3+ constants)
+- Need internal helpers (not exported)
+
+</modular_unit_types>
+
+---
+
+<facade_types>
+
+## Facade Types
+
+### Three Types of Facades
+
+| Type | Contains | Purpose | Example |
+|:---|:---|:---|:---|
+| **File-facade** | Function implementation | Module = 1 file | `format-date.ts` |
+| **Folder-facade** | Function implementation | Module = folder <6 files | `validate-email/index.ts` |
+| **Barrel** | Only re-exports | Slice with segments | `features/auth/index.ts` |
+
+### File-Facade
+
+```typescript
+// shared/lib/format-date.ts — file IS the facade
+/** Форматирует дату в локализованную строку */
+export function formatDate(date: Date): string {
+    return date.toLocaleDateString();
+}
+```
+
+### Folder-Facade
+
+```typescript
+// shared/lib/validate-email/index.ts — contains function, NOT re-exports
+import type { ValidationResult } from './types';
+import { EMAIL_REGEX } from './constants';
+
+/** Валидирует email адрес */
+export function validateEmail(email: string): ValidationResult {
+    return { isValid: EMAIL_REGEX.test(email) };
+}
+```
+
+### Barrel (Re-exports Only)
+
+```typescript
+// features/auth/index.ts — ONLY re-exports (slice facade)
+export { AuthForm } from './ui/auth-form';
+export { useAuth } from './model/use-auth';
+```
+
+### Facade Detection Rules
+
+| Check | File-facade | Folder-facade | Barrel |
+|:---|:---|:---|:---|
+| Is single file? | YES | NO | NO |
+| Contains function? | YES | YES | NO |
+| Has internal files? | NO | YES | NO |
+| Only re-exports? | NO | NO | YES |
+
+### CRITICAL: No False Positives
+
+**DO NOT require index.ts for:**
+
+- Single-file modules (`format-date.ts` IS the facade)
+- Files that are the only file in their context
+
+**DO require index.ts for:**
+
+- Folder-modules (contains function + internal files)
+- Containers (barrel with re-exports)
+
+</facade_types>
+
+---
+
+<container_vs_unit>
+
+## Container vs Modular Unit
+
+### Key Distinction
+
+| Element | Is Modular Unit? | Needs index.ts? | What index.ts contains |
+|:---|:---|:---|:---|
+| `shared/lib/` | NO (container) | NO | — |
+| `shared/lib/format-date.ts` | YES (file-module) | NO | — |
+| `shared/lib/validate-email/` | YES (folder-module) | YES | Function implementation |
+| `features/` | NO (layer) | NO | — |
+| `features/auth/` | YES (slice) | YES | Depends on size |
+
+### Container Folders
+
+Containers group modular units but have NO index.ts. Can be flat or nested:
+
+**Flat structure:**
+
+```
+shared/lib/                 <- Container (NO index.ts)
+├── format-date.ts          <- File-module
+└── validate-email/         <- Folder-module
+    └── index.ts
+```
+
+**Nested structure (with sub-containers):**
+
+```
+shared/lib/                 <- Container (NO index.ts)
+├── helpers/                <- Sub-container (NO index.ts)
+│   ├── format-date.ts      <- File-module
+│   └── parse-url.ts        <- File-module
+├── hooks/                  <- Sub-container (NO index.ts)
+│   ├── use-debounce/       <- Folder-module
+│   │   └── index.ts
+│   └── use-timer.ts        <- File-module
+└── validators/             <- Sub-container (NO index.ts)
+    └── validate-email/     <- Folder-module
+        └── index.ts
+```
+
+**Import directly to modular units (any nesting level):**
+
+```typescript
+// Flat
+import { formatDate } from '$shared/lib/format-date';
+
+// Nested
+import { formatDate } from '$shared/lib/helpers/format-date';
+import { useDebounce } from '$shared/lib/hooks/use-debounce';
+```
+
+**Rule: Containers at ANY level have NO index.ts**
+
+### Detection Algorithm
+
+1. Is it a single file with function? → **File-module** (file = facade)
+2. Is it a folder with <6 files? → **Folder-module** (index.ts = function)
+3. Is it a folder grouping multiple modules? → **Container** (index.ts = barrel)
+4. Is it a layer folder (features/, shared/)? → **Layer** (no facade needed)
+
+### CRITICAL: Containers and Segments have NO index.ts
+
+**Containers in `shared/`** = folders grouping modular units, NO index.ts:
+
+```
+shared/
+├── ui/                     <- Container (NO index.ts)
+│   ├── button/             <- Modular unit (HAS index.ts)
+│   │   └── index.ts
+│   └── input/              <- Modular unit (HAS index.ts)
+│       └── index.ts
+├── lib/                    <- Container (NO index.ts)
+│   ├── format-date.ts      <- File-module (file IS facade)
+│   └── validate-email/     <- Folder-module (HAS index.ts)
+│       └── index.ts
+```
+
+**Segments inside slices** = organizational folders, NO index.ts:
+
+```
+features/auth/
+├── index.ts                <- Slice facade (ONLY index.ts here)
+├── ui/                     <- Segment (NO index.ts)
+│   └── auth-form.tsx
+├── model/                  <- Segment (NO index.ts)
+│   └── auth-store.ts
+```
+
+**Import directly to modular units:**
+
+```typescript
+import { Button } from '$shared/ui/button';
+import { formatDate } from '$shared/lib/format-date';
+```
+
+| Context | Folder | Has index.ts? |
+|:---|:---|:---|
+| shared/ui/ | Container | NO |
+| shared/lib/ | Container | NO |
+| shared/ui/button/ | Modular unit | YES |
+| features/auth/ui/ | Segment | NO |
+
+</container_vs_unit>
 
 ---
 
@@ -314,7 +569,13 @@ Only `app` is mandatory. Add layers as project grows:
 | Term | Definition |
 |:---|:---|
 | **Modular Unit** | Isolated code block with public API and single responsibility |
-| **Facade** | Entry point (index.ts) exposing public API, hiding internals |
+| **File-module** | Modular unit = 1 file; file itself is the facade |
+| **Folder-module** | Modular unit = folder <6 files; index.ts contains function |
+| **Container** | Folder grouping multiple modular units; has barrel index.ts |
+| **Facade** | Entry point exposing public API, hiding internals |
+| **File-facade** | Single file that IS the module (no index.ts needed) |
+| **Folder-facade** | index.ts with function implementation (NOT re-exports) |
+| **Barrel** | index.ts with ONLY re-exports (for containers) |
 | **Cohesion** | How related code is grouped together inside module |
 | **Coupling** | Dependencies between modules (lower = better) |
 | **Colocation** | Placing code next to where it's used |

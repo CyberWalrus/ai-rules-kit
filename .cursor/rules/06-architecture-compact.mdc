@@ -43,13 +43,46 @@ Read full reference: `.cursor/docs/architecture.md` for detailed architecture ty
 
 **3+ modules extraction:** ASK USER before extracting. Never auto-extract.
 
+## Modular Unit Types
+
+| Type | Structure | Facade | Example |
+|:---|:---|:---|:---|
+| **File-module** | Single file | File IS facade | `format-date.ts` |
+| **Folder-module** | Folder <6 files | `index.ts` with function | `validate-email/index.ts` |
+| **Container** | Groups modules | Barrel (re-exports) | `shared/lib/index.ts` |
+
+## Facade Types (CRITICAL - NO FALSE POSITIVES)
+
+| Facade Type | Contains | When |
+|:---|:---|:---|
+| **File-facade** | Function implementation | Module = 1 file, NO index.ts needed |
+| **Folder-facade** | Function implementation | Module = folder <6 files |
+| **Barrel** | ONLY re-exports | Container grouping modules |
+
+**DO NOT require** index.ts for:
+
+- `format-date.ts` — file IS the facade
+- Domain folders (`features/user/`)
+- Segments inside slices (`features/auth/ui/`)
+- Containers at ANY level (`shared/lib/`, `shared/lib/helpers/`, `shared/ui/base/`)
+
+**DO require** index.ts for:
+
+- Folder-modules (`shared/ui/button/`, `shared/lib/hooks/use-debounce/`)
+- Slice roots in FSD (re-exports from segment files)
+
+**Import directly (any nesting):**
+
+```typescript
+import { Button } from '$shared/ui/button';
+import { useDebounce } from '$shared/lib/hooks/use-debounce';
+```
+
 ## Facade Rules (MANDATORY)
 
-1. All modular units MUST have facade `index.ts/tsx`
-2. Named exports ONLY - `export { validateInput }` not `export default`
-3. Facades = ONLY re-exports (≤10 lines) - `export { fn } from './fn'`
-4. NO function definitions or logic in facades
-5. Export minimal public API - hide internal details
+1. Named exports ONLY - `export { validateInput }` not `export default`
+2. Export minimal public API - hide internal details
+3. Internal files (types.ts, constants.ts) NOT re-exported
 
 ## Forbidden Practices
 

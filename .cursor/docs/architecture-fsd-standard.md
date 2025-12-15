@@ -113,19 +113,23 @@ features/auth/
 
 ```
 features/auth/
-├── index.ts        # facade
-├── ui/
+├── index.ts        # ONLY facade (in slice root)
+├── ui/             # Segment (NO index.ts)
 │   ├── auth-form.tsx
 │   ├── login-button.tsx
 │   └── types.ts    # UI-specific types
-├── model/
+├── model/          # Segment (NO index.ts)
 │   ├── auth-store.ts
 │   ├── types.ts    # model types
 │   └── constants.ts
-├── lib/
+├── lib/            # Segment (NO index.ts)
 │   └── validate-credentials.ts
 └── __tests__/
 ```
+
+**CRITICAL: Segments are NOT modular units**
+
+Segments (ui/, model/, lib/) are organizational folders inside slice. They do NOT have index.ts. Only the slice root has a facade.
 
 ### Colocation Rule
 
@@ -145,30 +149,143 @@ Types, helpers, constants belong to segment that uses them:
 
 ### Structure
 
+**Variant 1: Flat containers**
+
 ```
 shared/
-├── ui/             # Base components (Button, Input)
-│   ├── button/
+├── ui/                     <- Container (NO index.ts)
+│   ├── button/             <- Folder-module
+│   │   └── index.ts
 │   └── input/
-├── lib/            # Utilities
-│   ├── hooks/
-│   │   └── use-debounce/
-│   └── helpers/
-│       └── format-date/
-├── api/            # API client, base fetcher
-│   └── base-fetcher/
-└── config/         # App config
-    └── env.ts
+│       └── index.ts
+├── lib/                    <- Container (NO index.ts)
+│   ├── format-date.ts      <- File-module
+│   └── validate-email/     <- Folder-module
+│       └── index.ts
 ```
+
+**Variant 2: Containers with sub-containers (thematic grouping)**
+
+```
+shared/
+├── ui/                     <- Container (NO index.ts)
+│   ├── base/               <- Sub-container (NO index.ts)
+│   │   ├── button/         <- Folder-module
+│   │   └── input/
+│   ├── forms/              <- Sub-container (NO index.ts)
+│   │   └── text-field/
+│   └── feedback/           <- Sub-container (NO index.ts)
+│       └── toast/
+├── lib/                    <- Container (NO index.ts)
+│   ├── helpers/            <- Sub-container (NO index.ts)
+│   │   ├── format-date.ts  <- File-module
+│   │   └── parse-url.ts
+│   ├── hooks/              <- Sub-container (NO index.ts)
+│   │   ├── use-debounce/   <- Folder-module
+│   │   └── use-timer.ts    <- File-module
+│   └── validators/         <- Sub-container (NO index.ts)
+│       └── validate-email/
+```
+
+**Import directly to modular units (any nesting level):**
+
+```typescript
+// Flat
+import { Button } from '$shared/ui/button';
+import { formatDate } from '$shared/lib/format-date';
+
+// With sub-containers
+import { Button } from '$shared/ui/base/button';
+import { formatDate } from '$shared/lib/helpers/format-date';
+import { useDebounce } from '$shared/lib/hooks/use-debounce';
+```
+
+**CRITICAL: Containers at ANY level have NO index.ts**
+
+All containers (ui/, lib/, helpers/, hooks/, base/) do NOT have index.ts. Only modular units (button/, format-date.ts) have facades.
 
 ### Rules
 
 - Only truly shared code (3+ usages)
-- Each item is a modular unit with facade
+- Each item inside container is a modular unit with its own facade
+- Containers (ui/, lib/) have barrel index.ts
 - No god files (`shared/utils.ts` forbidden)
 - Extraction requires confirmation
 
 </shared_layer>
+
+---
+
+<modular_unit_here>
+
+## What is a Modular Unit Here?
+
+### Layers vs Slices vs Modules
+
+| Element | Is Modular Unit? | Facade Type |
+|:---|:---|:---|
+| `features/` | NO (layer) | — |
+| `features/auth/` | YES (slice) | Depends on size |
+| `shared/` | NO (layer) | — |
+| `shared/lib/` | NO (container) | NO index.ts |
+| `shared/lib/format-date.ts` | YES (file-module) | File-facade |
+| `shared/lib/validate-email/` | YES (folder-module) | Folder-facade |
+
+### Slice Facade Types
+
+| Slice Size | Facade Contains |
+|:---|:---|
+| Small (1-3 files, flat) | Re-exports from component files |
+| Large (segments) | Re-exports from segments |
+
+### Small Slice: Barrel Facade
+
+```
+features/auth/
+├── index.ts        <- Barrel (re-exports)
+├── auth-form.tsx   <- Component
+└── types.ts        <- Internal
+```
+
+```typescript
+// features/auth/index.ts — barrel, re-exports
+export { AuthForm } from './auth-form';
+export type { AuthFormProps } from './types';
+```
+
+### Shared Layer: Mixed Facades
+
+```
+shared/
+├── lib/
+│   ├── index.ts               <- Barrel (layer container)
+│   ├── format-date.ts         <- File-module (IS facade)
+│   └── validate-email/        <- Folder-module
+│       ├── index.ts           <- Contains function
+│       ├── types.ts           <- Internal
+│       └── constants.ts       <- Internal
+└── ui/
+    ├── index.ts               <- Barrel
+    └── button/                <- Folder-module
+        ├── index.ts           <- Contains component OR re-exports
+        └── button.tsx
+```
+
+### CRITICAL: No False Positives
+
+**DO NOT require** `index.ts` for:
+
+- `shared/lib/format-date.ts` — file IS the facade
+- Segments inside slices (ui/, model/, lib/) — organizational folders
+- Container folders in shared (`shared/ui/`, `shared/lib/`) — just group modules
+- Single-file slices in layers
+
+**DO require** `index.ts` for:
+
+- Slice folders (`features/auth/`) — facade in slice ROOT only
+- Folder-modules in shared (`shared/lib/validate-email/`, `shared/ui/button/`)
+
+</modular_unit_here>
 
 ---
 

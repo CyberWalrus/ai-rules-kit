@@ -83,6 +83,67 @@ package-name/
 
 ---
 
+<modular_unit_here>
+
+## What is a Modular Unit Here?
+
+In `single_module` architecture, the **entire package is ONE modular unit**.
+
+### Facade Types by Size
+
+| Size | Facade Location | Facade Contains |
+|:---|:---|:---|
+| Minimal (1-3 files) | `src/index.ts` | Function implementation |
+| Standard (4-10 files) | `src/index.ts` | Re-exports from `main.ts` |
+
+### Minimal: index.ts = Function
+
+When package has 1-3 files, `index.ts` contains the function directly:
+
+```
+src/
+├── index.ts        <- Contains function (IS the facade)
+├── types.ts        <- Internal (not re-exported)
+└── __tests__/
+```
+
+```typescript
+// src/index.ts — function inside, NOT re-exports
+import type { ValidationResult } from './types';
+
+/** Валидирует email адрес */
+export function validateEmail(email: string): ValidationResult {
+    return { isValid: /@/.test(email) };
+}
+```
+
+### Standard: index.ts = Barrel
+
+When package has 4-10 files, `index.ts` re-exports from main.ts:
+
+```
+src/
+├── index.ts        <- Barrel (re-exports)
+├── main.ts         <- Main function
+├── types.ts        <- Internal
+└── constants.ts    <- Internal
+```
+
+```typescript
+// src/index.ts — re-exports only
+export { validateEmail } from './validate-email';
+export type { ValidationResult } from './types';
+```
+
+### No Separate index.ts Needed For
+
+- Single file packages where `index.ts` IS the implementation
+- Internal files (types.ts, constants.ts, helpers.ts)
+
+</modular_unit_here>
+
+---
+
 <rules>
 
 ## Rules
