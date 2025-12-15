@@ -183,6 +183,11 @@ Mark each group: [SEQUENTIAL] or [PARALLEL]
 
 - [List specific sections based on type]
 
+**[SEQUENTIAL] Step N: Validation & Quality Checks**
+
+- MCP validation: run in PARALLEL for ALL changed .mdc/.md files, target >=85
+- Fix any failures before proceeding
+
 ## 4. Quality Gates
 
 **MCP Validation (PARALLEL):**

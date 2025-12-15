@@ -270,6 +270,18 @@ Mark each group: [SEQUENTIAL] or [PARALLEL]
 - 2.1: [action] → [file]
 - 2.2: [action] → [file]
 
+**[SEQUENTIAL] Step N: Validation & Quality Checks**
+- MCP validation: run in PARALLEL for ALL changed files, target >=85
+- Lint + typecheck: `[lint_cmd from Step 1]` — 0 errors
+- Unit tests: `[unit_test_cmd from Step 1]` — 0 failures
+- E2E tests: `[e2e_test_cmd from Step 1]` — 0 failures (if applicable)
+- Fix any failures before proceeding
+
+**[SEQUENTIAL] Step N+1: AI Docs**
+- Action: `[ai_docs_action from Step 5]` (CREATE/UPDATE/NO UPDATE)
+- If CREATE: create file with initial sections
+- If UPDATE: update specified section
+
 ## 2. Architecture Changes
 
 **New Files:**
@@ -349,9 +361,9 @@ Step 6 complete when:
 - [ ] Success criteria are measurable
 - [ ] Quality Gates section contains ACTUAL commands (no placeholders like "[cmd]")
 - [ ] Success Criteria includes ALL mandatory items:
-  - [ ] Unit tests: 0 failures
-  - [ ] Lint + typecheck: 0 errors
-  - [ ] MCP validation: all files >=85
+    - [ ] Unit tests: 0 failures
+    - [ ] Lint + typecheck: 0 errors
+    - [ ] MCP validation: all files >=85
 
 **BLOCKING GATE:** If Quality Gates contains ANY placeholder text (e.g., "[unified_check_cmd]", "[lint_cmd]", "[N]") → VIOLATION → Replace with actual values from Step 1
 </completion_criteria>
@@ -393,6 +405,7 @@ If any ❌ or skipped:
 **PLACEHOLDER DETECTION (MANDATORY):**
 
 Before create_plan, scan plan content for these FORBIDDEN patterns:
+
 - `[unified_check_cmd]`, `[lint_cmd]`, `[unit_test_cmd]`, `[e2e_test_cmd]`
 - `[N]`, `[count]`, `[path]`, `[score]`
 - Any `[text_in_brackets]` that should be replaced

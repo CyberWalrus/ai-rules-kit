@@ -284,6 +284,18 @@ Mark each: [SEQUENTIAL] or [PARALLEL]
 - File: [path]
 - Details: [classes, properties]
 
+**[SEQUENTIAL] Step N: Validation & Quality Checks**
+- MCP validation: run in PARALLEL for ALL changed files, target >=85
+- Lint + typecheck: `[lint_cmd from Step 1]` — 0 errors
+- Unit tests: `[unit_test_cmd from Step 1]` — 0 failures
+- E2E tests: `[e2e_test_cmd from Step 1]` — 0 failures (if applicable)
+- Fix any failures before proceeding
+
+**[SEQUENTIAL] Step N+1: AI Docs**
+- Action: `[ai_docs_action from Step 7]` (CREATE/UPDATE/NO UPDATE)
+- If CREATE: create file with initial sections
+- If UPDATE: update specified section
+
 ## 2. Architecture Changes
 
 **New Files:**
