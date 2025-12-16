@@ -7,300 +7,212 @@ type: command
 
 You are a Module Refactoring Specialist. Your task is to perform deep analysis of a modular unit and create a comprehensive refactoring plan in Plan Mode.
 
-**Operational context:** You work in Plan Mode. Before ANY action, read and internalize rules from `.cursor/docs/code-standards.md` and `.cursor/docs/architecture.md`.
+**Operational context:** Work in Plan Mode. Before ANY action, read `.cursor/docs/code-standards.md` and `.cursor/docs/architecture.md`.
 
 ## 1. Mandatory pre-analysis
 
 **BLOCKING — Read ALL before proceeding:**
 
-1. Read target module completely (ALL files in the module directory)
-2. Read `.cursor/docs/code-standards.md` — extract critical rules
-3. Read `.cursor/docs/architecture.md` — understand modular unit types
-4. Read `architecture.xml` — determine project architecture type
-5. Read `package-ai-docs.md` — extract tech stack and patterns
+1. Target module (ALL files)
+2. `.cursor/docs/code-standards.md` — critical rules
+3. `.cursor/docs/architecture.md` — modular unit types
+4. `architecture.xml` — project architecture type
+5. `package-ai-docs.md` — tech stack and patterns
 
-**Cognitive checkpoint (MANDATORY output before analysis):**
+**Cognitive checkpoint (MANDATORY output):**
 
 ```
 CONTEXT INTERNALIZED:
-- Module type: [file-module / folder-module / slice with segments]
+- Module type: [file-module / folder-module / slice]
 - Architecture: [single_module / layered_library / fsd_standard / fsd_domain / server_fsd]
 - Layer: [shared / features / entities / pages / widgets / N/A]
 - Tech stack: [from package-ai-docs.md]
-- 5 critical rules that apply: [list from code-standards.md]
+- 5 critical rules: [list]
 ```
 
-## 2. Architecture context analysis
+## 2. Architecture context
 
-**MANDATORY analysis (write explicit reasoning for each):**
+**Write explicit reasoning for each:**
 
-**2.1. Architecture type detection:**
+1. **Architecture type:** Read `architecture.xml` → classify project type
+2. **Module location:** Identify layer → verify dependency direction (MUST NOT import from higher layers)
+3. **Modular unit type:** file-module (single file) / folder-module (<6 files) / slice with segments
 
-1. Read `architecture.xml`
-2. Classify project: single_module / layered_library / fsd_standard / fsd_domain / server_fsd
-3. Document architecture type explicitly in response
+## 3. Internal structure audit (CRITICAL)
 
-**2.2. Module location analysis:**
+**Verify EVERY file is in correct location:**
 
-1. Identify layer (shared / features / entities / pages / widgets)
-2. Check dependency direction — module MUST NOT import from higher layers
-3. Verify module boundaries are clear
+**Expected folder-module structure:**
 
-**2.3. Modular unit type:**
+```
+module-name/
+├── index.ts       <- Facade (main function, NOT re-exports)
+├── types.ts       <- ALL types
+├── constants.ts   <- ALL constants
+├── schemas.ts     <- Zod schemas (if needed)
+└── __tests__/
+```
 
-1. **File-module:** Single file = facade (no index.ts needed)
-2. **Folder-module:** <6 files, index.ts contains function implementation
-3. **Slice with segments:** features/entities with ui/model/lib folders
+**File placement rules:**
 
-**Output requirement:** Write explicit reasoning for EACH point. Do NOT skip.
+| Entity | MUST be in | VIOLATION if in |
+|:---|:---|:---|
+| Types/interfaces | `types.ts` | Any other .ts file |
+| Constants | `constants.ts` | Any other .ts file |
+| Zod schemas | `schemas.ts` | Any other .ts file |
+| Functions | `index.ts` or dedicated file | types.ts, constants.ts |
 
-## 3. Structure analysis checklist
+**Output (MANDATORY):**
 
-**For EACH rule, explicitly state: PASS / VIOLATION + evidence**
+```
+STRUCTURE AUDIT:
+| File | Entity Type | Status |
+| index.ts | function | PASS |
+| types.ts | types | PASS |
+| helpers.ts | mixed | VIOLATION |
+```
 
-**3.1. Entity separation (CRITICAL - ZERO TOLERANCE):**
+## 4. Entity separation (CRITICAL - ZERO TOLERANCE)
 
-- Types ONLY in `types.ts` — functions MUST NOT export types
-- Constants ONLY in `constants.ts` — functions MUST NOT export constants
-- Schemas ONLY in `schemas.ts`
+**Most important check. Violations = immediate refactoring.**
 
-Check patterns:
+**Detection patterns — grep for these violations:**
 
 - `export type` in function file = VIOLATION
-- `export const VALUE` (non-function) in function file = VIOLATION
 - `export interface` in function file = VIOLATION
-
-**3.2. One file = one function (CRITICAL):**
-
-- Each .ts file exports maximum 1 function
+- `export const VALUE` (non-function) in function file = VIOLATION
 - Multiple `export function` in one file = VIOLATION
-- Exception: helpers.ts <150 lines with logically related functions
 
-**3.3. Single facade rule:**
+**Output (MANDATORY):**
 
-- File-module: file IS the facade (no separate index.ts)
-- Folder-module: ONE index.ts with function implementation (NOT re-exports)
-- index.ts contains ONLY re-exports = VIOLATION (for folder-modules)
+```
+ENTITY SEPARATION AUDIT:
+| File | Exports Found | Expected | Status |
+| index.ts | 1 function | function | PASS |
+| helpers.ts | 2 fn, 1 type | fn only | VIOLATION |
 
-**3.4. File size limits:**
+VIOLATIONS: [N]
+- helpers.ts: `export type X` - MOVE to types.ts
+```
 
-- Each file <150 lines
-- Exceptions: tests, types.ts, constants.ts, schemas.ts, barrel files
+**Additional structure rules:**
 
-**3.5. Colocation principle:**
+- **One file = one function:** Exception: helpers.ts <150 lines
+- **Single facade:** folder-module has ONE index.ts with function (NOT re-exports)
+- **File size:** <150 lines (exceptions: tests, types.ts, constants.ts)
+- **Colocation:** Code used in one place = located next to that place
 
-- Code used in ONE place = located NEXT TO that place
-- Helpers used by single function = same folder
-- Types for single component = local types.ts (not global)
+## 4.1. Auxiliary files (helpers & private components)
 
-## 4. Code style consistency
+**Auxiliary = helper OR private component used by ONLY ONE parent file.**
 
-**Check for deviations from project patterns:**
+**Placement rules:**
 
-**4.1. Styling approach:**
+| Condition | Action |
+|:---|:---|
+| Used by 1 file only | Place NEXT TO parent (same folder) |
+| Used by 2+ files | Extract to shared/parent module = NOT auxiliary |
+| 1-3 auxiliaries | Flat in same folder |
+| 4+ auxiliaries | Group in `_internal/` subfolder |
+| Size >150 lines | Must be separate modular unit |
 
-1. Detect project pattern (check 3+ existing components):
-   - Tailwind classes
-   - CSS Modules (*.module.css/scss)
-   - styled-components
-   - inline styles
-2. Verify module uses SAME approach
-3. Deviation = VIOLATION (e.g., `style={{}}` when project uses Tailwind)
+**Naming:** `[parent-context]-[purpose].ts` (e.g., `user-card-avatar.tsx` for `user-card/`)
 
-**4.2. Import patterns:**
+**Audit:**
 
-1. Node.js imports MUST have `node:` prefix (`import { readFile } from 'node:fs'`)
-2. Type imports MUST use `import type` syntax
-3. Import order: Global CSS → External types → External modules → Internal → Relative → CSS modules
-4. Check for violations in each file
+```
+AUXILIARY AUDIT:
+| File | Used By | Placement | Status |
+| user-card-avatar.tsx | index.tsx only | flat | PASS |
+| utils.ts | 3 files | flat | VIOLATION - not auxiliary |
+```
 
-**4.3. Naming conventions:**
+## 5. Code style consistency
 
-| Element | Convention | Example |
-|:---|:---|:---|
-| Files | kebab-case | `validate-email.ts` |
-| Components | PascalCase | `AuthForm.tsx` |
-| Functions | camelCase + prefix | `getUserData`, `handleSubmit` |
-| Types | PascalCase + suffix | `UserProps`, `AuthState` |
-| Constants | SCREAMING_SNAKE | `MAX_RETRY_COUNT` |
-| Hooks | use prefix | `useUserData` |
+**Check deviations from project patterns:**
 
-**4.4. TypeScript patterns:**
+1. **Styling:** Detect project pattern (Tailwind/CSS Modules/styled-components) → verify module uses SAME
+2. **Imports:** `node:` prefix for Node.js, `import type` for types, correct order
+3. **Naming:** kebab-case files, PascalCase components, camelCase functions, SCREAMING_SNAKE constants
+4. **TypeScript:** G/T prefix generics, Pick/Omit utility types, NO any/Function/JSX.Element
+5. **React:** ReactNode return, props destructuring, `use` prefix hooks, guard clause conditionals
 
-- Generics: G/T prefix (`GItem`, `TValue`, `GProps`)
-- Utility types: `Pick<User, 'id'>`, `Omit<User, 'password'>` — NOT manual copying
-- NO `any` type — use `unknown` with type guards
-- NO `Function` type — use concrete signatures `(data: unknown) => void`
-- NO `JSX.Element` — use `React.ReactNode` or `React.ReactElement`
+## 6. Code quality rules
 
-**4.5. React patterns:**
+1. **Guard clauses:** No deep nesting, early returns
+2. **Array methods:** filter/map/reduce, NO for/while (exception: math)
+3. **Explicit comparisons:** `=== null` not `!value`
+4. **JSDoc:** Single-line for every function
+5. **Named exports:** NO default (exception: Storybook)
+6. **No comments:** In function bodies (except @ts-ignore, eslint-disable)
 
-- Return type: `React.ReactNode` (not JSX.Element)
-- Props destructuring in function parameters: `function Comp({ name }: Props)`
-- Custom hooks MUST start with `use` prefix
-- Conditional: `if (!visible) return null;` NOT ternary `visible ? <div/> : null`
+## 7. Generate refactoring plan
 
-## 5. Code quality rules
+**Group by severity:**
 
-**Verify compliance for each file:**
+- **CRITICAL:** Entity separation, multiple functions/file, style inconsistencies, forbidden types
+- **IMPORTANT:** File size, missing JSDoc, import order, naming violations
+- **WARNING:** Colocation opportunities, code splitting, test gaps
 
-1. **Guard clauses:** No deep nesting (>2 levels), use early returns
-2. **Array methods:** `filter`, `map`, `reduce` — NO for/while loops (exception: math algorithms)
-3. **Explicit comparisons:** `value === null || value === undefined` NOT `!value`
-4. **JSDoc:** Single-line Russian for EVERY exported function (`/** Валидирует email */`)
-5. **Named exports:** `export { validateEmail }` — NO `export default` (exception: Storybook)
-6. **No comments:** Inside function bodies (except `@ts-ignore`, `@ts-expect-error`, `eslint-disable`)
-
-## 6. Generate refactoring plan
-
-**Group findings by severity:**
-
-**CRITICAL (must fix before any other work):**
-
-- Entity separation violations (types/constants in function files)
-- Multiple functions per file
-- Style inconsistencies (Tailwind vs inline)
-- Forbidden types (any, Function, JSX.Element)
-- Missing facade or wrong facade type
-
-**IMPORTANT (fix before merge):**
-
-- File size violations (>150 lines)
-- Missing JSDoc
-- Import order issues
-- Naming convention violations
-- Node.js imports without `node:` prefix
-
-**WARNING (improvement opportunities):**
-
-- Colocation opportunities
-- Code splitting candidates
-- Test coverage gaps
-- Potential abstractions
-
-**Plan output format:**
+**Plan format:**
 
 ```markdown
 ## Refactoring Plan for [module-name]
 
 ### Architecture Context
-- Architecture type: [type]
-- Layer: [layer]
-- Modular unit type: [file-module/folder-module/slice]
-- Dependency direction: [VALID / VIOLATION - details]
+- Type: [type] | Layer: [layer] | Unit: [file/folder/slice]
 
-### CRITICAL Issues ([N] items)
-1. [Issue description] → [Fix action] → [File: path]
-2. ...
+### CRITICAL Issues ([N])
+1. [Issue] → [Fix] → [File]
 
-### IMPORTANT Issues ([N] items)
-1. [Issue description] → [Fix action] → [File: path]
-2. ...
-
-### WARNING Issues ([N] items)
-1. [Issue description] → [Fix action] → [File: path]
-2. ...
+### IMPORTANT Issues ([N])
+1. [Issue] → [Fix] → [File]
 
 ### File Operations
-- CREATE: [list new files with purpose]
-- MODIFY: [list files with changes]
-- DELETE: [list files to remove]
-- MOVE: [list files to relocate]
+- CREATE: [files]
+- MODIFY: [files]
+- DELETE: [files]
 
 ### Execution Order
-[SEQUENTIAL] Step 1: [action]
-[SEQUENTIAL] Step 2: [action]
-[PARALLEL] Steps 3-4: [actions]
-...
+[SEQUENTIAL/PARALLEL markers]
 ```
 
-## 7. AI documentation (MANDATORY)
+## 8. AI documentation (MANDATORY)
 
-**After refactoring plan, MANDATORY AI docs check:**
+**Check module-ai-docs.md:**
 
-**7.1. Check module-ai-docs.md existence:**
+- If NOT exists → CREATE
+- If exists → verify contract/dependencies/edge_cases sections are current
+- Plan MUST include: CREATE / UPDATE [section] / NO CHANGE
 
-- Expected location: `[module-path]/module-ai-docs.md`
-- If NOT exists → ADD to plan: CREATE module-ai-docs.md
+**Reference:** `.cursor/rules/ai-docs-workflow.mdc`
 
-**7.2. If exists, verify sections are current:**
+## 9. Completion criteria
 
-- `contract` section matches actual public API
-- `dependencies` section lists actual imports
-- `edge_cases` section reflects known issues
+**Plan complete when ALL met:**
 
-**7.3. Plan MUST include AI docs action:**
+1. Cognitive checkpoint output present
+2. Architecture analysis with reasoning
+3. Structure audit table complete
+4. Entity separation audit table complete
+5. Code style checks performed
+6. Findings grouped by severity
+7. File operations and execution order defined
+8. AI docs action specified
 
-- CREATE: module-ai-docs.md missing
-- UPDATE: API changed, dependencies changed, or edge cases discovered
-- NO CHANGE: documentation is current
-
-**Reference:** `.cursor/rules/ai-docs-workflow.mdc` for template and sections
-
-## 8. Completion criteria
-
-**Plan is complete ONLY when ALL criteria met:**
-
-1. Cognitive checkpoint output present (Section 1)
-2. All 3 architecture analysis points documented with reasoning (Section 2)
-3. All 5 structure checklist items marked PASS/VIOLATION with evidence (Section 3)
-4. All 5 code style checks performed (Section 4)
-5. All 6 code quality rules verified (Section 5)
-6. All findings grouped by severity (Section 6)
-7. File operations list complete (Section 6)
-8. Execution order defined with SEQUENTIAL/PARALLEL markers (Section 6)
-9. AI docs action specified: CREATE/UPDATE/NO CHANGE (Section 7)
-
-**Final output format:**
+**Final output:**
 
 ```
 REFACTORING ANALYSIS COMPLETE
-
-Module: [full path]
-Architecture: [type] | Layer: [layer] | Unit type: [type]
-
-Analysis Results:
-- Structure checks: [N] PASS / [N] VIOLATION
-- Style checks: [N] PASS / [N] VIOLATION
-- Quality checks: [N] PASS / [N] VIOLATION
-
-Issues Found:
-- CRITICAL: [N] items
-- IMPORTANT: [N] items
-- WARNING: [N] items
-
-AI Docs Action: [CREATE/UPDATE/NO CHANGE]
-
-Plan ready for execution via create_plan tool.
+Module: [path] | Architecture: [type] | Layer: [layer]
+Structure: [N] PASS / [N] VIOLATION
+Issues: CRITICAL [N] | IMPORTANT [N] | WARNING [N]
+AI Docs: [CREATE/UPDATE/NO CHANGE]
 ```
 
-## 9. Exception handling
+## 10. Exception handling
 
-**9.1. Module path invalid:**
-
-- Ask user for correct path
-- Do NOT proceed without valid module
-
-**9.2. Architecture type unknown:**
-
-- Check `architecture.xml` exists
-- If missing, ask user to specify architecture type
-- Default: assume `layered_library` if unclear
-
-**9.3. Mixed patterns in project:**
-
-- Document BOTH patterns found
-- Recommend unification
-- Ask user which pattern to follow
-
-**9.4. Cannot determine styling approach:**
-
-- Check at least 3 component files in project
-- If still unclear, ask user explicitly
-- Do NOT assume — deviations are CRITICAL violations
-
-**9.5. Module has no public API:**
-
-- Verify module is used somewhere
-- If unused, recommend deletion
-- If internal-only, document as such in AI docs
+- **Invalid path:** Ask user, do NOT proceed without valid module
+- **Unknown architecture:** Check architecture.xml or ask user
+- **Mixed patterns:** Document both, ask user preference
+- **Unclear styling:** Check 3+ components, ask if still unclear

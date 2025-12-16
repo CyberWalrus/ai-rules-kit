@@ -424,6 +424,81 @@ Modules communicate only through:
 
 ---
 
+<auxiliary_files>
+
+## Auxiliary Files (Helpers & Private Components)
+
+### Definition
+
+**Auxiliary file** = helper function OR private component used by **ONLY ONE parent file**.
+
+Key distinction:
+- **Auxiliary** — used by 1 parent → stays with parent
+- **Shared** — used by 2+ consumers → extract to shared layer
+
+### Placement Rules
+
+| Condition | Placement |
+|:---|:---|
+| Used by 1 file only | Place NEXT TO parent (same folder) |
+| Used by 2+ files | NOT auxiliary → extract to shared |
+| 1-3 auxiliaries in module | Flat structure (same folder as parent) |
+| 4+ auxiliaries in module | Group in `_internal/` or `lib/` subfolder |
+| Auxiliary size >150 lines | Must be separate modular unit |
+
+### Naming Convention
+
+Format: `[parent-context]-[purpose].ts`
+
+| Type | Example |
+|:---|:---|
+| Helper for `user-card` | `user-card-utils.ts` |
+| Private component for `user-card` | `user-card-avatar.tsx` |
+| Internal subfolder | `_internal/` |
+
+### Structure Examples
+
+**Flat (1-3 small auxiliaries):**
+
+```
+user-card/
+├── index.tsx              <- Main component
+├── user-card-avatar.tsx   <- Auxiliary: used only by index.tsx
+├── user-card-utils.ts     <- Auxiliary: helper for index.tsx
+├── types.ts
+└── __tests__/
+```
+
+**Subfolder (4+ auxiliaries):**
+
+```
+user-card/
+├── index.tsx
+├── _internal/
+│   ├── avatar.tsx
+│   ├── badge.tsx
+│   ├── format-name.ts
+│   └── calculate-score.ts
+├── types.ts
+└── __tests__/
+```
+
+### When Auxiliary Becomes Shared
+
+Extract to shared when:
+
+1. Second consumer appears (auxiliary used by 2+ files)
+2. Logic becomes generic (not tied to parent context)
+3. Size grows beyond modular unit (>150 lines with own types/constants)
+
+**Before extraction, ask:** "Will this logic diverge between consumers?"
+- YES → keep duplicated (each consumer maintains own copy)
+- NO → extract to shared
+
+</auxiliary_files>
+
+---
+
 <forbidden_practices>
 
 ## Forbidden Practices
@@ -579,6 +654,7 @@ Only `app` is mandatory. Add layers as project grows:
 | **Cohesion** | How related code is grouped together inside module |
 | **Coupling** | Dependencies between modules (lower = better) |
 | **Colocation** | Placing code next to where it's used |
+| **Auxiliary file** | Helper or private component used by ONLY ONE parent file |
 | **Layer** | Vertical abstraction level with dependency rules |
 | **Slice** | Horizontal module within a layer (FSD term) |
 | **Segment** | Functional block inside slice: ui, model, lib |
