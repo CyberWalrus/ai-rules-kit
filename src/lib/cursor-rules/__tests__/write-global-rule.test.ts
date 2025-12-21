@@ -1,3 +1,4 @@
+import { join } from 'node:path';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { writeGlobalRule } from '../write-global-rule';
@@ -34,6 +35,6 @@ describe('writeGlobalRule', () => {
         await writeGlobalRule(ruleName, ruleContent);
 
         expect(mockMkdir).toHaveBeenCalledWith(mockRulesDir, { recursive: true });
-        expect(mockWriteFile).toHaveBeenCalledWith(`${mockRulesDir}/${ruleName}`, ruleContent, 'utf-8');
+        expect(mockWriteFile).toHaveBeenCalledWith(join(mockRulesDir, ruleName), ruleContent, 'utf-8');
     });
 });

@@ -136,6 +136,7 @@ describe('getCursorConfigDir', () => {
 
     it('должен возвращать стандартный путь для Linux если ни один не существует', async () => {
         mockPlatform.mockReturnValue('linux');
+        delete process.env.XDG_CONFIG_HOME;
         process.env.HOME = '/home/test';
         mockPathExists.mockResolvedValue(false);
 

@@ -1,3 +1,4 @@
+import { join } from 'node:path';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { readGlobalRule } from '../read-global-rule';
@@ -31,7 +32,7 @@ describe('readGlobalRule', () => {
         const result = await readGlobalRule(ruleName);
 
         expect(result).toBe(ruleContent);
-        expect(mockReadFile).toHaveBeenCalledWith(`${mockRulesDir}/${ruleName}`, 'utf-8');
+        expect(mockReadFile).toHaveBeenCalledWith(join(mockRulesDir, ruleName), 'utf-8');
     });
 
     it('должен возвращать null если файл не существует', async () => {
