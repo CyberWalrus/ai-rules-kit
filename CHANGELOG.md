@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.5.2] - 2025-12-21
+
+<small>21.12.2025 16:34</small>
+
+### Changed
+
+- **Test improvements**
+    - Updated tests for cursor-config and cursor-rules modules with cross-platform path handling using path.join
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/2546830" target="_blank">2546830</a>
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/a377795" target="_blank">a377795</a>
+
+- **Configuration**
+    - Updated knip.json configuration
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/8ee993d" target="_blank">8ee993d</a>
+
 ## [0.5.1] - 2025-12-21
 
 <small>21.12.2025 16:16</small>
