@@ -72,6 +72,8 @@ describe('showInteractiveMenu', () => {
                 'cli.interactive-menu.init': 'Инициализировать правила (init)',
                 'cli.interactive-menu.replace-all': 'Заменить все правила (replace-all)',
                 'cli.interactive-menu.select-action': 'Выберите действие:',
+                'cli.interactive-menu.set-global-rule': 'Установить глобальное правило (set-global-rule)',
+                'cli.interactive-menu.set-mcp-server': 'Установить MCP сервер (set-mcp-server)',
                 'cli.interactive-menu.target-dir-not-found': 'Target directory not found',
                 'cli.interactive-menu.title': 'cursor-rules-cli',
                 'cli.interactive-menu.upgrade': 'Обновить правила (upgrade)',
@@ -108,6 +110,8 @@ describe('showInteractiveMenu', () => {
                 { label: 'Обновить правила (upgrade)', value: 'upgrade' },
                 { label: 'Заменить все правила (replace-all)', value: 'replace-all' },
                 { label: 'Настроить конфигурацию (config)', value: 'config' },
+                { label: 'Установить глобальное правило (set-global-rule)', value: 'set-global-rule' },
+                { label: 'Установить MCP сервер (set-mcp-server)', value: 'set-mcp-server' },
                 { label: 'Выход', value: 'exit' },
             ],
         });
