@@ -90,6 +90,23 @@ alwaysApply: true
 
 **ZERO TOLERANCE:** MCP validation is NON-NEGOTIABLE. Never skip, never postpone. 3 failures → escalate.
 
+**MCP FEEDBACK HANDLING (ZERO TOLERANCE):**
+
+**Score ≥85 = BLOCKING GATE.** "80 is almost 85" = WRONG → Fix until ≥85.
+
+**Every Issue Must Be Addressed:**
+1. Parse ALL issues (critical/warning/suggestion)
+2. For EACH → FIX or REJECT with documented reason
+3. "I fixed something" ≠ ignore remaining
+
+**Valid Rejection (ONLY):** Contradicts project standards (cite rule) | Technically incorrect | Out of scope for file type
+
+**Invalid Rejection (FORBIDDEN):** "Not critical" → FIX | "Pre-existing" → FIX | "Close enough" → FIX UNTIL ≥85
+
+**Pre-existing Policy:** Fix ALL issues in touched files. Leave codebase better.
+
+**Report:** `MCP: [score]/100 | Fixed: [N]/[total] | Rejected: [N] ([reasons])`
+
 **WORKFLOW:**
 
 1. Check plan → follow todos

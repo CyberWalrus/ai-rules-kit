@@ -328,6 +328,23 @@ src/[feature]/
 - Max 3 retries per file if <85
 - THEN run unified check command
 
+**MCP FEEDBACK HANDLING (ZERO TOLERANCE):**
+
+**Score ≥85 = BLOCKING GATE.** "80 is almost 85" = WRONG → Fix until ≥85.
+
+**Every Issue Must Be Addressed:**
+1. Parse ALL issues (critical/warning/suggestion)
+2. For EACH → FIX or REJECT with documented reason
+3. "I fixed something" ≠ ignore remaining
+
+**Valid Rejection (ONLY):** Contradicts project standards (cite rule) | Technically incorrect | Out of scope for file type
+
+**Invalid Rejection (FORBIDDEN):** "Not critical" → FIX | "Pre-existing" → FIX | "Close enough" → FIX UNTIL ≥85
+
+**Pre-existing Policy:** Fix ALL issues in touched files. Leave codebase better.
+
+**Report:** `MCP: [score]/100 | Fixed: [N]/[total] | Rejected: [N] ([reasons])`
+
 **Tests (MANDATORY - ZERO TOLERANCE):**
 - Unit tests: `[unit_test_cmd from Step 1]` — 0 failures REQUIRED
 - E2E tests: `[e2e_test_cmd from Step 1]` — 0 failures REQUIRED (skip if project has no e2e)
