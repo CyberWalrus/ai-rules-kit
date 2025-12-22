@@ -2,13 +2,7 @@
 export type CommandType = 'config' | 'init' | 'replace-all' | 'set-mcp-server' | 'upgrade';
 
 /** Тип действия интерактивного меню */
-export type InteractiveMenuAction =
-    | 'config'
-    | 'exit'
-    | 'init'
-    | 'replace-all'
-    | 'set-mcp-server'
-    | 'upgrade';
+export type InteractiveMenuAction = 'config' | 'exit' | 'init' | 'replace-all' | 'set-mcp-server' | 'upgrade';
 
 /** Конфигурация правил */
 export type RulesConfig = {
