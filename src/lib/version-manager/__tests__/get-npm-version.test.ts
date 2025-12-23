@@ -1,12 +1,10 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { getNpmVersion } from '../get-npm-version';
 
 const { mockFetch } = vi.hoisted(() => ({
     mockFetch: vi.fn(),
 }));
-
-global.fetch = mockFetch;
 
 describe('getNpmVersion', () => {
     const originalFetch = global.fetch;
