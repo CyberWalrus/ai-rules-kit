@@ -1,5 +1,55 @@
 # Changelog
 
+## [0.5.4] - 2025-12-23
+
+<small>23.12.2025 09:41</small>
+
+### Added
+
+- **Clipboard and prompts modules**
+    - Added clipboard module for copying text to clipboard across different platforms
+    - Added prompts module for generating system prompts (MCP config, meta-info, current date, core instructions)
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/33d77da" target="_blank">33d77da</a>
+
+- **System files command**
+    - Added system-files command for working with system files (core instructions, meta-info, current date, MCP config)
+    - Integrated system-files command into interactive menu
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/b684ade" target="_blank">b684ade</a>
+
+- **Config command enhancements**
+    - Added support for editing meta-info (name, age, role, stack, tool versions, OS, device, location, language, communication style)
+    - Added support for copying MCP config to clipboard
+    - Added UserMetaInfo type and userMetaInfoSchema for validation
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/a844746" target="_blank">a844746</a>
+
+### Changed
+
+- **Package configuration**
+    - Updated package version to 0.5.4
+    - Updated test configuration with NODE_OPTIONS for better memory management
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/8b59cd4" target="_blank">8b59cd4</a>
+
+### Removed
+
+- **set-mcp-server command and mcp-config module**
+    - Removed set-mcp-server command (replaced by system-files command)
+    - Removed mcp-config module (functionality moved to prompts module)
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/a4cd937" target="_blank">a4cd937</a>
+
+## [0.5.3] - 2025-12-21
+
+<small>21.12.2025 18:48</small>
+
+### Changed
+
+- **User Rules management**
+    - Removed User Rules management commands and related functionality
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/57ee065" target="_blank">57ee065</a>
+
+- **Package version**
+    - Updated package version to 0.5.3
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/57ee065" target="_blank">57ee065</a>
+
 ## [0.5.2] - 2025-12-21
 
 <small>21.12.2025 16:34</small>
