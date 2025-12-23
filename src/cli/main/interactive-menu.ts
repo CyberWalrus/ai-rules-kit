@@ -5,7 +5,7 @@ import type { InteractiveMenuAction } from '../../model/types/main';
 import { configCommand } from '../commands/config';
 import { initCommand } from '../commands/init';
 import { replaceAllCommand } from '../commands/replace-all';
-import { setMcpServerCommand } from '../commands/set-mcp-server';
+import { systemFilesCommand } from '../commands/system-files';
 import { upgradeCommand } from '../commands/upgrade';
 import { getPackageDir } from './get-package-dir';
 import { getTargetDir } from './get-target-dir';
@@ -21,7 +21,7 @@ export async function showInteractiveMenu(currentFilePath: string): Promise<void
             { label: t('cli.interactive-menu.upgrade'), value: 'upgrade' },
             { label: t('cli.interactive-menu.replace-all'), value: 'replace-all' },
             { label: t('cli.interactive-menu.config'), value: 'config' },
-            { label: t('cli.interactive-menu.set-mcp-server'), value: 'set-mcp-server' },
+            { label: t('cli.interactive-menu.system-files'), value: 'system-files' },
             { label: t('cli.interactive-menu.exit'), value: 'exit' },
         ],
     });
@@ -65,8 +65,8 @@ export async function showInteractiveMenu(currentFilePath: string): Promise<void
                 await configCommand();
                 outro(t('cli.main.config.success'));
                 break;
-            case 'set-mcp-server':
-                await setMcpServerCommand();
+            case 'system-files':
+                await systemFilesCommand();
                 break;
         }
     } catch (error) {

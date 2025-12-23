@@ -5,7 +5,7 @@ import { t } from '../../lib/i18n';
 import { configCommand } from '../commands/config';
 import { initCommand } from '../commands/init';
 import { replaceAllCommand } from '../commands/replace-all';
-import { setMcpServerCommand } from '../commands/set-mcp-server';
+import { systemFilesCommand } from '../commands/system-files';
 import { upgradeCommand } from '../commands/upgrade';
 import { ensureLatestVersion } from './ensure-latest-version';
 import { getPackageDir } from './get-package-dir';
@@ -57,14 +57,14 @@ const main = defineCommand({
                 console.log(t('cli.main.replace-all.success'));
             },
         }),
-        'set-mcp-server': defineCommand({
+        'system-files': defineCommand({
             meta: {
-                description: 'Add or update MCP server configuration',
-                name: 'set-mcp-server',
+                description: 'Copy system prompts to clipboard',
+                name: 'system-files',
             },
-            /** Запускает установку MCP сервера */
+            /** Запускает работу с системными файлами */
             async run(): Promise<void> {
-                await setMcpServerCommand();
+                await systemFilesCommand();
             },
         }),
         upgrade: defineCommand({

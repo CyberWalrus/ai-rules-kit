@@ -9,6 +9,7 @@ const mockInitCommand = vi.hoisted(() => vi.fn());
 const mockUpgradeCommand = vi.hoisted(() => vi.fn());
 const mockReplaceAllCommand = vi.hoisted(() => vi.fn());
 const mockConfigCommand = vi.hoisted(() => vi.fn());
+const mockSystemFilesCommand = vi.hoisted(() => vi.fn());
 const mockGetPackageDir = vi.hoisted(() => vi.fn());
 const mockGetTargetDir = vi.hoisted(() => vi.fn());
 const mockT = vi.hoisted(() => vi.fn((key: string) => key));
@@ -37,6 +38,10 @@ vi.mock('../../commands/config', () => ({
     configCommand: mockConfigCommand,
 }));
 
+vi.mock('../../commands/system-files', () => ({
+    systemFilesCommand: mockSystemFilesCommand,
+}));
+
 vi.mock('../get-package-dir', () => ({
     getPackageDir: mockGetPackageDir,
 }));
@@ -63,6 +68,7 @@ describe('showInteractiveMenu', () => {
         mockUpgradeCommand.mockResolvedValue(undefined);
         mockReplaceAllCommand.mockResolvedValue(undefined);
         mockConfigCommand.mockResolvedValue(undefined);
+        mockSystemFilesCommand.mockResolvedValue(undefined);
         mockT.mockImplementation((key: string) => {
             const translations: Record<string, string> = {
                 'cli.interactive-menu.cancelled': 'Операция отменена',
@@ -72,7 +78,7 @@ describe('showInteractiveMenu', () => {
                 'cli.interactive-menu.init': 'Инициализировать правила (init)',
                 'cli.interactive-menu.replace-all': 'Заменить все правила (replace-all)',
                 'cli.interactive-menu.select-action': 'Выберите действие:',
-                'cli.interactive-menu.set-mcp-server': 'Установить MCP сервер (set-mcp-server)',
+                'cli.interactive-menu.system-files': 'Системные файлы (system-files)',
                 'cli.interactive-menu.target-dir-not-found': 'Target directory not found',
                 'cli.interactive-menu.title': 'cursor-rules-cli',
                 'cli.interactive-menu.upgrade': 'Обновить правила (upgrade)',
@@ -109,7 +115,7 @@ describe('showInteractiveMenu', () => {
                 { label: 'Обновить правила (upgrade)', value: 'upgrade' },
                 { label: 'Заменить все правила (replace-all)', value: 'replace-all' },
                 { label: 'Настроить конфигурацию (config)', value: 'config' },
-                { label: 'Установить MCP сервер (set-mcp-server)', value: 'set-mcp-server' },
+                { label: 'Системные файлы (system-files)', value: 'system-files' },
                 { label: 'Выход', value: 'exit' },
             ],
         });
@@ -180,6 +186,14 @@ describe('showInteractiveMenu', () => {
 
         expect(mockConfigCommand).toHaveBeenCalledTimes(1);
         expect(mockOutro).toHaveBeenCalledWith('✅ Конфигурация успешно сохранена');
+    });
+
+    it('должен вызывать systemFilesCommand при выборе system-files', async () => {
+        mockSelect.mockResolvedValue('system-files');
+
+        await showInteractiveMenu(mockFilePath);
+
+        expect(mockSystemFilesCommand).toHaveBeenCalledTimes(1);
     });
 
     it('должен выбрасывать ошибку если packageDir не найден', async () => {

@@ -1,8 +1,8 @@
 /** Тип команды CLI */
-export type CommandType = 'config' | 'init' | 'replace-all' | 'set-mcp-server' | 'upgrade';
+export type CommandType = 'config' | 'init' | 'replace-all' | 'system-files' | 'upgrade';
 
 /** Тип действия интерактивного меню */
-export type InteractiveMenuAction = 'config' | 'exit' | 'init' | 'replace-all' | 'set-mcp-server' | 'upgrade';
+export type InteractiveMenuAction = 'config' | 'exit' | 'init' | 'replace-all' | 'system-files' | 'upgrade';
 
 /** Конфигурация правил */
 export type RulesConfig = {
@@ -82,12 +82,38 @@ export type CheckAndUpdateOptions = {
     isSkipUpdate?: boolean;
 };
 
+/** Метаинформация пользователя */
+export type UserMetaInfo = {
+    /** Возраст */
+    age?: number;
+    /** Стиль общения */
+    communicationStyle?: string;
+    /** Устройство */
+    device?: string;
+    /** Язык */
+    language?: string;
+    /** Локация */
+    location?: string;
+    /** Имя пользователя */
+    name?: string;
+    /** Операционная система */
+    os?: string;
+    /** Роль */
+    role?: string;
+    /** Технологический стек */
+    stack?: string;
+    /** Версии инструментов */
+    toolVersions?: string;
+};
+
 /** Глобальная конфигурация пользователя */
 export type UserConfig = {
     /** Дополнительные настройки */
     [key: string]: unknown;
     /** Язык интерфейса */
     language: 'en' | 'ru';
+    /** Метаинформация пользователя */
+    metaInfo?: UserMetaInfo;
 };
 
 /** Конфигурация MCP сервера */
