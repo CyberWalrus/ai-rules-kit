@@ -7,11 +7,11 @@ const mockCancel = vi.hoisted(() => vi.fn());
 const mockIsCancel = vi.hoisted(() => vi.fn());
 const mockInitCommand = vi.hoisted(() => vi.fn());
 const mockUpgradeCommand = vi.hoisted(() => vi.fn());
-const mockReplaceAllCommand = vi.hoisted(() => vi.fn());
 const mockConfigCommand = vi.hoisted(() => vi.fn());
 const mockSystemFilesCommand = vi.hoisted(() => vi.fn());
 const mockGetPackageDir = vi.hoisted(() => vi.fn());
 const mockGetTargetDir = vi.hoisted(() => vi.fn());
+const mockGetCurrentVersion = vi.hoisted(() => vi.fn());
 const mockT = vi.hoisted(() => vi.fn((key: string) => key));
 
 vi.mock('@clack/prompts', () => ({
@@ -30,10 +30,6 @@ vi.mock('../../commands/upgrade', () => ({
     upgradeCommand: mockUpgradeCommand,
 }));
 
-vi.mock('../../commands/replace-all', () => ({
-    replaceAllCommand: mockReplaceAllCommand,
-}));
-
 vi.mock('../../commands/config', () => ({
     configCommand: mockConfigCommand,
 }));
@@ -50,6 +46,10 @@ vi.mock('../get-target-dir', () => ({
     getTargetDir: mockGetTargetDir,
 }));
 
+vi.mock('../../../lib/version-manager/get-current-version', () => ({
+    getCurrentVersion: mockGetCurrentVersion,
+}));
+
 vi.mock('../../../lib/i18n', () => ({
     t: mockT,
 }));
@@ -63,10 +63,10 @@ describe('showInteractiveMenu', () => {
         vi.clearAllMocks();
         mockGetPackageDir.mockReturnValue(mockPackageDir);
         mockGetTargetDir.mockReturnValue(mockTargetDir);
+        mockGetCurrentVersion.mockResolvedValue(null);
         mockIsCancel.mockReturnValue(false);
         mockInitCommand.mockResolvedValue(undefined);
         mockUpgradeCommand.mockResolvedValue(undefined);
-        mockReplaceAllCommand.mockResolvedValue(undefined);
         mockConfigCommand.mockResolvedValue(undefined);
         mockSystemFilesCommand.mockResolvedValue(undefined);
         mockT.mockImplementation((key: string) => {
@@ -79,11 +79,8 @@ describe('showInteractiveMenu', () => {
                 'cli.interactive-menu.init': 'Инициализировать правила (init)',
                 'cli.interactive-menu.init.hint':
                     'Первая установка правил в проект. Скачивает последнюю версию из GitHub и создает конфигурацию',
-                'cli.interactive-menu.replace-all': 'Заменить все правила (replace-all)',
-                'cli.interactive-menu.replace-all.hint':
-                    'Полная замена всех файлов правил. Сохраняет ignoreList и fileOverrides из конфига',
                 'cli.interactive-menu.select-action': 'Выберите действие:',
-                'cli.interactive-menu.system-files': 'Системные файлы (system-files)',
+                'cli.interactive-menu.system-files': 'Глобальные промпты и конфиги для Cursor (system-files)',
                 'cli.interactive-menu.system-files.hint':
                     'Копирование промптов и правил для пользователя. Вставьте в Cursor: Rules and Commands -> User Rules',
                 'cli.interactive-menu.target-dir-not-found': 'Target directory not found',
@@ -94,7 +91,6 @@ describe('showInteractiveMenu', () => {
                 'cli.main.config.success': '✅ Конфигурация успешно сохранена',
                 'cli.main.init.success': '✅ Rules initialized successfully',
                 'cli.main.package-dir-not-found': 'Package directory not found',
-                'cli.main.replace-all.success': '✅ Rules replaced successfully',
                 'cli.main.upgrade.success': '✅ Rules upgraded successfully',
             };
 
@@ -111,11 +107,13 @@ describe('showInteractiveMenu', () => {
         expect(mockIntro).toHaveBeenCalledWith('cursor-rules-cli');
     });
 
-    it('должен показывать меню выбора команды', async () => {
+    it('должен показывать меню выбора команды когда правила не инициализированы', async () => {
+        mockGetCurrentVersion.mockResolvedValue(null);
         mockSelect.mockResolvedValue('exit');
 
         await showInteractiveMenu(mockFilePath);
 
+        expect(mockGetCurrentVersion).toHaveBeenCalledWith(mockTargetDir);
         expect(mockSelect).toHaveBeenCalledTimes(1);
         expect(mockSelect).toHaveBeenCalledWith({
             message: 'Выберите действие:',
@@ -126,24 +124,45 @@ describe('showInteractiveMenu', () => {
                     value: 'init',
                 },
                 {
-                    hint: 'Обновление с сохранением ignoreList и fileOverrides. Файлы правил перезаписываются новыми версиями',
-                    label: 'Обновить правила (upgrade)',
-                    value: 'upgrade',
-                },
-                {
-                    hint: 'Полная замена всех файлов правил. Сохраняет ignoreList и fileOverrides из конфига',
-                    label: 'Заменить все правила (replace-all)',
-                    value: 'replace-all',
+                    hint: 'Копирование промптов и правил для пользователя. Вставьте в Cursor: Rules and Commands -> User Rules',
+                    label: 'Глобальные промпты и конфиги для Cursor (system-files)',
+                    value: 'system-files',
                 },
                 {
                     hint: 'Настройка языка интерфейса, метаинформации и MCP конфигурации',
                     label: 'Настроить конфигурацию (config)',
                     value: 'config',
                 },
+                { label: 'Выход', value: 'exit' },
+            ],
+        });
+    });
+
+    it('должен показывать меню выбора команды когда правила инициализированы', async () => {
+        mockGetCurrentVersion.mockResolvedValue('2025.11.10.1');
+        mockSelect.mockResolvedValue('exit');
+
+        await showInteractiveMenu(mockFilePath);
+
+        expect(mockGetCurrentVersion).toHaveBeenCalledWith(mockTargetDir);
+        expect(mockSelect).toHaveBeenCalledTimes(1);
+        expect(mockSelect).toHaveBeenCalledWith({
+            message: 'Выберите действие:',
+            options: [
+                {
+                    hint: 'Обновление с сохранением ignoreList и fileOverrides. Файлы правил перезаписываются новыми версиями',
+                    label: 'Обновить правила (upgrade)',
+                    value: 'upgrade',
+                },
                 {
                     hint: 'Копирование промптов и правил для пользователя. Вставьте в Cursor: Rules and Commands -> User Rules',
-                    label: 'Системные файлы (system-files)',
+                    label: 'Глобальные промпты и конфиги для Cursor (system-files)',
                     value: 'system-files',
+                },
+                {
+                    hint: 'Настройка языка интерфейса, метаинформации и MCP конфигурации',
+                    label: 'Настроить конфигурацию (config)',
+                    value: 'config',
                 },
                 { label: 'Выход', value: 'exit' },
             ],
@@ -153,6 +172,7 @@ describe('showInteractiveMenu', () => {
     it('должен обрабатывать отмену пользователем (Ctrl+C)', async () => {
         const mockExit = vi.spyOn(process, 'exit').mockImplementation((() => {}) as never);
         mockIsCancel.mockReturnValue(true);
+        mockGetCurrentVersion.mockResolvedValue(null);
         mockSelect.mockResolvedValue('init');
 
         await showInteractiveMenu(mockFilePath);
@@ -165,6 +185,7 @@ describe('showInteractiveMenu', () => {
     });
 
     it('должен завершаться при выборе exit', async () => {
+        mockGetCurrentVersion.mockResolvedValue(null);
         mockSelect.mockResolvedValue('exit');
 
         await showInteractiveMenu(mockFilePath);
@@ -172,43 +193,36 @@ describe('showInteractiveMenu', () => {
         expect(mockOutro).toHaveBeenCalledWith('До свидания! 👋');
         expect(mockInitCommand).not.toHaveBeenCalled();
         expect(mockUpgradeCommand).not.toHaveBeenCalled();
-        expect(mockReplaceAllCommand).not.toHaveBeenCalled();
     });
 
     it('должен вызывать initCommand при выборе init', async () => {
+        mockGetCurrentVersion.mockResolvedValue(null);
         mockSelect.mockResolvedValue('init');
 
         await showInteractiveMenu(mockFilePath);
 
         expect(mockGetPackageDir).toHaveBeenCalledWith(mockFilePath);
         expect(mockGetTargetDir).toHaveBeenCalledTimes(1);
+        expect(mockGetCurrentVersion).toHaveBeenCalledWith(mockTargetDir);
         expect(mockInitCommand).toHaveBeenCalledWith(mockPackageDir, mockTargetDir);
         expect(mockOutro).toHaveBeenCalledWith('✅ Rules initialized successfully');
     });
 
     it('должен вызывать upgradeCommand при выборе upgrade', async () => {
+        mockGetCurrentVersion.mockResolvedValue('2025.11.10.1');
         mockSelect.mockResolvedValue('upgrade');
 
         await showInteractiveMenu(mockFilePath);
 
         expect(mockGetPackageDir).toHaveBeenCalledWith(mockFilePath);
         expect(mockGetTargetDir).toHaveBeenCalledTimes(1);
+        expect(mockGetCurrentVersion).toHaveBeenCalledWith(mockTargetDir);
         expect(mockUpgradeCommand).toHaveBeenCalledWith(mockPackageDir, mockTargetDir);
         expect(mockOutro).toHaveBeenCalledWith('✅ Rules upgraded successfully');
     });
 
-    it('должен вызывать replaceAllCommand при выборе replace-all', async () => {
-        mockSelect.mockResolvedValue('replace-all');
-
-        await showInteractiveMenu(mockFilePath);
-
-        expect(mockGetPackageDir).toHaveBeenCalledWith(mockFilePath);
-        expect(mockGetTargetDir).toHaveBeenCalledTimes(1);
-        expect(mockReplaceAllCommand).toHaveBeenCalledWith(mockPackageDir, mockTargetDir);
-        expect(mockOutro).toHaveBeenCalledWith('✅ Rules replaced successfully');
-    });
-
     it('должен вызывать configCommand при выборе config', async () => {
+        mockGetCurrentVersion.mockResolvedValue('2025.11.10.1');
         mockSelect.mockResolvedValue('config');
 
         await showInteractiveMenu(mockFilePath);
@@ -218,6 +232,7 @@ describe('showInteractiveMenu', () => {
     });
 
     it('должен вызывать systemFilesCommand при выборе system-files', async () => {
+        mockGetCurrentVersion.mockResolvedValue('2025.11.10.1');
         mockSelect.mockResolvedValue('system-files');
 
         await showInteractiveMenu(mockFilePath);
@@ -226,6 +241,7 @@ describe('showInteractiveMenu', () => {
     });
 
     it('должен выбрасывать ошибку если packageDir не найден', async () => {
+        mockGetCurrentVersion.mockResolvedValue(null);
         mockSelect.mockResolvedValue('init');
         mockGetPackageDir.mockReturnValue(null);
 
@@ -233,7 +249,6 @@ describe('showInteractiveMenu', () => {
     });
 
     it('должен выбрасывать ошибку если targetDir не найден', async () => {
-        mockSelect.mockResolvedValue('init');
         mockGetTargetDir.mockReturnValue(null);
 
         await expect(showInteractiveMenu(mockFilePath)).rejects.toThrow('Target directory not found');
@@ -242,6 +257,7 @@ describe('showInteractiveMenu', () => {
     it('должен обрабатывать ошибки команд и вызывать process.exit', async () => {
         const mockExit = vi.spyOn(process, 'exit').mockImplementation((() => {}) as never);
         const commandError = new Error('Command failed');
+        mockGetCurrentVersion.mockResolvedValue(null);
         mockSelect.mockResolvedValue('init');
         mockInitCommand.mockRejectedValue(commandError);
 
@@ -255,6 +271,7 @@ describe('showInteractiveMenu', () => {
 
     it('должен обрабатывать не-Error ошибки команд', async () => {
         const mockExit = vi.spyOn(process, 'exit').mockImplementation((() => {}) as never);
+        mockGetCurrentVersion.mockResolvedValue(null);
         mockSelect.mockResolvedValue('init');
         mockInitCommand.mockRejectedValue('String error');
 
