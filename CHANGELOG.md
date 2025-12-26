@@ -1,5 +1,36 @@
 # Changelog
 
+## [0.6.1] - 2025-12-25
+
+<small>25.12.2025 15:44</small>
+
+### Added
+
+- **Meta-info validation and filling with MCP improvements**
+    - Added validation and filling of meta-information with MCP configuration enhancements
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/636a0d9d70b0f34a01bde43ea52f5f5056cdf1ec" target="_blank">636a0d9</a>
+
+### Changed
+
+- **Uncommitted changes in current version**
+    - Changes in mcp.json
+    - Changes in package.json
+    - Changes in src/cli/commands/config/index.ts
+    - Changes in src/cli/commands/system-files/index.ts
+    - Changes in src/cli/main/__tests__/interactive-menu.test.ts
+    - Changes in src/cli/main/interactive-menu.ts
+    - Changes in src/lib/i18n/locales/en.ts
+    - Changes in src/lib/i18n/locales/ru.ts
+    - Changes in src/lib/prompts/index.ts
+    - Changes in src/lib/user-config/index.ts
+    - Changes in src/model/types/main.ts
+
+### Docs
+
+- **React refs naming rules**
+    - Updated React refs naming rules in documentation and rules
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/3470f37c2b31379ce82413161b8df6c5725937ce" target="_blank">3470f37</a>
+
 ## [0.6.0] - 2025-12-25
 
 <small>25.12.2025</small>
