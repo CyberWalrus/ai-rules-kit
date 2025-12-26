@@ -2,23 +2,23 @@
 export const ru = {
     'cli.error': 'Ошибка: {message}',
     'cli.interactive-menu.cancelled': 'Операция отменена',
-    'cli.interactive-menu.config': 'Настроить конфигурацию (config)',
+    'cli.interactive-menu.config': 'Настроить конфигурацию',
     'cli.interactive-menu.config.hint': 'Настройка языка интерфейса, метаинформации и MCP конфигурации',
     'cli.interactive-menu.exit': 'Выход',
     'cli.interactive-menu.goodbye': 'До свидания! 👋',
-    'cli.interactive-menu.init': 'Инициализировать правила (init)',
+    'cli.interactive-menu.init': 'Инициализировать правила',
     'cli.interactive-menu.init.hint':
         'Первая установка правил в проект. Скачивает последнюю версию из GitHub и создает конфигурацию',
-    'cli.interactive-menu.replace-all': 'Заменить все правила (replace-all)',
+    'cli.interactive-menu.replace-all': 'Заменить все правила',
     'cli.interactive-menu.replace-all.hint':
         'Полная замена всех файлов правил. Сохраняет ignoreList и fileOverrides из конфига',
     'cli.interactive-menu.select-action': 'Выберите действие:',
-    'cli.interactive-menu.system-files': 'Глобальные промпты и конфиги для Cursor (system-files)',
+    'cli.interactive-menu.system-files': 'Глобальные промпты и конфиги для Cursor',
     'cli.interactive-menu.system-files.hint':
         'Копирование промптов и правил для пользователя. Вставьте в Cursor: Rules and Commands -> User Rules',
     'cli.interactive-menu.target-dir-not-found': 'Целевая директория не найдена',
     'cli.interactive-menu.title': 'cursor-rules-cli',
-    'cli.interactive-menu.upgrade': 'Обновить правила (upgrade)',
+    'cli.interactive-menu.upgrade': 'Обновить правила',
     'cli.interactive-menu.upgrade.hint':
         'Обновление с сохранением ignoreList и fileOverrides. Файлы правил перезаписываются новыми версиями',
     'cli.main.config.success': '✅ Конфигурация успешно сохранена',

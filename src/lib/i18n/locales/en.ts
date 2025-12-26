@@ -2,23 +2,23 @@
 export const en = {
     'cli.error': 'Error: {message}',
     'cli.interactive-menu.cancelled': 'Operation cancelled',
-    'cli.interactive-menu.config': 'Configure settings (config)',
+    'cli.interactive-menu.config': 'Configure settings',
     'cli.interactive-menu.config.hint': 'Configure interface language, meta information and MCP configuration',
     'cli.interactive-menu.exit': 'Exit',
     'cli.interactive-menu.goodbye': 'Goodbye! 👋',
-    'cli.interactive-menu.init': 'Initialize rules (init)',
+    'cli.interactive-menu.init': 'Initialize rules',
     'cli.interactive-menu.init.hint':
         'First-time installation of rules. Downloads latest version from GitHub and creates configuration',
-    'cli.interactive-menu.replace-all': 'Replace all rules (replace-all)',
+    'cli.interactive-menu.replace-all': 'Replace all rules',
     'cli.interactive-menu.replace-all.hint':
         'Complete replacement of all rule files. Preserves ignoreList and fileOverrides from config',
     'cli.interactive-menu.select-action': 'Select action:',
-    'cli.interactive-menu.system-files': 'Global prompts and configs for Cursor (system-files)',
+    'cli.interactive-menu.system-files': 'Global prompts and configs for Cursor',
     'cli.interactive-menu.system-files.hint':
         'Copy prompts and rules for user. Paste in Cursor: Rules and Commands -> User Rules',
     'cli.interactive-menu.target-dir-not-found': 'Target directory not found',
     'cli.interactive-menu.title': 'cursor-rules-cli',
-    'cli.interactive-menu.upgrade': 'Update rules (upgrade)',
+    'cli.interactive-menu.upgrade': 'Update rules',
     'cli.interactive-menu.upgrade.hint':
         'Update preserving ignoreList and fileOverrides. Rule files are overwritten with new versions',
     'cli.main.config.success': '✅ Configuration saved successfully',
