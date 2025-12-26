@@ -1,5 +1,38 @@
 # Changelog
 
+## [0.6.3] - 2025-12-26
+
+<small>27.12.2025 01:28</small>
+
+### Changed
+
+- **MCP config generation**
+    - Updated MCP config generation to apply environment variables only to mcp-validator server
+    - Simplified code logic and improved maintainability
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/UNCOMMITTED" target="_blank">UNCOMMITTED</a>
+
+- **Interactive menu labels**
+    - Removed command names from interactive menu labels for cleaner UI
+    - Updated Russian and English translations
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/UNCOMMITTED" target="_blank">UNCOMMITTED</a>
+
+### Tests
+
+- **MCP config generation tests**
+    - Updated tests to reflect changes in MCP config generation logic
+    - Tests now verify that env variables are applied only to mcp-validator server
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/UNCOMMITTED" target="_blank">UNCOMMITTED</a>
+
+## [0.6.2] - 2025-12-26
+
+<small>26.12.2025 10:56</small>
+
+### Changed
+
+- **Package version**
+    - Updated package version to 0.6.2
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/9136b1724756c4447ac7f59cae5b759c686d9a2e" target="_blank">9136b17</a>
+
 ## [0.6.1] - 2025-12-25
 
 <small>25.12.2025 15:44</small>
