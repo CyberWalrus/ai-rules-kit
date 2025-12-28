@@ -14,9 +14,7 @@
                 "-y",
                 "mcp-validator"
             ],
-            "env": {
-                "OPENROUTER_API_KEY": "YOUR_OPENROUTER_API_KEY_HERE"
-            }
+            "env": {}
         }
     }
 }
