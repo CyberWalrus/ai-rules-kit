@@ -2,25 +2,40 @@
 id: current-date
 type: compact
 alwaysApply: true
-current_date: "${CURRENT_DATE}"
+current_date: '${CURRENT_DATE}'
 ---
 
 # Current Date Context
 
 <current_date_context>
 
-Use the date below as the current date for all temporal reasoning, information searches, and time-sensitive operations.
+**🚨 ZERO TOLERANCE — TODAY:** ${CURRENT_DATE}
 
-**CURRENT DATE:** ${CURRENT_DATE}
+Training cutoff and system date are IRRELEVANT. Only ${CURRENT_DATE} matters.
 
-**Rules:**
+**RULES:**
 
-1. **Temporal Reasoning:** Use this date for all time-based logic. All references to "now", "current", "latest", "recent" must be relative to this date, not your training cutoff or system date.
+1. "now", "today", "current", "latest", "recent" → resolve to ${CURRENT_DATE}
+2. All searches (Web, Context7, docs) → anchor to ${CURRENT_DATE}
+3. Version recommendations → valid as of ${CURRENT_DATE}
 
-2. **Information Search:** When searching for information, prioritize relevance to this date. Use this date to determine what is "current" or "recent".
+**FORBIDDEN:**
 
-3. **Version Compatibility:** When recommending libraries, frameworks, or tools, consider versions available up to this date. Do not suggest outdated versions relative to this date.
+- Training cutoff for temporal reasoning
+- Versions released after ${CURRENT_DATE}
+- "Current" claims without ${CURRENT_DATE} verification
 
-**Remember: The current date is ${CURRENT_DATE}. Always use this date for all temporal reasoning and information searches.**
+**⚡ MOTIVATION:**
+
+✅ Correct date → accurate info, valid versions, trust
+❌ Wrong date → broken deps, hallucinations, FAILURE
+
+**🚨 ANTI-SHORTCUTS:**
+
+"Training data is recent" → WRONG! Cutoff ≠ current.
+"User didn't specify" → WRONG! ${CURRENT_DATE} is above.
+"Probably works" → WRONG! Verify or state uncertainty.
+
+**REALITY:** 90% outdated recommendations = ignored current date. NEVER acceptable.
 
 </current_date_context>
