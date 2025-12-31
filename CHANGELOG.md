@@ -1,5 +1,60 @@
 # Changelog
 
+## [0.6.6] - 2025-12-31
+
+<small>31.12.2025 10:17</small>
+
+### Changed
+
+- **File operations improvements**
+    - Fixed directory filtering in copy-rules-to-target to properly respect ignoreList
+    - Improved base directory calculation for relative path normalization
+    - Updated tests to reflect changes in file operations logic
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/009d6135bde47054d5f70d6e17833c640143f4c0" target="_blank">009d613</a>
+
+### Docs
+
+- **Current date template**
+    - Updated current-date template with improved instructions
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/009d6135bde47054d5f70d6e17833c640143f4c0" target="_blank">009d613</a>
+
+## [0.6.5] - 2025-12-31
+
+<small>31.12.2025 10:01</small>
+
+### Changed
+
+- **Package version**
+    - Updated package version to 0.6.5
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/57cb178e1bc890f0f0c7b5cba3eb0b6412a8bd09" target="_blank">57cb178</a>
+
+## [0.6.4] - 2025-12-28
+
+<small>28.12.2025 12:29</small>
+
+### Fixed
+
+- **MCP config environment variables**
+    - Fixed environment variable substitution to apply only to mcp-validator server
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/6da684251e5bed15cd22037ee40ad781e1500ae1" target="_blank">6da6842</a>
+
+### Changed
+
+- **Interactive menu**
+    - Removed command names from interactive menu labels for cleaner UI
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/f9eec23d9adc06274d5770259f95effa39fc06b7" target="_blank">f9eec23</a>
+
+- **MCP configuration**
+    - Cleaned up mcp.json configuration by removing environment variable
+    - Updated package version to 0.6.4
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/47981e16ae45da60c7bd11033c5f8f24d1aa773c" target="_blank">47981e1</a>
+
+### Docs
+
+- **Jira command**
+    - Added jira.md command and simplified jira-task-creator.mdc
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/3204148f7fa6da7d70d956a662bd0d4981eeb59b" target="_blank">3204148</a>
+
 ## [0.6.3] - 2025-12-26
 
 <small>27.12.2025 01:28</small>
