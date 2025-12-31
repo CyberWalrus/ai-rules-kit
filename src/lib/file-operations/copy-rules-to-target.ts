@@ -36,7 +36,9 @@ async function copyDirectoryRecursive(
         const targetPath = join(targetDir, entry.name);
 
         if (entry.isDirectory()) {
-            await copyDirectoryRecursive(sourcePath, targetPath, baseDir, ignoreList);
+            if (!shouldIgnoreFile(relativePath, ignoreList)) {
+                await copyDirectoryRecursive(sourcePath, targetPath, baseDir, ignoreList);
+            }
         } else if (entry.isFile() && !shouldIgnoreFile(relativePath, ignoreList)) {
             await copyFile(sourcePath, targetPath);
         }
@@ -67,7 +69,12 @@ export async function copyRulesToTarget(
                 return;
             }
 
-            await copyDirectoryRecursive(sourcePath, targetPath, sourcePath, ignoreList);
+            const baseDir = join(packageDir, '.cursor');
+            const relativeRuleDir = relative(baseDir, sourcePath).replace(/\\/g, '/');
+
+            if (!shouldIgnoreFile(relativeRuleDir, ignoreList)) {
+                await copyDirectoryRecursive(sourcePath, targetPath, baseDir, ignoreList);
+            }
         }),
     );
 

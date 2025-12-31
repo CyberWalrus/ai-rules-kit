@@ -179,4 +179,39 @@ describe('copyRulesToTarget', () => {
 
         await expect(copyRulesToTarget(packageDir, '')).rejects.toThrow('targetDir is required');
     });
+
+    it('должен игнорировать директорию если она в ignoreList', async () => {
+        mockShouldIgnoreFile.mockImplementation((path: string) => path === 'rules');
+        mockPathExists.mockResolvedValue(true);
+
+        const packageDir = getTestPath('package');
+        const targetDir = getTestPath('target');
+
+        await copyRulesToTarget(packageDir, targetDir, ['rules']);
+
+        const rulesDirCalls = mockReaddir.mock.calls.filter((call) => call[0].includes('/rules'));
+        expect(rulesDirCalls).toHaveLength(0);
+    });
+
+    it('должен игнорировать поддиректории если они в ignoreList', async () => {
+        mockReaddir
+            .mockResolvedValueOnce([
+                { isDirectory: () => true, isFile: () => false, name: 'subdir' },
+                { isDirectory: () => false, isFile: () => true, name: 'file1.mdc' },
+            ])
+            .mockResolvedValueOnce([{ isDirectory: () => false, isFile: () => true, name: 'file2.mdc' }])
+            .mockResolvedValueOnce([{ isDirectory: () => false, isFile: () => true, name: 'file3.mdc' }]);
+        mockShouldIgnoreFile.mockImplementation((path: string) => path === 'rules/subdir');
+        mockMkdir.mockResolvedValue(undefined);
+        mockCp.mockResolvedValue(undefined);
+
+        const packageDir = getTestPath('package');
+        const targetDir = getTestPath('target');
+
+        await copyRulesToTarget(packageDir, targetDir, ['rules/subdir']);
+
+        const rulesDirCalls = mockReaddir.mock.calls.filter((call) => call[0].includes('/rules'));
+        expect(rulesDirCalls).toHaveLength(1);
+        expect(mockCp).toHaveBeenCalledTimes(RULES_DIRS.length);
+    });
 });
