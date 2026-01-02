@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.6.9] - 2026-01-02
+
+<small>02.01.2026</small>
+
+### Changed
+
+- **Config command improvements**
+    - Removed MCP config generation option from config menu
+    - Improved age validation in meta-info editing
+    - Updated translations for system-files.current-date
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/UNCOMMITTED" target="_blank">UNCOMMITTED</a>
+
+## [0.6.8] - 2025-12-31
+
+<small>31.12.2025 17:21</small>
+
+### Fixed
+
+- **Directory filtering with negation patterns**
+    - Fixed directory filtering in should-ignore-file to support negation patterns
+    - Updated tests for copy-rules-to-target and should-ignore-file
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/d1bb2ba" target="_blank">d1bb2ba</a>
+
 ## [0.6.7] - 2025-12-31
 
 <small>31.12.2025 16:03</small>
