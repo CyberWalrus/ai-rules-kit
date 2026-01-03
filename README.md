@@ -151,7 +151,7 @@ CLI сохраняет настройки в глобальной конфигу
 
 ```json
 {
-  "$schema": "https://raw.githubusercontent.com/CyberWalrus/cursor-rules-cli/main/.cursor/cursor-rules-config-1.0.0.schema.json",
+  "$schema": "https://raw.githubusercontent.com/CyberWalrus/cursor-rules-cli/main/schemas/cursor-rules-config-1.0.0.schema.json",
   "configVersion": "1.0.0",
   "installedAt": "2025-11-07T10:00:00.000Z",
   "updatedAt": "2025-11-07T10:00:00.000Z",

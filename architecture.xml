@@ -156,6 +156,12 @@
 					</directory>
 				</layer>
 			</source_directory>
+			<directory name="cursor">
+				<purpose>Директория с правилами, документацией и командами для распространения через npm пакет</purpose>
+				<directory name="rules" purpose="Правила Cursor AI для управления поведением агента" />
+				<directory name="docs" purpose="Документация и справочные материалы" />
+				<directory name="commands" purpose="Команды для использования в Cursor IDE" />
+			</directory>
 			<directory name="scripts">
 				<layer name="scripts" purpose="Вспомогательные скрипты разработки">
 					<file name="quality-check.ts" role="workflow" purpose="Параллельное выполнение проверок качества кода" />
