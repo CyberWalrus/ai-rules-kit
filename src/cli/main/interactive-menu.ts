@@ -11,18 +11,10 @@ import { versionsCommand } from '../commands/versions';
 import { getPackageDir } from './get-package-dir';
 import { getTargetDir } from './get-target-dir';
 
-/** Показывает интерактивное меню выбора команды */
-export async function showInteractiveMenu(currentFilePath: string): Promise<void> {
-    intro(t('cli.interactive-menu.title'));
-
-    const targetDir = getTargetDir();
-    if (targetDir === null || targetDir === undefined) {
-        throw new Error(t('cli.interactive-menu.target-dir-not-found'));
-    }
-
-    const currentVersion = await getCurrentVersion(targetDir);
-    const isInitialized = currentVersion !== null;
-
+/** Создает список опций для меню */
+function buildMenuOptions(
+    isInitialized: boolean,
+): Array<{ label: string; value: InteractiveMenuAction; hint?: string }> {
     const options: Array<{ label: string; value: InteractiveMenuAction; hint?: string }> = [];
 
     if (!isInitialized) {
@@ -48,54 +40,86 @@ export async function showInteractiveMenu(currentFilePath: string): Promise<void
             value: 'system-files',
         },
         { hint: t('cli.interactive-menu.config.hint'), label: t('cli.interactive-menu.config'), value: 'config' },
-        { hint: t('cli.interactive-menu.versions.hint'), label: t('cli.interactive-menu.versions'), value: 'versions' },
-        { label: t('cli.interactive-menu.exit'), value: 'exit' },
+        {
+            hint: t('cli.interactive-menu.versions.hint'),
+            label: t('cli.interactive-menu.versions'),
+            value: 'versions',
+        },
+        { label: t('cli.interactive-menu.finish'), value: 'exit' },
     );
 
-    const action = await select<InteractiveMenuAction>({
-        message: t('cli.interactive-menu.select-action'),
-        options,
-    });
+    return options;
+}
 
-    if (isCancel(action)) {
-        cancel(t('cli.interactive-menu.cancelled'));
-        process.exit(0);
-    }
+/** Показывает интерактивное меню выбора команды */
+export async function showInteractiveMenu(currentFilePath: string): Promise<void> {
+    intro(t('cli.interactive-menu.title'));
 
-    if (action === 'exit') {
-        outro(t('cli.interactive-menu.goodbye'));
-
-        return;
-    }
-
-    const packageDir = getPackageDir(currentFilePath);
-    if (packageDir === null || packageDir === undefined) {
-        throw new Error(t('cli.main.package-dir-not-found'));
-    }
-
-    try {
-        switch (action) {
-            case 'init':
-                await initCommand(packageDir, targetDir);
-                outro(t('cli.main.init.success'));
-                break;
-            case 'upgrade':
-                await upgradeCommand(packageDir, targetDir);
-                outro(t('cli.main.upgrade.success'));
-                break;
-            case 'config':
-                await configCommand();
-                outro(t('cli.main.config.success'));
-                break;
-            case 'system-files':
-                await systemFilesCommand();
-                break;
-            case 'versions':
-                await versionsCommand();
-                break;
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+        const targetDir = getTargetDir();
+        if (targetDir === null || targetDir === undefined) {
+            throw new Error(t('cli.interactive-menu.target-dir-not-found'));
         }
-    } catch (error) {
-        cancel(error instanceof Error ? error.message : String(error));
-        process.exit(1);
+
+        const currentVersion = await getCurrentVersion(targetDir);
+        const isInitialized = currentVersion !== null;
+        const options = buildMenuOptions(isInitialized);
+
+        const action = await select<InteractiveMenuAction>({
+            message: t('cli.interactive-menu.select-action'),
+            options,
+        });
+
+        if (isCancel(action)) {
+            cancel(t('cli.interactive-menu.cancelled'));
+            process.exit(0);
+        }
+
+        if (action === 'exit') {
+            outro(t('cli.interactive-menu.goodbye'));
+
+            return;
+        }
+
+        const packageDir = getPackageDir(currentFilePath);
+        if (packageDir === null || packageDir === undefined) {
+            throw new Error(t('cli.main.package-dir-not-found'));
+        }
+
+        try {
+            switch (action) {
+                case 'init':
+                    await initCommand(packageDir, targetDir);
+                    outro(t('cli.main.init.success'));
+                    break;
+                case 'upgrade':
+                    await upgradeCommand(packageDir, targetDir);
+                    outro(t('cli.main.upgrade.success'));
+                    break;
+                case 'config': {
+                    const result = await configCommand();
+                    if (result === 'finish') {
+                        return;
+                    }
+
+                    break;
+                }
+                case 'system-files':
+                    await systemFilesCommand();
+                    break;
+                case 'versions': {
+                    const result = await versionsCommand();
+                    if (result === 'finish') {
+                        return;
+                    }
+
+                    break;
+                }
+            }
+        } catch (error) {
+            cancel(error instanceof Error ? error.message : String(error));
+            process.exit(1);
+        }
     }
 }

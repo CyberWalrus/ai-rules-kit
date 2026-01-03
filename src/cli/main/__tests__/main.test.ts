@@ -132,16 +132,6 @@ describe('runCli', () => {
         await expect(runCli()).rejects.toThrow('Command execution failed');
     });
 
-    it.skip('должен обрабатывать ошибки при проверке обновлений', async () => {
-        const error = new Error('Update check failed');
-        mockEnsureLatestVersion.mockRejectedValue(error);
-
-        await runCli();
-
-        expect(mockEnsureLatestVersion).toHaveBeenCalledTimes(1);
-        expect(mockRunMain).toHaveBeenCalledTimes(1);
-    });
-
     it('должен запускать команду немедленно, не дожидаясь проверки версии', async () => {
         vi.useFakeTimers();
 
