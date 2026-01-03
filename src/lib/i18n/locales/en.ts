@@ -1,5 +1,5 @@
 /** Английские переводы */
-export const en = {
+export const EN_TRANSLATIONS = {
     'cli.error': 'Error: {message}',
     'cli.interactive-menu.back-to-menu': 'Back to main menu',
     'cli.interactive-menu.cancelled': 'Operation cancelled',
@@ -86,6 +86,7 @@ export const en = {
     'command.replace-all.success': '✓ Replaced prompts to version {version}',
     'command.replace-all.use-local': 'Do you want to continue with the current local version?',
     'command.replace-all.use-local.no': 'Replace-all cancelled by user',
+    'command.system-files.back-to-menu': 'Back to main menu',
     'command.system-files.copied': '✓ Copied to clipboard. Paste in Cursor: Rules and Commands -> User Rules',
     'command.system-files.copied.core-instructions':
         '✓ Copied to clipboard. Paste in Cursor: Rules and Commands -> User Rules',
@@ -101,6 +102,7 @@ export const en = {
     'command.system-files.current-date.hint':
         'Prompt with current date for user. Paste in Cursor: Rules and Commands -> User Rules',
     'command.system-files.error': 'Error: {message}',
+    'command.system-files.finish': 'Finish',
     'command.system-files.mcp-config': 'MCP server config',
     'command.system-files.mcp-config.filled': '✓ MCP settings filled',
     'command.system-files.mcp-config.filling-fields': 'Filling missing MCP settings fields...',
@@ -112,6 +114,7 @@ export const en = {
     'command.system-files.meta-info.hint':
         'Prompt with meta information for user. Paste in Cursor: Rules and Commands -> User Rules',
     'command.system-files.meta-info.missing-fields': 'Missing meta information fields need to be filled',
+    'command.system-files.select-action': 'Select action:',
     'command.system-files.select-type': 'Select system file type:',
     'command.upgrade.config-not-found': 'Config file not found',
     'command.upgrade.downgrade': 'Do you want to downgrade from {current} to {latest}?',

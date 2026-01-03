@@ -1,5 +1,5 @@
 /** Русские переводы */
-export const ru = {
+export const RU_TRANSLATIONS = {
     'cli.error': 'Ошибка: {message}',
     'cli.interactive-menu.back-to-menu': 'В главное меню',
     'cli.interactive-menu.cancelled': 'Операция отменена',
@@ -86,6 +86,7 @@ export const ru = {
     'command.replace-all.success': '✓ Заменены промпты на версию {version}',
     'command.replace-all.use-local': 'Хотите продолжить с текущей локальной версией?',
     'command.replace-all.use-local.no': 'Замена всех правил отменена пользователем',
+    'command.system-files.back-to-menu': 'В главное меню',
     'command.system-files.copied': '✓ Скопировано в буфер обмена. Вставьте в Cursor: Rules and Commands -> User Rules',
     'command.system-files.copied.core-instructions':
         '✓ Скопировано в буфер обмена. Вставьте в Cursor: Rules and Commands -> User Rules',
@@ -102,6 +103,7 @@ export const ru = {
     'command.system-files.current-date.hint':
         'Промпт с текущей датой для пользователя. Вставьте в Cursor: Rules and Commands -> User Rules',
     'command.system-files.error': 'Ошибка: {message}',
+    'command.system-files.finish': 'Завершить',
     'command.system-files.mcp-config': 'Конфиг для MCP сервера',
     'command.system-files.mcp-config.filled': '✓ MCP настройки заполнены',
     'command.system-files.mcp-config.filling-fields': 'Заполнение недостающих полей MCP настроек...',
@@ -113,6 +115,7 @@ export const ru = {
     'command.system-files.meta-info.hint':
         'Промпт с метаинформацией для пользователя. Вставьте в Cursor: Rules and Commands -> User Rules',
     'command.system-files.meta-info.missing-fields': 'Необходимо заполнить недостающие поля метаинформации',
+    'command.system-files.select-action': 'Выберите действие:',
     'command.system-files.select-type': 'Выберите тип системного файла:',
     'command.upgrade.config-not-found': 'Файл конфигурации не найден',
     'command.upgrade.downgrade': 'Хотите понизить версию с {current} до {latest}?',

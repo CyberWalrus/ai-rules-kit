@@ -2,7 +2,7 @@ import { cancel, isCancel, log, text } from '@clack/prompts';
 
 import type { McpSettings } from '../../model/types/main';
 import { t } from '../i18n';
-import type { Translations } from '../i18n/get-translations';
+import type { Translations } from '../i18n/types';
 
 /** Маппинг полей для отображения */
 const FIELD_PROMPTS: Record<keyof McpSettings, keyof Translations> = {

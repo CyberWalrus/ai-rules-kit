@@ -2,7 +2,7 @@ import { cancel, isCancel, log, text } from '@clack/prompts';
 
 import type { UserMetaInfo } from '../../model/types/main';
 import { t } from '../i18n';
-import type { Translations } from '../i18n/get-translations';
+import type { Translations } from '../i18n/types';
 
 /** Маппинг полей для отображения */
 const FIELD_PROMPTS: Record<keyof UserMetaInfo, keyof Translations> = {
