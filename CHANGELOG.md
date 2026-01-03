@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.6.12] - 2026-01-03
+
+<small>03.01.2026 18:14</small>
+
+### Changed
+
+- **File operations improvements**
+    - Improved logic for working with rules in file-operations module
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/f2bbe33290280873c8c7c90d771a4e7d9c7a47ef" target="_blank">f2bbe33</a>
+
+### Docs
+
+- **Documentation updates**
+    - Updated README, architecture.xml and package-ai-docs.md
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/ecc69fcbb431b7778f574a2c87fa97f53e8bc69f" target="_blank">ecc69fc</a>
+
+### Removed
+
+- **Legacy files and configuration**
+    - Removed outdated mcp.json configuration file
+    - Removed user-rules directory with legacy templates
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/307256052156b02981716ee23e70e35d0d0c4b1a" target="_blank">3072560</a>
+
 ## [0.6.11] - 2026-01-03
 
 <small>03.01.2026 17:22</small>
