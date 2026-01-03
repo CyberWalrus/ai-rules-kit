@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://raw.githubusercontent.com/CyberWalrus/cursor-rules-cli/main/.cursor/cursor-rules-config-1.0.0.schema.json",
+  "$id": "https://raw.githubusercontent.com/CyberWalrus/cursor-rules-cli/main/schemas/cursor-rules-config-1.0.0.schema.json",
   "title": "Cursor Rules Configuration",
   "description": "Configuration file for cursor-rules CLI tool",
   "type": "object",
