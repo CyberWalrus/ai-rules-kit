@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.6.13] - 2026-01-02
+
+<small>03.01.2026 21:30</small>
+
+### Changed
+
+- **Code structure refactoring**
+    - Extracted types and constants from system-files command to separate files
+    - Extracted i18n types to separate types.ts file
+    - Improved code organization and maintainability
+    - Updated translations in locales
+
 ## [0.6.12] - 2026-01-03
 
 <small>03.01.2026 18:14</small>
