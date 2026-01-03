@@ -3,7 +3,6 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 import { copyRulesToTarget } from '../../../lib/file-operations/copy-rules-to-target';
-import { copySystemRulesToTarget } from '../../../lib/file-operations/copy-system-rules-to-target';
 import { writeConfigFile } from '../../../lib/file-operations/write-config-file';
 import { fetchPromptsTarball, fetchSystemRulesTarball } from '../../../lib/github-fetcher';
 import { t } from '../../../lib/i18n';
@@ -53,9 +52,6 @@ export async function initCommand(packageDir: string, targetDir: string): Promis
                 : Promise.resolve(),
         ]);
         await copyRulesToTarget(tmpDir, targetDir);
-        if (systemRulesVersion !== null) {
-            await copySystemRulesToTarget(tmpDir, targetDir);
-        }
 
         const cliVersion = await getPackageVersion(packageDir);
         const currentTimestamp = new Date().toISOString();

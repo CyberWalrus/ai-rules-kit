@@ -1,11 +1,11 @@
-import { cancel, isCancel, log, select, text } from '@clack/prompts';
+import { cancel, isCancel, log, outro, select, text } from '@clack/prompts';
 
 import { t } from '../../../lib/i18n';
 import { readUserConfig, writeUserConfig } from '../../../lib/user-config';
 import type { McpSettings, UserConfig, UserMetaInfo } from '../../../model';
 
 /** Тип поля конфигурации для редактирования */
-type ConfigField = 'finish' | 'language' | 'mcp-settings' | 'meta-info';
+type ConfigField = 'back-to-menu' | 'finish' | 'language' | 'mcp-settings' | 'meta-info';
 
 /** Тип поля метаинформации для редактирования */
 type MetaInfoField =
@@ -279,9 +279,12 @@ async function editMcpSettings(currentMcpSettings: McpSettings | null | undefine
     return mcpSettings;
 }
 
+/** Результат выполнения команды конфигурации */
+export type ConfigCommandResult = 'back-to-menu' | 'finish';
+
 /** Команда настройки глобальной конфигурации */
 // eslint-disable-next-line sonarjs/cognitive-complexity -- интерактивное меню требует множественных условий
-export async function configCommand(): Promise<void> {
+export async function configCommand(): Promise<ConfigCommandResult> {
     // eslint-disable-next-line no-constant-condition
     while (true) {
         const currentConfig = await readUserConfig();
@@ -301,6 +304,7 @@ export async function configCommand(): Promise<void> {
                     label: `${t('command.config.field.mcp-settings')}: ${currentMcpSettings ? '(настроено)' : '(не настроено)'}`,
                     value: 'mcp-settings',
                 },
+                { label: t('command.config.field.back-to-menu'), value: 'back-to-menu' },
                 { label: t('command.config.field.finish'), value: 'finish' },
             ],
         });
@@ -308,11 +312,17 @@ export async function configCommand(): Promise<void> {
         if (isCancel(field)) {
             cancel(t('cli.interactive-menu.cancelled'));
 
-            return;
+            return 'finish';
+        }
+
+        if (field === 'back-to-menu') {
+            return 'back-to-menu';
         }
 
         if (field === 'finish') {
-            break;
+            outro(t('cli.interactive-menu.goodbye'));
+
+            return 'finish';
         }
 
         if (field === 'language') {

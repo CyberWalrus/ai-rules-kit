@@ -1,5 +1,3 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-
 import { configCommand } from '../index';
 
 const mockSelect = vi.hoisted(() => vi.fn());
@@ -31,10 +29,13 @@ const mockT = vi.hoisted(() =>
     }),
 );
 
+const mockOutro = vi.hoisted(() => vi.fn());
+
 vi.mock('@clack/prompts', () => ({
     cancel: mockCancel,
     isCancel: mockIsCancel,
     log: mockLog,
+    outro: mockOutro,
     select: mockSelect,
     text: mockText,
 }));
@@ -57,6 +58,7 @@ describe('configCommand', () => {
         mockCancel.mockImplementation(() => {});
         mockLog.error.mockImplementation(() => {});
         mockLog.success.mockImplementation(() => {});
+        mockOutro.mockImplementation(() => {});
         mockConsoleLog.mockClear();
         mockReadUserConfig.mockResolvedValue(null);
         mockWriteUserConfig.mockResolvedValue(undefined);

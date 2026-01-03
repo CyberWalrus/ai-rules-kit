@@ -3,12 +3,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 import { calculateDiff } from '../../../lib/diff-calculator/calculate-diff';
-import {
-    copyRulesToTarget,
-    copySystemRulesToTarget,
-    readConfigFile,
-    writeConfigFile,
-} from '../../../lib/file-operations';
+import { copyRulesToTarget, readConfigFile, writeConfigFile } from '../../../lib/file-operations';
 import { fetchPromptsTarball, fetchSystemRulesTarball } from '../../../lib/github-fetcher';
 import { askConfirmation } from '../../../lib/helpers';
 import { t } from '../../../lib/i18n';
@@ -123,9 +118,6 @@ export async function upgradeCommand(packageDir: string, targetDir: string): Pro
         ]);
         await calculateDiff(tmpDir, targetDir);
         await copyRulesToTarget(tmpDir, targetDir, config.ignoreList ?? [], config.fileOverrides ?? []);
-        if (shouldUpdateSystemRules) {
-            await copySystemRulesToTarget(tmpDir, targetDir);
-        }
 
         const cliVersion = await getPackageVersion(packageDir);
         config.cliVersion = cliVersion;

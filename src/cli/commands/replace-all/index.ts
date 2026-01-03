@@ -4,7 +4,6 @@ import { join } from 'node:path';
 
 import {
     copyRulesToTarget,
-    copySystemRulesToTarget,
     deleteRulesFromTarget,
     readConfigFile,
     writeConfigFile,
@@ -112,9 +111,6 @@ export async function replaceAllCommand(packageDir: string, targetDir: string): 
         ]);
         await deleteRulesFromTarget(targetDir);
         await copyRulesToTarget(tmpDir, targetDir, config.ignoreList ?? [], config.fileOverrides ?? []);
-        if (systemRulesVersion !== undefined) {
-            await copySystemRulesToTarget(tmpDir, targetDir);
-        }
         await writeConfigFile(targetDir, config);
 
         console.log(t('command.replace-all.success', { version: promptsVersion }));

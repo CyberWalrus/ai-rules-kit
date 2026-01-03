@@ -1,10 +1,12 @@
 /** Русские переводы */
 export const ru = {
     'cli.error': 'Ошибка: {message}',
+    'cli.interactive-menu.back-to-menu': 'В главное меню',
     'cli.interactive-menu.cancelled': 'Операция отменена',
     'cli.interactive-menu.config': 'Настроить конфигурацию',
     'cli.interactive-menu.config.hint': 'Настройка языка интерфейса, метаинформации и MCP конфигурации',
     'cli.interactive-menu.exit': 'Выход',
+    'cli.interactive-menu.finish': 'Завершить',
     'cli.interactive-menu.goodbye': 'До свидания! 👋',
     'cli.interactive-menu.init': 'Инициализировать правила',
     'cli.interactive-menu.init.hint':
@@ -29,6 +31,7 @@ export const ru = {
     'cli.main.replace-all.success': '✅ Правила успешно заменены',
     'cli.main.update-check.failed': '⚠️ Не удалось проверить обновления: {message}',
     'cli.main.upgrade.success': '✅ Правила успешно обновлены',
+    'command.config.field.back-to-menu': 'В главное меню',
     'command.config.field.finish': 'Завершить',
     'command.config.field.language': 'Язык интерфейса',
     'command.config.field.mcp-config': 'Конфиг MCP сервера (копировать)',
@@ -124,6 +127,9 @@ export const ru = {
     'command.upgrade.use-local': 'Хотите продолжить с текущей локальной версией?',
     'command.upgrade.use-local.no': 'Обновление отменено пользователем',
     'command.upgrade.use-local.yes': '✓ Используется текущая локальная версия {version}',
+    'command.versions.back-to-menu': 'В главное меню',
+    'command.versions.finish': 'Завершить',
+    'command.versions.select-action': 'Выберите действие:',
     'github-fetcher.api-error': '⚠️ Ошибка GitHub API: {status}',
     'github-fetcher.fetch-failed': '⚠️ Не удалось получить последнюю версию промптов из GitHub: {message}',
     'github-fetcher.no-version': '⚠️ Версия промптов не найдена в репозитории GitHub',

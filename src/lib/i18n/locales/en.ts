@@ -1,10 +1,12 @@
 /** Английские переводы */
 export const en = {
     'cli.error': 'Error: {message}',
+    'cli.interactive-menu.back-to-menu': 'Back to main menu',
     'cli.interactive-menu.cancelled': 'Operation cancelled',
     'cli.interactive-menu.config': 'Configure settings',
     'cli.interactive-menu.config.hint': 'Configure interface language, meta information and MCP configuration',
     'cli.interactive-menu.exit': 'Exit',
+    'cli.interactive-menu.finish': 'Finish',
     'cli.interactive-menu.goodbye': 'Goodbye! 👋',
     'cli.interactive-menu.init': 'Initialize rules',
     'cli.interactive-menu.init.hint':
@@ -29,6 +31,7 @@ export const en = {
     'cli.main.replace-all.success': '✅ Rules replaced successfully',
     'cli.main.update-check.failed': '⚠️ Failed to check for updates: {message}',
     'cli.main.upgrade.success': '✅ Rules upgraded successfully',
+    'command.config.field.back-to-menu': 'Back to main menu',
     'command.config.field.finish': 'Finish',
     'command.config.field.language': 'Interface language',
     'command.config.field.mcp-config': 'MCP server config (copy)',
@@ -122,6 +125,9 @@ export const en = {
     'command.upgrade.use-local': 'Do you want to continue with the current local version?',
     'command.upgrade.use-local.no': 'Upgrade cancelled by user',
     'command.upgrade.use-local.yes': '✓ Using current local version {version}',
+    'command.versions.back-to-menu': 'Back to main menu',
+    'command.versions.finish': 'Finish',
+    'command.versions.select-action': 'Select action:',
     'github-fetcher.api-error': '⚠️ GitHub API error: {status}',
     'github-fetcher.fetch-failed': '⚠️ Failed to fetch latest prompts version from GitHub: {message}',
     'github-fetcher.no-version': '⚠️ No prompts version found in GitHub repository',

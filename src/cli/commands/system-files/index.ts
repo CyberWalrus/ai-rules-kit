@@ -1,7 +1,7 @@
 import { cancel, isCancel, log, select } from '@clack/prompts';
-import { fileURLToPath } from 'node:url';
 
 import { copyToClipboard } from '../../../lib/clipboard';
+import { getLatestSystemRulesVersion } from '../../../lib/github-fetcher/get-latest-system-rules-version';
 import { t } from '../../../lib/i18n';
 import {
     generateCurrentDatePrompt,
@@ -18,18 +18,22 @@ import {
     validateMetaInfo,
     writeUserConfig,
 } from '../../../lib/user-config';
-import { getPackageDir } from '../../main/get-package-dir';
-
-const currentFilePath = typeof __filename !== 'undefined' ? __filename : fileURLToPath(import.meta.url);
+import { GITHUB_REPO } from '../../../model';
 
 /** Тип системного файла для копирования */
 type SystemFileType = 'core-instructions' | 'current-date' | 'mcp-config' | 'meta-info';
 
 /** Команда работы с системными файлами */
 export async function systemFilesCommand(): Promise<void> {
-    const packageDir = getPackageDir(currentFilePath);
-    if (packageDir === null || packageDir === undefined) {
-        throw new Error(t('cli.main.package-dir-not-found'));
+    let isGithubError = false;
+
+    try {
+        const latestVersion = await getLatestSystemRulesVersion(GITHUB_REPO);
+        if (latestVersion === null) {
+            isGithubError = true;
+        }
+    } catch {
+        isGithubError = true;
     }
 
     const fileType = await select<SystemFileType>({
@@ -65,11 +69,13 @@ export async function systemFilesCommand(): Promise<void> {
     }
 
     try {
+        const forceRefresh = isGithubError;
+
         let content: string;
 
         switch (fileType) {
             case 'core-instructions': {
-                const rawContent = await getCoreSystemInstructions(packageDir);
+                const rawContent = await getCoreSystemInstructions(forceRefresh);
                 content = removeYamlFrontmatter(rawContent);
                 break;
             }
@@ -97,12 +103,12 @@ export async function systemFilesCommand(): Promise<void> {
                     await writeUserConfig(userConfig);
                 }
 
-                const rawContent = await generateMetaInfoPrompt(packageDir, userConfig?.metaInfo);
+                const rawContent = await generateMetaInfoPrompt(userConfig?.metaInfo, forceRefresh);
                 content = removeYamlFrontmatter(rawContent);
                 break;
             }
             case 'current-date': {
-                const rawContent = await generateCurrentDatePrompt(packageDir);
+                const rawContent = await generateCurrentDatePrompt(forceRefresh);
                 content = removeYamlFrontmatter(rawContent);
                 break;
             }
@@ -133,7 +139,7 @@ export async function systemFilesCommand(): Promise<void> {
                     await writeUserConfig(userConfig);
                 }
 
-                content = await generateMcpConfig(packageDir, userConfig?.mcpSettings);
+                content = await generateMcpConfig(userConfig?.mcpSettings, forceRefresh);
                 break;
             }
         }
