@@ -17,7 +17,7 @@ export async function writeConfigFile(targetDir: string, config: RulesConfig): P
     const cursorDir = join(targetDir, '.cursor');
     const configFilePath = join(cursorDir, VERSION_FILE_NAME);
     const configWithSchema = {
-        $schema: `https://raw.githubusercontent.com/CyberWalrus/cursor-rules-cli/main/.cursor/cursor-rules-config-${config.configVersion}.schema.json`,
+        $schema: `https://raw.githubusercontent.com/CyberWalrus/cursor-rules-cli/main/schemas/cursor-rules-config-${config.configVersion}.schema.json`,
         ...config,
     };
     const content = JSON.stringify(configWithSchema, null, 2);

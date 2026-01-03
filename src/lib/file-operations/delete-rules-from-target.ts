@@ -11,17 +11,20 @@ export async function deleteRulesFromTarget(targetDir: string): Promise<void> {
         throw new Error('targetDir is required');
     }
 
-    for (const ruleDir of RULES_DIRS) {
-        const targetPath = join(targetDir, ruleDir);
-        const targetExists = await pathExists(targetPath);
+    await Promise.all(
+        RULES_DIRS.map(async (ruleDir) => {
+            const targetRuleDir = ruleDir.replace(/^cursor\//, '.cursor/');
+            const targetPath = join(targetDir, targetRuleDir);
+            const targetExists = await pathExists(targetPath);
 
-        if (!targetExists) {
-            continue;
-        }
+            if (!targetExists) {
+                return;
+            }
 
-        await rm(targetPath, {
-            force: true,
-            recursive: true,
-        });
-    }
+            await rm(targetPath, {
+                force: true,
+                recursive: true,
+            });
+        }),
+    );
 }
