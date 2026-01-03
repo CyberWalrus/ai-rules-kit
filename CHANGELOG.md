@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.6.11] - 2026-01-03
+
+<small>03.01.2026 17:22</small>
+
+### Added
+
+- **New commands for agent analysis, changelog generation and commit automation**
+    - Added agent-analysis, changelog and commit commands
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/e77d93d0b05d02785ff80d13af03703809a4f33d" target="_blank">e77d93d</a>
+
+### Changed
+
+- **Config command improvements**
+    - Simplified config command and updated translations
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/0cad999a1f77b6c90a77aee0e131ac9a31aef2ee" target="_blank">0cad999</a>
+
+### Removed
+
+- **Legacy configuration file**
+    - Removed outdated cursor-rules-config.json configuration file
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/1dd7246d3ed083d27c347fac699182e7cfd0a736" target="_blank">1dd7246</a>
+
 ## [0.6.9] - 2026-01-02
 
 <small>02.01.2026</small>

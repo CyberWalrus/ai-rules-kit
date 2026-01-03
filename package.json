@@ -1,6 +1,6 @@
 {
     "name": "cursor-rules-cli",
-    "version": "0.6.9",
+    "version": "0.6.11",
     "description": "CLI tool for managing .cursor rules in projects",
     "bin": {
         "cursor-rules-cli": "dist/cli.cjs",
@@ -59,8 +59,7 @@
     },
     "files": [
         "dist",
-        "user-rules",
-        "mcp.json"
+        "schemas"
     ],
     "publishConfig": {
         "access": "public"
