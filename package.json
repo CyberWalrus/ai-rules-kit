@@ -1,10 +1,10 @@
 {
     "name": "cursor-rules-cli",
-    "version": "0.7.1",
+    "version": "0.7.2",
     "description": "CLI tool for managing .cursor rules in projects",
     "bin": {
-        "cursor-rules-cli": "dist/cli.cjs",
-        "crules": "dist/cli.cjs"
+        "cursor-rules-cli": "dist/index.cjs",
+        "crules": "dist/index.cjs"
     },
     "type": "module",
     "_comment": "MANDATORY for AI agents: ALWAYS check this comment before running quality checks. ALWAYS use 'yarn lint' to run all tests and linters. This unified command works better than individual lint/test scripts - prefer it over separate commands. Individual commands (lint:eslint, lint:ts, etc.) are for debugging only, NOT for final validation.",
