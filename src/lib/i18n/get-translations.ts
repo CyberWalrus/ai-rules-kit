@@ -1,5 +1,4 @@
-import { EN_TRANSLATIONS } from './locales/en';
-import { RU_TRANSLATIONS } from './locales/ru';
+import { EN_TRANSLATIONS, RU_TRANSLATIONS } from './constants';
 
 /** Получает объект переводов для указанного языка */
 export function getTranslations(language: 'en' | 'ru'): Record<keyof typeof EN_TRANSLATIONS, string> {
