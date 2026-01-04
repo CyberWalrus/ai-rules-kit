@@ -140,9 +140,9 @@
 - **Uncommitted changes in current version**
     - Changes in .cursor/cursor-rules-config-1.0.0.schema.json
     - Changes in package.json
-    - Changes in src/__tests__/e2e/upgrade-command.e2e.test.ts
-    - Changes in src/lib/file-operations/__tests__/copy-rules-to-target.test.ts
-    - Changes in src/lib/file-operations/__tests__/should-ignore-file.test.ts
+    - Changes in src/**tests**/e2e/upgrade-command.e2e.test.ts
+    - Changes in src/lib/file-operations/**tests**/copy-rules-to-target.test.ts
+    - Changes in src/lib/file-operations/**tests**/should-ignore-file.test.ts
     - Changes in src/lib/file-operations/copy-rules-to-target.ts
     - Changes in src/lib/file-operations/should-ignore-file.ts
 
@@ -251,7 +251,7 @@
     - Changes in package.json
     - Changes in src/cli/commands/config/index.ts
     - Changes in src/cli/commands/system-files/index.ts
-    - Changes in src/cli/main/__tests__/interactive-menu.test.ts
+    - Changes in src/cli/main/**tests**/interactive-menu.test.ts
     - Changes in src/cli/main/interactive-menu.ts
     - Changes in src/lib/i18n/locales/en.ts
     - Changes in src/lib/i18n/locales/ru.ts
