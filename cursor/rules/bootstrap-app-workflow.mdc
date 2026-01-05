@@ -182,10 +182,10 @@ Step 3 complete when:
 
 Ask user:
 
-| Structure            | When to use                         |
-| :------------------- | :---------------------------------- |
-| Monolith             | Single application, small team      |
-| Monorepo (Turborepo) | Multiple packages/apps, shared code |
+| Structure                              | When to use                         |
+| :------------------------------------- | :---------------------------------- |
+| Monolith                               | Single application, small team      |
+| Monorepo (Turborepo + yarn workspaces) | Multiple packages/apps, shared code |
 
 **4.2 Architecture Pattern**
 
@@ -485,15 +485,58 @@ Step 6 complete when:
 
 ### Infrastructure Defaults
 
-| Component       | Default                    |
-| :-------------- | :------------------------- |
-| Package Manager | yarn                       |
-| Monorepo Tool   | Turborepo (if needed)      |
-| Linting         | eslint-walrus-config       |
-| Code Analysis   | Knip                       |
-| CI/CD           | GitHub Actions             |
-| TypeScript      | strict mode (strict: true) |
-| Versions        | Pinned (no ^ or ~)         |
+| Component       | Default                                 |
+| :-------------- | :-------------------------------------- |
+| Package Manager | yarn                                    |
+| Monorepo Tool   | Turborepo + yarn workspaces (if needed) |
+| Linting         | eslint-walrus-config                    |
+| Code Analysis   | Knip                                    |
+| CI/CD           | GitHub Actions                          |
+| TypeScript      | strict mode (strict: true)              |
+| Versions        | Pinned (no ^ or ~)                      |
+
+### Scripts Template
+
+**package.json scripts structure:**
+
+```json
+{
+    "_comment": "MANDATORY for AI agents: ALWAYS use 'yarn lint' to run all tests and linters. Individual commands are for debugging only.",
+    "scripts": {
+        "build": "tsup",
+        "start": "tsx src/index.ts",
+        "dev": "vite",
+        "lint": "aifr \"yarn lint:eslint\" \"yarn lint:ts\" \"yarn lint:knip\" \"yarn lint:test-unit\" \"yarn lint:test-e2e\"",
+        "lint:eslint": "eslint --fix --max-warnings 0 src",
+        "lint:ts": "tsc --noEmit",
+        "lint:knip": "knip --no-progress --include exports,files",
+        "lint:test-unit": "cross-env NODE_ENV=test vitest --run",
+        "lint:test-e2e": "yarn build && cross-env NODE_ENV=test TEST_TYPE=e2e vitest --run"
+    }
+}
+```
+
+**Key principles:**
+
+- `yarn lint` — unified command for ALL checks (AI agents MUST use this)
+- `aifr` (ai-friendly-runner) — runs commands in parallel
+- Individual `lint:*` commands — for debugging only
+- `cross-env` — cross-platform environment variables
+
+### DevDependencies Template
+
+**Required devDependencies:**
+
+| Package              | Purpose                    |
+| :------------------- | :------------------------- |
+| ai-friendly-runner   | Parallel command execution |
+| cross-env            | Cross-platform env vars    |
+| eslint-walrus-config | ESLint + Prettier config   |
+| knip                 | Dead code detection        |
+| tsup                 | TypeScript bundler         |
+| tsx                  | TypeScript executor        |
+| typescript           | Type checking              |
+| vitest               | Testing framework          |
 
 </tech_stacks>
 
