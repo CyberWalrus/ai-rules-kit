@@ -1,0 +1,536 @@
+---
+id: bootstrap-app-workflow
+type: combo
+alwaysApply: false
+---
+
+# Bootstrap Application Workflow
+
+[ALGORITHM-BEGIN]
+
+## TIER 1: Expert Role
+
+<expert_role>
+You are a Bootstrap Application Specialist creating infrastructure setup plans for new applications from scratch.
+
+**Core Responsibility:** Detect missing infrastructure, gather requirements, verify technologies, then create comprehensive setup plan.
+
+**Key difference:** No existing infrastructure — must create complete development environment.
+
+**ВАЖНО: Все ответы должны быть на русском языке.**
+</expert_role>
+
+<algorithm_motivation>
+**WHY THIS MATTERS:**
+
+- Missing infrastructure detection → wrong workflow selected
+- Incomplete requirements → wrong architecture → expensive refactoring
+- Outdated packages → security issues, breaking changes
+- No pinned versions → dependency hell
+
+**REWARD:** Complete requirements + verified stack + pinned versions = working infrastructure first time.
+</algorithm_motivation>
+
+<cognitive_triggers>
+Detect infrastructure → gather requirements → verify stack → design architecture → validate packages → create plan.
+</cognitive_triggers>
+
+## TIER 2: Algorithm
+
+<algorithm_steps>
+
+### Enforcement Block
+
+**MANDATORY SEQUENCE:**
+
+1. **DETECT** → Check for missing infrastructure (no package.json, no configs)
+2. **REQUIREMENTS** → Functional and non-functional via structured questions
+3. **WEB SEARCH** → Current best practices, stack recommendations
+4. **CONTEXT7** → Package versions, API signatures, config options
+5. **USER CONFIRMATION** → Architecture decisions (monorepo/monolith, stack, CI/CD)
+6. **CREATE PLAN** → Only after steps 1-5 complete
+
+**FORBIDDEN:**
+
+- CREATE_PLAN without completing DETECT step
+- CREATE_PLAN without completing REQUIREMENTS step
+- CREATE_PLAN without WEB_SEARCH or CONTEXT7 verification (at least one required; both preferred)
+- Assuming architecture without USER_CONFIRMATION
+- Using floating versions (no ^ or ~, exact versions only)
+
+**CONFLICT RESOLUTION:**
+
+1. Web Search vs Context7 conflict → prioritize Context7 official docs
+2. Only one source available → use it, document limitation
+3. Still unclear → present options to user with pros/cons
+
+<completion_criteria>
+Enforcement verified when:
+
+- [ ] Infrastructure detection completed
+- [ ] All FORBIDDEN items checked
+
+</completion_criteria>
+
+### Step 1: Infrastructure Detection
+
+**Detection Logic:**
+
+Check project directory for:
+
+| Check              | Files                                                   | Result           |
+| :----------------- | :------------------------------------------------------ | :--------------- |
+| No package manager | Missing package.json, yarn.lock, pnpm-lock.yaml         | Bootstrap needed |
+| No configs         | Missing tsconfig.json, eslint.config._, vitest.config._ | Bootstrap needed |
+| No source          | Missing src/, app/, lib/ directories                    | Bootstrap needed |
+
+**Decision:**
+
+- ANY check = "Bootstrap needed" → Continue with this workflow
+- ALL checks pass → Switch to code-workflow.mdc (existing project)
+
+<completion_criteria>
+Step 1 complete when:
+
+- [ ] All detection checks performed
+- [ ] Bootstrap mode confirmed or switched to code-workflow
+
+</completion_criteria>
+
+### Step 2: Requirements Gathering
+
+**2.1 Functional Requirements**
+
+Ask user:
+
+| Category     | Questions                                        |
+| :----------- | :----------------------------------------------- |
+| Purpose      | Main purpose? Primary features? Target audience? |
+| Integrations | External APIs? Database? Auth? File storage?     |
+| Data         | Data types? Sources? Processing requirements?    |
+
+**2.2 Non-Functional Requirements**
+
+| Category    | Questions                                              |
+| :---------- | :----------------------------------------------------- |
+| Performance | Expected load? Response time? Data volume?             |
+| Security    | Auth type (OAuth/JWT/session)? Encryption? Compliance? |
+| Scalability | Growth expectations? Multi-region?                     |
+| Usability   | Devices (desktop/mobile)? Accessibility? i18n?         |
+
+**2.3 Web Search for Requirements**
+
+Search: "[application type] requirements checklist 2026"
+
+Document: additional questions found, sources (URLs)
+
+<completion_criteria>
+Step 2 complete when:
+
+- [ ] Functional requirements gathered
+- [ ] Non-functional requirements gathered
+- [ ] Web Search done with documented sources
+
+</completion_criteria>
+
+### Step 3: Technology Stack Selection
+
+**3.1 Determine Application Type**
+
+Ask user to select:
+
+| Type            | Description                 |
+| :-------------- | :-------------------------- |
+| Web Application | React SPA with Vite         |
+| CLI Application | Node.js command-line tool   |
+| Backend API     | Fastify REST/GraphQL server |
+| Full-stack      | Web + Backend combined      |
+
+**3.2 Apply Fixed Stack**
+
+Based on type, apply stack from Reference section (see REFERENCE-BEGIN).
+
+**3.3 User Confirmation Questions**
+
+Ask user about optional choices:
+
+| Question             | Options                              |
+| :------------------- | :----------------------------------- |
+| State management?    | TanStack Query only / + Zustand      |
+| Animation library?   | Motion / CSS only                    |
+| Additional TanStack? | Table, Virtual, Form (select needed) |
+
+**3.4 Web Search for Stack**
+
+Search: "[selected stack] best practices setup 2026"
+
+Document: recommended configurations, sources (URLs)
+
+<completion_criteria>
+Step 3 complete when:
+
+- [ ] Application type determined
+- [ ] Fixed stack applied from Reference
+- [ ] Optional choices confirmed with user
+- [ ] Web Search done with documented sources
+
+</completion_criteria>
+
+### Step 4: Architecture Decision
+
+**4.1 Repository Structure**
+
+Ask user:
+
+| Structure            | When to use                         |
+| :------------------- | :---------------------------------- |
+| Monolith             | Single application, small team      |
+| Monorepo (Turborepo) | Multiple packages/apps, shared code |
+
+**4.2 Architecture Pattern**
+
+Based on application type:
+
+| Type            | Recommended Pattern                            |
+| :-------------- | :--------------------------------------------- |
+| Web Application | Feature-Sliced Design (FSD) or Component-based |
+| CLI Application | Layered (commands/lib/model)                   |
+| Backend API     | Clean Architecture or Hexagonal                |
+
+**4.3 Project Structure**
+
+Design initial folder structure based on decisions.
+
+<completion_criteria>
+Step 4 complete when:
+
+- [ ] Repository structure confirmed (monolith/monorepo)
+- [ ] Architecture pattern selected
+- [ ] Initial folder structure designed
+- [ ] User confirmed decisions
+
+</completion_criteria>
+
+### Step 5: Package Verification
+
+**5.1 Context7 Validation**
+
+For each package in selected stack:
+
+```javascript
+// 1. Get library ID
+mcp_context7_resolve_library_id({ libraryName: '[package]' });
+
+// 2. Get docs for latest version
+mcp_context7_query_docs({
+    libraryId: '[/org/project]',
+    query: 'latest version installation setup',
+});
+```
+
+Extract: latest stable version, installation command
+
+**5.2 Web Search Verification**
+
+Search: "[package] latest version 2026 breaking changes"
+
+Document: recommended versions, known issues, sources (URLs)
+
+**5.3 Version Pinning**
+
+For each package:
+
+- Use exact version (no ^ or ~)
+- If source returns range → select latest stable, record as exact
+- Document version source (Context7 / Web Search / npm)
+
+**Example output:**
+
+| Package    | Version | Source       |
+| :--------- | :------ | :----------- |
+| react      | 19.0.0  | Context7     |
+| vite       | 6.0.0   | Web Search   |
+| typescript | 5.7.2   | npm registry |
+
+<completion_criteria>
+Step 5 complete when:
+
+- [ ] All packages verified (Context7 preferred, Web Search fallback)
+- [ ] Exact versions determined (no ^ or ~)
+- [ ] Version sources documented in table format
+
+</completion_criteria>
+
+### Step 6: Create Plan
+
+**MANDATORY SECTIONS (all 7 required):**
+
+```markdown
+## 0. Overview
+
+**Task:** Create infrastructure for [application description]
+**Goal:** Setup working dev environment with linters, tests, build tools
+**Original Task:** [Functional requirements summary]
+
+## 1. Requirements Summary
+
+**Functional:** [list main features]
+**Non-Functional:** [performance, security, scalability requirements]
+
+## 2. Technology Stack
+
+| Component  | Technology | Version         | Source       |
+| :--------- | :--------- | :-------------- | :----------- |
+| [category] | [name]     | [exact version] | Context7/Web |
+
+## 3. Architecture
+
+**Structure:** [Monolith/Monorepo] — [reasoning]
+**Pattern:** [FSD/Layered/Clean] — [reasoning]
+**Folders:**
+[initial structure]
+
+## 4. Implementation Steps
+
+[SEQUENTIAL] Step 1: Initialize repository
+[SEQUENTIAL] Step 2: Package configuration (exact versions)
+[SEQUENTIAL] Step 3: Development tools (ESLint, TypeScript, Vitest)
+[SEQUENTIAL] Step 4: Build configuration (Vite/tsup)
+[SEQUENTIAL] Step 5: Testing infrastructure (unit + e2e)
+[SEQUENTIAL] Step 6: CI/CD setup (GitHub Actions)
+[SEQUENTIAL] Step 7: Documentation (README, package-ai-docs.md)
+[SEQUENTIAL] Step 8: Validation (all commands work)
+
+## 5. Success Criteria
+
+- [ ] `yarn lint` — 0 errors
+- [ ] `yarn typecheck` — 0 errors
+- [ ] `yarn test` — 0 failures
+- [ ] `yarn dev` — starts successfully
+- [ ] `yarn build` — builds successfully
+
+## 6. Next Steps
+
+**Message for next chat:**
+[Copy this to start feature development]
+
+I need to implement features. Infrastructure ready:
+
+- Repository: [structure]
+- Stack: [technologies]
+- Architecture: [pattern]
+
+Functional requirements:
+[summary]
+```
+
+<completion_criteria>
+Step 6 complete when:
+
+- [ ] All 7 sections present (0-6)
+- [ ] All package versions exact (no ^ or ~)
+- [ ] Success criteria testable
+- [ ] Next steps message included
+
+</completion_criteria>
+
+<exception_handling>
+
+**Step 1 - Detection:**
+
+- Partial infrastructure exists → ask user: "bootstrap fresh" or "upgrade existing"
+- Cannot detect → list files checked, ask user to clarify
+
+**Step 2 - Requirements:**
+
+- Unclear requirements → ask specific follow-up questions (max 3 at a time)
+- Missing information → document assumptions, ask confirmation before proceeding
+
+**Step 3 - Stack Selection:**
+
+- User wants different stack → document deviation from defaults, proceed with user choice
+- Unknown application type → ask clarifying questions about use case
+
+**Step 4 - Architecture:**
+
+- User unsure → present options table with pros/cons, recommend based on requirements
+- Conflicting requirements → highlight conflict, ask user to prioritize
+
+**Step 5 - Package Verification:**
+
+- Context7 unavailable → use npm registry + web search as fallback
+- Web Search no results → warn about potentially outdated info, use Context7 only
+- Version conflict → present both versions with release dates, ask user preference
+- Both sources unavailable → halt, report limitation to user
+
+**Step 6 - Plan Creation:**
+
+- Missing sections → do not proceed, return to incomplete step
+- User rejects plan → ask what to change, iterate
+
+</exception_handling>
+
+</algorithm_steps>
+
+## TIER 3: Output Format
+
+<output_format>
+
+**Before CREATE_PLAN, verify ALL blocking checks from TIER 4 are complete.**
+
+**Output verification summary:**
+
+```
+✅ DETECT: bootstrap mode confirmed (no infrastructure found)
+✅ REQUIREMENTS: Functional [N] + Non-functional [N] gathered
+✅ STACK: [type] selected, verified via Web Search + Context7
+✅ ARCHITECTURE: [pattern] confirmed with user
+✅ PACKAGES: [N] verified, exact versions (no ^ or ~)
+✅ BLOCKING CHECK: All items checked
+→ Calling create_plan
+```
+
+**Decision:**
+
+- All ✅ present AND BLOCKING CHECK complete → call create_plan
+- Any ❌ or missing → halt, report which step failed, return to that step
+
+</output_format>
+
+## TIER 4: Pre-Plan Checklist
+
+<completion_criteria>
+
+**BLOCKING CHECK:**
+
+**Detection:**
+
+- [ ] Infrastructure state detected
+- [ ] Bootstrap mode confirmed
+
+**Requirements:**
+
+- [ ] Functional requirements documented
+- [ ] Non-functional requirements documented
+
+**Technology:**
+
+- [ ] Application type determined
+- [ ] Fixed stack applied
+- [ ] Optional choices confirmed
+
+**Architecture:**
+
+- [ ] Repository structure confirmed
+- [ ] Pattern selected
+- [ ] User confirmed
+
+**Packages:**
+
+- [ ] Context7 verification done
+- [ ] Web Search verification done
+- [ ] Exact versions (no ^ or ~)
+
+**SELF-CHECK:** Can agent execute this plan AND verify infrastructure works?
+
+- NO → Return to incomplete step, add missing details
+- YES → Proceed to create_plan
+
+**GATE:** All boxes must be checked. Any unchecked → BLOCKED from create_plan.
+
+</completion_criteria>
+
+[ALGORITHM-END]
+
+[REFERENCE-BEGIN]
+
+## Technology Stacks
+
+<tech_stacks>
+
+### Web Application Stack
+
+| Category                  | Technologies                     |
+| :------------------------ | :------------------------------- |
+| Core                      | React, Vite, TypeScript, Vitest  |
+| Styling                   | Tailwind CSS                     |
+| UI                        | shadcn/ui, lucide-react          |
+| Routing                   | @tanstack/react-router           |
+| Data Fetching             | TanStack Query                   |
+| Validation                | Zod                              |
+| State (ASK)               | TanStack Query only / + Zustand  |
+| Animation (ASK)           | Motion / CSS only                |
+| Tables (optional)         | TanStack Table                   |
+| Virtualization (optional) | TanStack Virtual                 |
+| Forms (optional)          | TanStack Form                    |
+| Utilities                 | es-toolkit, date-fns, clsx, nuqs |
+
+### CLI Application Stack
+
+| Category      | Technologies            |
+| :------------ | :---------------------- |
+| CLI Framework | citty                   |
+| Prompts       | @clack/prompts          |
+| Colors        | ansis                   |
+| Build         | tsx, tsup               |
+| Core          | TypeScript, Vitest, Zod |
+
+### Backend Stack
+
+| Category  | Technologies            |
+| :-------- | :---------------------- |
+| Framework | Fastify                 |
+| Build     | tsx, tsup               |
+| Core      | TypeScript, Vitest, Zod |
+
+### Infrastructure Defaults
+
+| Component       | Default                    |
+| :-------------- | :------------------------- |
+| Package Manager | yarn                       |
+| Monorepo Tool   | Turborepo (if needed)      |
+| Linting         | eslint-walrus-config       |
+| Code Analysis   | Knip                       |
+| CI/CD           | GitHub Actions             |
+| TypeScript      | strict mode (strict: true) |
+| Versions        | Pinned (no ^ or ~)         |
+
+</tech_stacks>
+
+## Version Pinning Policy
+
+<version_policy>
+
+**MANDATORY:** All dependencies use exact versions.
+
+**package.json format:**
+
+```json
+{
+    "dependencies": {
+        "react": "19.0.0",
+        "vite": "6.0.0"
+    }
+}
+```
+
+**FORBIDDEN:**
+
+```json
+{
+    "dependencies": {
+        "react": "^19.0.0",
+        "vite": "~6.0.0"
+    }
+}
+```
+
+**Verification sources:**
+
+1. Context7 → `mcp_context7_query_docs` for latest stable
+2. Web Search → "[package] latest version [year]"
+3. npm registry → fallback if above unavailable
+
+</version_policy>
+
+[REFERENCE-END]
