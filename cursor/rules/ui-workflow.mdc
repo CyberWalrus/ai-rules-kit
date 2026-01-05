@@ -155,11 +155,11 @@ If requirements are clear → proceed to Step 5.
 
 Before MCP validation, EXPLICITLY reason about structural changes in chat:
 
-| Category | Analysis Question | Your Answer |
-|:---|:---|:---|
-| NEW files | Will new files/folders be created? | YES (list) / NO |
-| REMOVED files | Will files/folders be deleted? | YES (list) / NO |
-| MODIFIED only | Only changes to existing files? | YES / NO |
+| Category      | Analysis Question                  | Your Answer     |
+| :------------ | :--------------------------------- | :-------------- |
+| NEW files     | Will new files/folders be created? | YES (list) / NO |
+| REMOVED files | Will files/folders be deleted?     | YES (list) / NO |
+| MODIFIED only | Only changes to existing files?    | YES / NO        |
 
 **Decision Logic:**
 
@@ -187,16 +187,17 @@ Collect planned UI changes into diff format:
 - REMOVED: components/files to be deleted
 
 ```javascript
-mcp_mcp-validator_validate({
-    validationType: 'architecture',
-    input: { type: 'file', data: '${PKG_ROOT}/architecture.xml' },
-    context: `Architecture validation: ${architecture_type}; scope=planning; target MCP>=85
+mcp_mcp -
+    validator_validate({
+        validationType: 'architecture',
+        input: { type: 'file', data: '${PKG_ROOT}/architecture.xml' },
+        context: `Architecture validation: ${architecture_type}; scope=planning; target MCP>=85
 DIFF: Planning mode - focus on UI changes
 - NEW: [components/files to be added from Step 5]
 - MODIFIED: [components/files to be changed from Step 5]
 - REMOVED: [components/files to be deleted from Step 5]
-Files affected: [count] files, [count] components`
-})
+Files affected: [count] files, [count] components`,
+    });
 ```
 
 - Score >=85 → proceed to Step 7
@@ -204,11 +205,11 @@ Files affected: [count] files, [count] components`
 
 **⚠️ MCP RESULT RECORD (MANDATORY):**
 
-| Field | Value |
-|:---|:---|
-| MCP called | YES / NO |
-| Score | ___/100 |
-| If skipped | Reason: ___ |
+| Field      | Value          |
+| :--------- | :------------- |
+| MCP called | YES / NO       |
+| Score      | \_\_\_/100     |
+| If skipped | Reason: \_\_\_ |
 
 ❌ Score field empty → FORBIDDEN to proceed to Step 7
 ❌ NO without documented reason → VIOLATION
@@ -222,12 +223,12 @@ Files affected: [count] files, [count] components`
 
 **Based on designed solution and validated architecture, decide AI docs action:**
 
-| Change Type | AI Docs Action |
-|:---|:---|
-| New component | CREATE module-ai-docs.md |
-| Changed component API (props, events) | UPDATE contract section |
-| Added/removed dependency | UPDATE dependencies section |
-| Refactoring without API change | NO UPDATE needed |
+| Change Type                           | AI Docs Action              |
+| :------------------------------------ | :-------------------------- |
+| New component                         | CREATE module-ai-docs.md    |
+| Changed component API (props, events) | UPDATE contract section     |
+| Added/removed dependency              | UPDATE dependencies section |
+| Refactoring without API change        | NO UPDATE needed            |
 
 **For detailed instructions:** Read `.cursor/rules/ai-docs-workflow.mdc`
 
@@ -280,11 +281,13 @@ Steps 1-7 complete when:
 Mark each: [SEQUENTIAL] or [PARALLEL]
 
 **[SEQUENTIAL] Step 1: [Name]**
+
 - Action: [CSS/component change]
 - File: [path]
 - Details: [classes, properties]
 
 **[SEQUENTIAL] Step N: Validation & Quality Checks**
+
 - MCP validation: run in PARALLEL for ALL changed files, target >=85
 - Lint + typecheck: `[lint_cmd from Step 1]` — 0 errors
 - Unit tests: `[unit_test_cmd from Step 1]` — 0 failures
@@ -292,6 +295,7 @@ Mark each: [SEQUENTIAL] or [PARALLEL]
 - Fix any failures before proceeding
 
 **[SEQUENTIAL] Step N+1: AI Docs**
+
 - Action: `[ai_docs_action from Step 7]` (CREATE/UPDATE/NO UPDATE)
 - If CREATE: create file with initial sections
 - If UPDATE: update specified section
@@ -299,18 +303,20 @@ Mark each: [SEQUENTIAL] or [PARALLEL]
 ## 2. Architecture Changes
 
 **New Files:**
+
 - `src/components/[name]/index.tsx` — [purpose]
 
 **Modified Files:**
+
 - `src/[path]/[file]` — [changes]
 
 ## 3. Dependencies
 
-| Package | Version | Purpose |
-|:---|:---|:---|
-| [name] | ^[X.Y.Z] | [reason] |
+| Package | Version  | Purpose  |
+| :------ | :------- | :------- |
+| [name]  | ^[X.Y.Z] | [reason] |
 
-*Versions via Context7*
+_Versions via Context7_
 
 ## 4. Project Context
 
@@ -324,6 +330,7 @@ Mark each: [SEQUENTIAL] or [PARALLEL]
 **Check command:** `[lint_cmd from Step 1]`
 
 **MCP Validation (PARALLEL):**
+
 - Run in PARALLEL for ALL changed files (one MCP call per file)
 - Component files: validationType="code", target >=85
 - Test files: validationType="tests", target >=85
@@ -335,6 +342,7 @@ Mark each: [SEQUENTIAL] or [PARALLEL]
 **Score ≥85 = BLOCKING GATE.** "80 is almost 85" = WRONG → Fix until ≥85.
 
 **Every Issue Must Be Addressed:**
+
 1. Parse ALL issues (critical/warning/suggestion)
 2. For EACH → FIX or REJECT with documented reason
 3. "I fixed something" ≠ ignore remaining
@@ -348,16 +356,19 @@ Mark each: [SEQUENTIAL] or [PARALLEL]
 **Report:** `MCP: [score]/100 | Fixed: [N]/[total] | Rejected: [N] ([reasons])`
 
 **Tests (MANDATORY - ZERO TOLERANCE):**
+
 - Unit tests: `[unit_test_cmd from Step 1]` — 0 failures REQUIRED
 - E2E tests: `[e2e_test_cmd from Step 1]` — 0 failures REQUIRED (skip if project has no e2e)
 - **CRITICAL:** If UI changes break ANY existing test → FIX the test BEFORE claiming completion
 - Skipping broken tests = TASK FAILURE
 
 **Browser verification:**
+
 - Desktop (1920x1080): [expected]
 - Mobile (375x667): [expected]
 
 **AI Docs:**
+
 - Action: `[ai_docs_action from Step 7]`
 - If CREATE: specify file path and initial sections
 - If UPDATE: specify which section and what changes

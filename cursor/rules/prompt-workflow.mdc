@@ -73,28 +73,28 @@ Think step-by-step: read context, classify type, design structure, validate, the
 
 **1.1 Read Context**
 
-| Operation | Read |
-|:---|:---|
-| CREATE | `.cursor/rules/prompt-structure-guide.mdc`, related prompts |
-| EDIT | Target prompt file, identify working elements |
+| Operation | Read                                                        |
+| :-------- | :---------------------------------------------------------- |
+| CREATE    | `.cursor/rules/prompt-structure-guide.mdc`, related prompts |
+| EDIT      | Target prompt file, identify working elements               |
 
 **1.2 Classify Operation**
 
-| Operation | Trigger | Scope |
-|:---|:---|:---|
-| CREATE | "create", "new prompt" | Full workflow |
-| MAJOR EDIT | "rewrite", "restructure", ≥20% change | Full workflow |
-| MINOR EDIT | "fix", "improve", <20% change | Surgical changes |
+| Operation  | Trigger                               | Scope            |
+| :--------- | :------------------------------------ | :--------------- |
+| CREATE     | "create", "new prompt"                | Full workflow    |
+| MAJOR EDIT | "rewrite", "restructure", ≥20% change | Full workflow    |
+| MINOR EDIT | "fix", "improve", <20% change         | Surgical changes |
 
 **1.3 Determine Prompt Type**
 
-| Type | Use For | Size |
-|:---|:---|:---|
-| compact | Routing, detection, 1-3 steps | ≤150 lines |
-| command | Task execution, imperative | 50-200 lines |
-| algorithm | Multi-step workflows | 100-600 lines |
-| reference | Documentation, examples | 100-1000 lines |
-| combo | Algorithm + reference | 200-1600 lines |
+| Type      | Use For                       | Size           |
+| :-------- | :---------------------------- | :------------- |
+| compact   | Routing, detection, 1-3 steps | ≤150 lines     |
+| command   | Task execution, imperative    | 50-200 lines   |
+| algorithm | Multi-step workflows          | 100-600 lines  |
+| reference | Documentation, examples       | 100-1000 lines |
+| combo     | Algorithm + reference         | 200-1600 lines |
 
 **Decision flow:**
 
@@ -108,11 +108,12 @@ Think step-by-step: read context, classify type, design structure, validate, the
 **1.4 Validate Existing Prompt (if EDIT)**
 
 ```javascript
-mcp_mcp-validator_validate({
-    validationType: 'prompts',
-    input: { type: 'file', data: '/absolute/path/to/prompt.mdc' },
-    context: 'Analyzing [prompt name] for edit planning'
-})
+mcp_mcp -
+    validator_validate({
+        validationType: 'prompts',
+        input: { type: 'file', data: '/absolute/path/to/prompt.mdc' },
+        context: 'Analyzing [prompt name] for edit planning',
+    });
 ```
 
 - Record current score
@@ -125,14 +126,14 @@ mcp_mcp-validator_validate({
 After research, BEFORE proceeding to Step 2:
 
 1. **STATE UNDERSTANDING** — Based on research, output summary in user language:
-   - Task interpretation (own words)
-   - Goal of changes (what behavior will change)
-   - Affected files with scope (file: ~N lines each)
+    - Task interpretation (own words)
+    - Goal of changes (what behavior will change)
+    - Affected files with scope (file: ~N lines each)
 
 2. **ASK CONFIRMATION** — Request explicit user approval:
-   - Is understanding correct?
-   - What outcome do you want?
-   - Agree with change scope?
+    - Is understanding correct?
+    - What outcome do you want?
+    - Agree with change scope?
 
 3. **WAIT FOR RESPONSE** — Do NOT proceed until user confirms
 
@@ -163,7 +164,7 @@ Step 1 complete when:
 
 **MANDATORY SECTIONS (all 6 required):**
 
-```markdown
+````markdown
 ## 0. Overview
 
 **Task:** [What user wants - 1-2 sentences]
@@ -172,16 +173,17 @@ Step 1 complete when:
 
 ## 1. Prompt Specification
 
-| Property | Value |
-|:---|:---|
-| Type | [compact/command/algorithm/reference/combo] |
-| Operation | [CREATE/MAJOR EDIT/MINOR EDIT] |
-| Target file | [path/to/prompt.mdc] |
-| Target size | [X-Y lines] |
+| Property    | Value                                       |
+| :---------- | :------------------------------------------ |
+| Type        | [compact/command/algorithm/reference/combo] |
+| Operation   | [CREATE/MAJOR EDIT/MINOR EDIT]              |
+| Target file | [path/to/prompt.mdc]                        |
+| Target size | [X-Y lines]                                 |
 
 ## 2. Structural Requirements
 
 **YAML Frontmatter:**
+
 ```yaml
 ---
 id: [prompt-name]
@@ -189,6 +191,7 @@ type: [type]
 alwaysApply: [true/false]
 ---
 ```
+````
 
 **Structure:**
 
@@ -485,3 +488,4 @@ All boxes must be checked AND SELF-CHECK must return YES.
 </language_policy>
 
 [REFERENCE-END]
+```
