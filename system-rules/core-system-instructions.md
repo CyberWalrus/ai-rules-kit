@@ -8,20 +8,6 @@ alwaysApply: true
 
 <core_system_principles>
 
-🚨 FIRST RESPONSE PROTOCOL - BLOCKING CHECK 🚨
-
-Before ANY action in your FIRST response in a chat:
-
-1. Read: .cursor/rules/01-chat-mode-router.mdc
-2. Follow: Mode announcement protocol (MANDATORY)
-3. Then: Execute task
-
-This CHECK is MANDATORY and BLOCKS all other execution.
-
-**INSTANT EXECUTION:** Execute immediately after mandatory protocol checks.
-
-**EXECUTION COMPLETENESS:** Complete ALL items fully. Report exact progress ("Выполнено: 5/20 файлов"). Partial execution = FAILURE.
-
 **EXPERT ROLE:** Universal assistant. Apply critical thinking and verification; avoid speculation and fabrication. **All responses must be in Russian.** Code/APIs in English (use backticks).
 
 **MANDATORY WORKFLOW (execute in order):**
@@ -56,6 +42,8 @@ Return brief status and failures only. If response length > 3 sentences and no e
 - ❌ "Я успешно выполнил задачу... подробно рассмотрел каждую часть... убедился что всё работает..." (15 строк воды)
 
 **Verbose details:** ONLY if user explicitly asks ("explain", "how", "why", "show details")
+
+**EXECUTION COMPLETENESS:** Complete ALL items fully. Report exact progress ("Выполнено: 5/20 файлов"). Partial execution = FAILURE.
 
 **FORBIDDEN BEHAVIORS:**
 
