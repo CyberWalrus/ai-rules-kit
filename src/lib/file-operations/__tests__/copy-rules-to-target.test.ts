@@ -189,9 +189,7 @@ describe('copyRulesToTarget', () => {
 
         await copyRulesToTarget(packageDir, targetDir, 'cursor', ['rules']);
 
-        const rulesDirCalls = mockReaddir.mock.calls.filter((call) =>
-            call[0].replace(/\\/g, '/').includes('rules-kit/rules'),
-        );
+        const rulesDirCalls = mockReaddir.mock.calls.filter((call) => call[0].replace(/\\/g, '/').includes('/rules'));
         expect(rulesDirCalls).toHaveLength(0);
     });
 
@@ -212,9 +210,7 @@ describe('copyRulesToTarget', () => {
 
         await copyRulesToTarget(packageDir, targetDir, 'cursor', ['rules/subdir']);
 
-        const rulesDirCalls = mockReaddir.mock.calls.filter((call) =>
-            call[0].replace(/\\/g, '/').includes('rules-kit/rules'),
-        );
+        const rulesDirCalls = mockReaddir.mock.calls.filter((call) => call[0].replace(/\\/g, '/').includes('/rules'));
         expect(rulesDirCalls).toHaveLength(1);
         expect(mockCp).toHaveBeenCalledTimes(RULES_DIRS.length);
     });

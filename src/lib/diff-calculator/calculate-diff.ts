@@ -17,7 +17,7 @@ export async function calculateDiff(packageDir: string, targetDir: string): Prom
     const results = await Promise.all(
         RULES_DIRS.map(async (ruleDir) => {
             const sourcePath = join(packageDir, ruleDir);
-            const targetRuleDir = ruleDir.replace(/^rules-kit\//, '.cursor/');
+            const targetRuleDir = `.cursor/${ruleDir}`;
             const targetPath = join(targetDir, targetRuleDir);
 
             const adds: string[] = [];

@@ -123,9 +123,9 @@ describe('Full Cycle E2E', () => {
         await upgradeCommand(packageDir, tempDir3);
         await replaceAllCommand(packageDir, tempDir3);
 
-        const cursorRulesDir: string = join(tempDir3, '.cursor', 'rules-kit', 'rules');
-        const cursorDocsDir: string = join(tempDir3, '.cursor', 'rules-kit', 'docs');
-        const cursorCommandsDir: string = join(tempDir3, '.cursor', 'rules-kit', 'commands');
+        const cursorRulesDir: string = join(tempDir3, '.cursor', 'rules');
+        const cursorDocsDir: string = join(tempDir3, '.cursor', 'docs');
+        const cursorCommandsDir: string = join(tempDir3, '.cursor', 'commands');
         const configFilePath: string = join(tempDir3, '.cursor', VERSION_FILE_NAME);
 
         await expect(access(cursorRulesDir, constants.F_OK)).resolves.toBeUndefined();

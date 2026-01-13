@@ -98,7 +98,7 @@ export async function copyRulesToTarget(
                 return;
             }
 
-            const baseDir = join(packageDir, 'rules-kit');
+            const baseDir = packageDir;
             const relativeRuleDir = relative(baseDir, sourcePath).replace(/\\/g, '/');
             const shouldIgnoreDir = shouldIgnoreFile(relativeRuleDir, ignoreList);
 

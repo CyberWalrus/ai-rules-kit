@@ -19,10 +19,17 @@ describe('calculateDiff', () => {
         ]);
         const targetMap = new Map([['file1.txt', 'hash1']]);
 
-        mockScanDirectory
-            .mockResolvedValueOnce(sourceMap)
-            .mockResolvedValueOnce(targetMap)
-            .mockResolvedValue(new Map());
+        mockScanDirectory.mockImplementation((path: string) => {
+            const normalizedPath = path.replace(/\\/g, '/');
+            if (normalizedPath.includes('/package/rules')) {
+                return Promise.resolve(sourceMap);
+            }
+            if (normalizedPath.includes('/target/.cursor/rules')) {
+                return Promise.resolve(targetMap);
+            }
+
+            return Promise.resolve(new Map());
+        });
 
         const result = await calculateDiff('/package', '/target');
 
@@ -35,10 +42,10 @@ describe('calculateDiff', () => {
 
         mockScanDirectory.mockImplementation((path: string) => {
             const normalizedPath = path.replace(/\\/g, '/');
-            if (normalizedPath.includes('rules-kit/rules') && normalizedPath.includes('/package')) {
+            if (normalizedPath.includes('/package/rules')) {
                 return Promise.resolve(sourceMap);
             }
-            if (normalizedPath.includes('.cursor/rules') && normalizedPath.includes('/target')) {
+            if (normalizedPath.includes('/target/.cursor/rules')) {
                 return Promise.resolve(targetMap);
             }
 
@@ -59,10 +66,10 @@ describe('calculateDiff', () => {
 
         mockScanDirectory.mockImplementation((path: string) => {
             const normalizedPath = path.replace(/\\/g, '/');
-            if (normalizedPath.includes('rules-kit/rules') && normalizedPath.includes('/package')) {
+            if (normalizedPath.includes('/package/rules')) {
                 return Promise.resolve(sourceMap);
             }
-            if (normalizedPath.includes('.cursor/rules') && normalizedPath.includes('/target')) {
+            if (normalizedPath.includes('/target/.cursor/rules')) {
                 return Promise.resolve(targetMap);
             }
 

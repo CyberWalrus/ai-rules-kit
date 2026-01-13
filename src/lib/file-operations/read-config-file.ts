@@ -1,6 +1,5 @@
-import { dirname } from 'node:path';
 import { readFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 
 import type { RulesConfig } from '../../model';
 import { rulesConfigSchema, VERSION_FILE_NAME } from '../../model';
