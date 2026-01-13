@@ -1,3 +1,4 @@
+import { select } from '@clack/prompts';
 import { rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -6,6 +7,7 @@ import { copyRulesToTarget } from '../../../lib/file-operations/copy-rules-to-ta
 import { writeConfigFile } from '../../../lib/file-operations/write-config-file';
 import { fetchPromptsTarball, fetchSystemRulesTarball } from '../../../lib/github-fetcher';
 import { t } from '../../../lib/i18n';
+import type { IdeType } from '../../../lib/ide-config';
 import { readUserConfig } from '../../../lib/user-config';
 import { getCurrentVersion } from '../../../lib/version-manager/get-current-version';
 import { getPackageVersion } from '../../../lib/version-manager/get-package-version';
@@ -37,12 +39,30 @@ export async function initCommand(packageDir: string, targetDir: string): Promis
         throw new Error(t('command.init.already-initialized', { version: existingVersion }));
     }
 
+    const currentUserConfig = await readUserConfig();
+    const savedIdeType = currentUserConfig?.ideType ?? 'cursor';
+
+    const selectedIdeType = await select<IdeType>({
+        initialValue: savedIdeType,
+        message: 'Выберите IDE',
+        options: [
+            { label: 'Cursor', value: 'cursor' },
+            { label: 'TRAE', value: 'trae' },
+        ],
+    });
+
+    if (typeof selectedIdeType === 'symbol') {
+        return;
+    }
+
+    const ideType = selectedIdeType;
+
     const { promptsVersion, systemRulesVersion } = await getVersionsWithRetry();
     if (promptsVersion === null) {
         throw new Error(t('command.init.fetch-failed'));
     }
 
-    const tmpDir = join(tmpdir(), `cursor-rules-${Date.now()}`);
+    const tmpDir = join(tmpdir(), `ai-rules-kit-${Date.now()}`);
 
     try {
         await Promise.all([
@@ -51,15 +71,15 @@ export async function initCommand(packageDir: string, targetDir: string): Promis
                 ? fetchSystemRulesTarball(GITHUB_REPO, systemRulesVersion, tmpDir)
                 : Promise.resolve(),
         ]);
-        await copyRulesToTarget(tmpDir, targetDir);
+        await copyRulesToTarget(tmpDir, targetDir, ideType);
 
         const cliVersion = await getPackageVersion(packageDir);
         const currentTimestamp = new Date().toISOString();
-        const userConfig = await readUserConfig();
         const config: RulesConfig = {
             cliVersion,
             configVersion: '1.0.0',
             fileOverrides: [],
+            ideType,
             ignoreList: [],
             installedAt: currentTimestamp,
             promptsVersion,
@@ -70,13 +90,13 @@ export async function initCommand(packageDir: string, targetDir: string): Promis
                 },
             ],
             settings: {
-                language: userConfig?.language ?? 'en',
+                language: currentUserConfig?.language ?? 'en',
             },
-            source: 'cursor-rules',
+            source: 'ai-rules-kit',
             systemRulesVersion: systemRulesVersion ?? undefined,
             updatedAt: currentTimestamp,
         };
-        await writeConfigFile(targetDir, config);
+        await writeConfigFile(targetDir, config, ideType);
 
         console.log(t('command.init.success', { version: promptsVersion }));
     } finally {

@@ -60,7 +60,7 @@ describe('file-operations', () => {
             const packageDir = getTestPath('package');
             const targetDir = getTestPath('target');
 
-            await copyRulesToTarget(packageDir, targetDir);
+            await copyRulesToTarget(packageDir, targetDir, 'cursor');
 
             expect(mockPathExists).toHaveBeenCalled();
             expect(mockReaddir).toHaveBeenCalled();
@@ -72,7 +72,7 @@ describe('file-operations', () => {
             const packageDir = getTestPath('package');
             const targetDir = getTestPath('target');
 
-            await copyRulesToTarget(packageDir, targetDir);
+            await copyRulesToTarget(packageDir, targetDir, 'cursor');
 
             expect(mockPathExists).toHaveBeenCalled();
             expect(mockReaddir).not.toHaveBeenCalled();
@@ -86,7 +86,7 @@ describe('file-operations', () => {
 
             const targetDir = getTestPath('target');
 
-            await deleteRulesFromTarget(targetDir);
+            await deleteRulesFromTarget(targetDir, 'cursor');
 
             expect(mockPathExists).toHaveBeenCalled();
             expect(mockRm).toHaveBeenCalled();
@@ -97,7 +97,7 @@ describe('file-operations', () => {
 
             const targetDir = getTestPath('target');
 
-            await deleteRulesFromTarget(targetDir);
+            await deleteRulesFromTarget(targetDir, 'cursor');
 
             expect(mockPathExists).toHaveBeenCalled();
             expect(mockRm).not.toHaveBeenCalled();
@@ -117,7 +117,7 @@ describe('file-operations', () => {
 
             expect(result).toEqual(config);
             expect(mockPathExists).toHaveBeenCalled();
-            expect(mockReadFile).toHaveBeenCalledWith(join(targetDir, '.cursor', 'cursor-rules-config.json'), 'utf-8');
+            expect(mockReadFile).toHaveBeenCalledWith(join(targetDir, '.cursor', 'ai-rules-kit-config.json'), 'utf-8');
         });
 
         it('должен возвращать null если файл не существует', async () => {
@@ -142,15 +142,16 @@ describe('file-operations', () => {
 
             const targetDir = getTestPath('target');
 
-            await writeConfigFile(targetDir, config);
+            await writeConfigFile(targetDir, config, 'cursor');
 
             expect(mockMkdir).toHaveBeenCalledWith(join(targetDir, '.cursor'), { recursive: true });
             const expectedConfig = {
-                $schema: `https://raw.githubusercontent.com/CyberWalrus/cursor-rules-cli/main/schemas/cursor-rules-config-${config.configVersion}.schema.json`,
+                $schema: `https://raw.githubusercontent.com/CyberWalrus/ai-rules-kit/main/schemas/ai-rules-kit-config-${config.configVersion}.schema.json`,
                 ...config,
+                ideType: 'cursor',
             };
             expect(mockWriteFile).toHaveBeenCalledWith(
-                join(targetDir, '.cursor', 'cursor-rules-config.json'),
+                join(targetDir, '.cursor', 'ai-rules-kit-config.json'),
                 JSON.stringify(expectedConfig, null, 2),
                 'utf-8',
             );

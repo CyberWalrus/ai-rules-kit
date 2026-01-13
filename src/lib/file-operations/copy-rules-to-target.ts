@@ -4,12 +4,14 @@ import { dirname, join, relative } from 'node:path';
 import type { FileOverride } from '../../model';
 import { RULES_DIRS } from '../../model';
 import { isEmptyString } from '../helpers';
+import type { IdeType } from '../ide-config';
+import { getIdeFileExtension, getProjectIdeDir } from '../ide-config';
 import { applyYamlOverrides } from './apply-yaml-overrides';
 import { pathExists } from './path-exists';
 import { shouldIgnoreFile } from './should-ignore-file';
 
-/** Копирует файл из источника в цель */
-async function copyFile(sourcePath: string, targetPath: string): Promise<void> {
+/** Копирует файл из источника в цель с конвертацией расширения */
+async function copyFileWithConversion(sourcePath: string, targetPath: string, ideType: IdeType): Promise<void> {
     const sourceExists = await pathExists(sourcePath);
     if (!sourceExists) {
         return;
@@ -18,15 +20,30 @@ async function copyFile(sourcePath: string, targetPath: string): Promise<void> {
     const targetDir = dirname(targetPath);
 
     await mkdir(targetDir, { recursive: true });
-    await cp(sourcePath, targetPath, { force: true });
+
+    const targetExtension = getIdeFileExtension(ideType);
+    const sourceExtension = sourcePath.endsWith('.mdc') ? '.mdc' : '.md';
+
+    let finalTargetPath = targetPath;
+
+    if (sourceExtension !== targetExtension) {
+        if (sourceExtension === '.mdc' && targetExtension === '.md') {
+            finalTargetPath = targetPath.replace(/\\.md$/, '.mdc');
+        } else if (sourceExtension === '.md' && targetExtension === '.mdc') {
+            finalTargetPath = targetPath.replace(/\\.mdc$/, '.md');
+        }
+    }
+
+    await cp(sourcePath, finalTargetPath, { force: true });
 }
 
-/** Рекурсивно копирует файлы из директории */
+/** Рекурсивно копирует файлы из директории с конвертацией */
 async function copyDirectoryRecursive(
     sourceDir: string,
     targetDir: string,
     baseDir: string,
     ignoreList: string[],
+    ideType: IdeType,
 ): Promise<void> {
     const hasNegationPatterns = ignoreList.some((pattern) => pattern.startsWith('!'));
     await mkdir(targetDir, { recursive: true });
@@ -42,10 +59,10 @@ async function copyDirectoryRecursive(
 
             if (entry.isDirectory()) {
                 if (!shouldIgnore || hasNegationPatterns) {
-                    await copyDirectoryRecursive(sourcePath, targetPath, baseDir, ignoreList);
+                    await copyDirectoryRecursive(sourcePath, targetPath, baseDir, ignoreList, ideType);
                 }
             } else if (entry.isFile() && !shouldIgnore) {
-                await copyFile(sourcePath, targetPath);
+                await copyFileWithConversion(sourcePath, targetPath, ideType);
             }
         }),
     );
@@ -55,6 +72,7 @@ async function copyDirectoryRecursive(
 export async function copyRulesToTarget(
     packageDir: string,
     targetDir: string,
+    ideType: IdeType,
     ignoreList: string[] = [],
     fileOverrides: FileOverride[] = [],
 ): Promise<void> {
@@ -65,33 +83,34 @@ export async function copyRulesToTarget(
         throw new Error('targetDir is required');
     }
 
+    const ideDir = getProjectIdeDir(ideType);
+    const targetIdeDir = join(targetDir, ideDir);
+
     const hasNegationPatterns = ignoreList.some((pattern) => pattern.startsWith('!'));
 
     await Promise.all(
         RULES_DIRS.map(async (ruleDir) => {
             const sourcePath = join(packageDir, ruleDir);
-            const targetRuleDir = ruleDir.replace(/^cursor\//, '.cursor/');
-            const targetPath = join(targetDir, targetRuleDir);
+            const targetPath = join(targetIdeDir, ruleDir);
             const sourceExists = await pathExists(sourcePath);
 
             if (!sourceExists) {
                 return;
             }
 
-            const baseDir = join(packageDir, 'cursor');
+            const baseDir = join(packageDir, 'rules-kit');
             const relativeRuleDir = relative(baseDir, sourcePath).replace(/\\/g, '/');
-
             const shouldIgnoreDir = shouldIgnoreFile(relativeRuleDir, ignoreList);
 
             if (!shouldIgnoreDir || hasNegationPatterns) {
-                await copyDirectoryRecursive(sourcePath, targetPath, baseDir, ignoreList);
+                await copyDirectoryRecursive(sourcePath, targetPath, baseDir, ignoreList, ideType);
             }
         }),
     );
 
     await Promise.all(
         fileOverrides.map(async (override) => {
-            const overridePath = join(targetDir, '.cursor', override.file);
+            const overridePath = join(targetIdeDir, override.file);
             const overrideExists = await pathExists(overridePath);
 
             if (overrideExists) {

@@ -85,6 +85,7 @@ describe('rulesConfigSchema', () => {
         const validData = {
             cliVersion: '1.0.0',
             configVersion: '1.0.0',
+            ideType: 'cursor',
             installedAt: '2025-11-01T12:00:00.000Z',
             promptsVersion: '2025.11.10.1',
             ruleSets: [

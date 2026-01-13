@@ -11,6 +11,7 @@ import {
 import { fetchPromptsTarball, fetchSystemRulesTarball } from '../../../lib/github-fetcher';
 import { askConfirmation } from '../../../lib/helpers';
 import { t } from '../../../lib/i18n';
+import type { IdeType } from '../../../lib/ide-config';
 import { readUserConfig } from '../../../lib/user-config';
 import { getPackageVersion } from '../../../lib/version-manager/get-package-version';
 import { getVersionsWithRetry } from '../../../lib/version-manager/get-versions-with-retry';
@@ -18,7 +19,7 @@ import type { RulesConfig } from '../../../model';
 import { GITHUB_REPO, replaceAllCommandParamsSchema } from '../../../model';
 
 /** Команда полной замены правил */
-// eslint-disable-next-line sonarjs/cognitive-complexity
+
 export async function replaceAllCommand(packageDir: string, targetDir: string): Promise<void> {
     try {
         replaceAllCommandParamsSchema.parse({ packageDir, targetDir });
@@ -43,7 +44,7 @@ export async function replaceAllCommand(packageDir: string, targetDir: string): 
         await getVersionsWithRetry();
     let promptsVersion = fetchedPromptsVersion;
 
-    if (promptsVersion == null) {
+    if (promptsVersion === null) {
         if (existingConfig !== null && existingConfig.promptsVersion !== undefined) {
             console.warn(t('command.replace-all.no-internet', { version: existingConfig.promptsVersion }));
 
@@ -63,8 +64,9 @@ export async function replaceAllCommand(packageDir: string, targetDir: string): 
 
     const userConfig = await readUserConfig();
     let config: RulesConfig;
-
+    let ideType: IdeType = 'cursor';
     let systemRulesVersion: string | undefined = fetchedSystemRulesVersion ?? undefined;
+
     if (systemRulesVersion === undefined && existingConfig?.systemRulesVersion !== undefined) {
         systemRulesVersion = existingConfig.systemRulesVersion;
     }
@@ -73,15 +75,19 @@ export async function replaceAllCommand(packageDir: string, targetDir: string): 
         config = {
             ...existingConfig,
             cliVersion,
+            ideType: existingConfig.ideType ?? 'cursor',
             promptsVersion,
+            source: 'ai-rules-kit',
             systemRulesVersion,
             updatedAt: currentTimestamp,
         };
+        ideType = existingConfig.ideType ?? 'cursor';
     } else {
         config = {
             cliVersion,
             configVersion: '1.0.0',
             fileOverrides: [],
+            ideType: 'cursor',
             ignoreList: [],
             installedAt: currentTimestamp,
             promptsVersion,
@@ -94,13 +100,13 @@ export async function replaceAllCommand(packageDir: string, targetDir: string): 
             settings: {
                 language: userConfig?.language ?? 'en',
             },
-            source: 'cursor-rules',
+            source: 'ai-rules-kit',
             systemRulesVersion,
             updatedAt: currentTimestamp,
         };
     }
 
-    const tmpDir = join(tmpdir(), `cursor-rules-${Date.now()}`);
+    const tmpDir = join(tmpdir(), `ai-rules-kit-${Date.now()}`);
 
     try {
         await Promise.all([
@@ -109,9 +115,9 @@ export async function replaceAllCommand(packageDir: string, targetDir: string): 
                 ? fetchSystemRulesTarball(GITHUB_REPO, systemRulesVersion, tmpDir)
                 : Promise.resolve(),
         ]);
-        await deleteRulesFromTarget(targetDir);
-        await copyRulesToTarget(tmpDir, targetDir, config.ignoreList ?? [], config.fileOverrides ?? []);
-        await writeConfigFile(targetDir, config);
+        await deleteRulesFromTarget(targetDir, ideType);
+        await copyRulesToTarget(tmpDir, targetDir, ideType, config.ignoreList ?? [], config.fileOverrides ?? []);
+        await writeConfigFile(targetDir, config, ideType);
 
         console.log(t('command.replace-all.success', { version: promptsVersion }));
     } finally {

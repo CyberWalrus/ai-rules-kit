@@ -1,27 +1,17 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
-import { isEmptyString } from '../../../lib/helpers';
 import type { RulesConfig } from '../../../model';
-import { VERSION_FILE_NAME } from '../../../model';
 
-/** Создает файл .cursor/cursor-rules-config.json */
-export async function createVersionFile(targetDir: string, promptsVersion: string): Promise<void> {
-    if (isEmptyString(targetDir)) {
-        throw new Error('targetDir is required');
-    }
-    if (isEmptyString(promptsVersion)) {
-        throw new Error('promptsVersion is required');
-    }
-
-    const currentTimestamp = new Date().toISOString();
+export async function createVersionFile(targetDir: string, version: string): Promise<void> {
     const config: RulesConfig = {
         cliVersion: '1.0.0',
         configVersion: '1.0.0',
         fileOverrides: [],
+        ideType: 'cursor',
         ignoreList: [],
-        installedAt: currentTimestamp,
-        promptsVersion,
+        installedAt: new Date().toISOString(),
+        promptsVersion: version,
         ruleSets: [
             {
                 id: 'base',
@@ -32,15 +22,9 @@ export async function createVersionFile(targetDir: string, promptsVersion: strin
             language: 'ru',
         },
         source: 'cursor-rules',
-        updatedAt: currentTimestamp,
+        updatedAt: new Date().toISOString(),
     };
 
-    const cursorDir = join(targetDir, '.cursor');
-    const configFilePath = join(cursorDir, VERSION_FILE_NAME);
-    try {
-        await mkdir(cursorDir, { recursive: true });
-        await writeFile(configFilePath, JSON.stringify(config, null, 2), 'utf-8');
-    } catch (error) {
-        throw new Error(`Failed to write config file: ${String(error)}`);
-    }
+    await mkdir(join(targetDir, '.cursor'), { recursive: true });
+    await writeFile(join(targetDir, '.cursor', 'ai-rules-kit-config.json'), JSON.stringify(config, null, 2));
 }

@@ -35,7 +35,7 @@ describe('calculateDiff', () => {
 
         mockScanDirectory.mockImplementation((path: string) => {
             const normalizedPath = path.replace(/\\/g, '/');
-            if (normalizedPath.includes('cursor/rules') && normalizedPath.includes('/package')) {
+            if (normalizedPath.includes('rules-kit/rules') && normalizedPath.includes('/package')) {
                 return Promise.resolve(sourceMap);
             }
             if (normalizedPath.includes('.cursor/rules') && normalizedPath.includes('/target')) {
@@ -59,7 +59,7 @@ describe('calculateDiff', () => {
 
         mockScanDirectory.mockImplementation((path: string) => {
             const normalizedPath = path.replace(/\\/g, '/');
-            if (normalizedPath.includes('cursor/rules') && normalizedPath.includes('/package')) {
+            if (normalizedPath.includes('rules-kit/rules') && normalizedPath.includes('/package')) {
                 return Promise.resolve(sourceMap);
             }
             if (normalizedPath.includes('.cursor/rules') && normalizedPath.includes('/target')) {

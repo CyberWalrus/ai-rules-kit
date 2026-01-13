@@ -4,12 +4,17 @@ export type CommandType = 'config' | 'init' | 'replace-all' | 'system-files' | '
 /** Тип действия интерактивного меню */
 export type InteractiveMenuAction = 'config' | 'exit' | 'init' | 'system-files' | 'upgrade' | 'versions';
 
+/** Тип поддерживаемой IDE */
+export type IdeType = 'cursor' | 'trae';
+
 /** Конфигурация правил */
 export type RulesConfig = {
     /** Версия CLI тулзы */
     cliVersion: string;
     /** Версия формата конфигурации */
     configVersion: string;
+    /** Тип используемой IDE */
+    ideType: IdeType;
     /** Дата установки */
     installedAt: string;
     /** Версия промптов */
@@ -126,6 +131,8 @@ export type UserConfig = {
     language: 'en' | 'ru';
     /** GitHub API токен */
     githubToken?: string;
+    /** Выбранная IDE */
+    ideType?: IdeType;
     /** Настройки MCP серверов */
     mcpSettings?: McpSettings;
     /** Метаинформация пользователя */

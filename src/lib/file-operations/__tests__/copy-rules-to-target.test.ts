@@ -53,7 +53,7 @@ describe('copyRulesToTarget', () => {
         const packageDir = getTestPath('package');
         const targetDir = getTestPath('target');
 
-        await copyRulesToTarget(packageDir, targetDir);
+        await copyRulesToTarget(packageDir, targetDir, 'cursor');
 
         expect(mockPathExists).toHaveBeenCalled();
         expect(mockReaddir).toHaveBeenCalled();
@@ -65,7 +65,7 @@ describe('copyRulesToTarget', () => {
         const packageDir = getTestPath('package');
         const targetDir = getTestPath('target');
 
-        await copyRulesToTarget(packageDir, targetDir);
+        await copyRulesToTarget(packageDir, targetDir, 'cursor');
 
         expect(mockPathExists).toHaveBeenCalled();
         expect(mockReaddir).not.toHaveBeenCalled();
@@ -83,7 +83,7 @@ describe('copyRulesToTarget', () => {
         const packageDir = getTestPath('package');
         const targetDir = getTestPath('target');
 
-        await copyRulesToTarget(packageDir, targetDir, ['ignored.mdc']);
+        await copyRulesToTarget(packageDir, targetDir, 'cursor', ['ignored.mdc']);
 
         const expectedCalls = RULES_DIRS.length;
         expect(mockCp).toHaveBeenCalledTimes(expectedCalls);
@@ -112,7 +112,7 @@ describe('copyRulesToTarget', () => {
         const packageDir = getTestPath('package');
         const targetDir = getTestPath('target');
 
-        await copyRulesToTarget(packageDir, targetDir, [], fileOverrides);
+        await copyRulesToTarget(packageDir, targetDir, 'cursor', [], fileOverrides);
 
         expect(mockApplyYamlOverrides).toHaveBeenCalledWith(join(targetDir, '.cursor', 'rules/file1.mdc'), {
             alwaysApply: true,
@@ -143,7 +143,7 @@ describe('copyRulesToTarget', () => {
         const packageDir = getTestPath('package');
         const targetDir = getTestPath('target');
 
-        await copyRulesToTarget(packageDir, targetDir, [], fileOverrides);
+        await copyRulesToTarget(packageDir, targetDir, 'cursor', [], fileOverrides);
 
         expect(mockApplyYamlOverrides).not.toHaveBeenCalled();
     });
@@ -163,7 +163,7 @@ describe('copyRulesToTarget', () => {
         const packageDir = getTestPath('package');
         const targetDir = getTestPath('target');
 
-        await copyRulesToTarget(packageDir, targetDir);
+        await copyRulesToTarget(packageDir, targetDir, 'cursor');
 
         expect(mockReaddir).toHaveBeenCalledTimes(4);
     });
@@ -171,13 +171,13 @@ describe('copyRulesToTarget', () => {
     it('должен выбрасывать ошибку если packageDir пустой', async () => {
         const targetDir = getTestPath('target');
 
-        await expect(copyRulesToTarget('', targetDir)).rejects.toThrow('packageDir is required');
+        await expect(copyRulesToTarget('', targetDir, 'cursor')).rejects.toThrow('packageDir is required');
     });
 
     it('должен выбрасывать ошибку если targetDir пустой', async () => {
         const packageDir = getTestPath('package');
 
-        await expect(copyRulesToTarget(packageDir, '')).rejects.toThrow('targetDir is required');
+        await expect(copyRulesToTarget(packageDir, '', 'cursor')).rejects.toThrow('targetDir is required');
     });
 
     it('должен игнорировать директорию если она в ignoreList', async () => {
@@ -187,9 +187,11 @@ describe('copyRulesToTarget', () => {
         const packageDir = getTestPath('package');
         const targetDir = getTestPath('target');
 
-        await copyRulesToTarget(packageDir, targetDir, ['rules']);
+        await copyRulesToTarget(packageDir, targetDir, 'cursor', ['rules']);
 
-        const rulesDirCalls = mockReaddir.mock.calls.filter((call) => call[0].replace(/\\/g, '/').includes('/rules'));
+        const rulesDirCalls = mockReaddir.mock.calls.filter((call) =>
+            call[0].replace(/\\/g, '/').includes('rules-kit/rules'),
+        );
         expect(rulesDirCalls).toHaveLength(0);
     });
 
@@ -208,9 +210,11 @@ describe('copyRulesToTarget', () => {
         const packageDir = getTestPath('package');
         const targetDir = getTestPath('target');
 
-        await copyRulesToTarget(packageDir, targetDir, ['rules/subdir']);
+        await copyRulesToTarget(packageDir, targetDir, 'cursor', ['rules/subdir']);
 
-        const rulesDirCalls = mockReaddir.mock.calls.filter((call) => call[0].replace(/\\/g, '/').includes('/rules'));
+        const rulesDirCalls = mockReaddir.mock.calls.filter((call) =>
+            call[0].replace(/\\/g, '/').includes('rules-kit/rules'),
+        );
         expect(rulesDirCalls).toHaveLength(1);
         expect(mockCp).toHaveBeenCalledTimes(RULES_DIRS.length);
     });
@@ -242,7 +246,7 @@ describe('copyRulesToTarget', () => {
         const packageDir = getTestPath('package');
         const targetDir = getTestPath('target');
 
-        await copyRulesToTarget(packageDir, targetDir, ['rules/**', '!rules/prompt-workflow.mdc']);
+        await copyRulesToTarget(packageDir, targetDir, 'cursor', ['rules/**', '!rules/prompt-workflow.mdc']);
 
         const promptWorkflowCalls = mockCp.mock.calls.filter((call) => call[0].includes('prompt-workflow.mdc'));
 

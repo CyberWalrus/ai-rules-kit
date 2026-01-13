@@ -20,6 +20,10 @@ vi.mock('../../lib/github-fetcher', () => ({
     getLatestSystemRulesVersion: vi.fn().mockResolvedValue(null),
 }));
 
+vi.mock('@clack/prompts', () => ({
+    select: vi.fn().mockResolvedValue('cursor'),
+}));
+
 describe('Replace-All Command E2E', () => {
     let tempDirPathPath: string;
     const packageDir = process.cwd();
@@ -80,7 +84,7 @@ describe('Replace-All Command E2E', () => {
         expect(content).toHaveProperty('promptsVersion');
         expect(content).toHaveProperty('installedAt');
         expect(content).toHaveProperty('updatedAt');
-        expect(content).toHaveProperty('source', 'cursor-rules');
+        expect(content).toHaveProperty('source', 'ai-rules-kit');
         expect(content).toHaveProperty('configVersion', '1.0.0');
         expect(content.promptsVersion).not.toBe('2025.11.9.1');
     });

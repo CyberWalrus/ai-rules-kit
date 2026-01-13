@@ -5,6 +5,7 @@ export function createTestConfig(overrides: Partial<RulesConfig> = {}): RulesCon
         cliVersion: '1.0.0',
         configVersion: '1.0.0',
         fileOverrides: [],
+        ideType: 'cursor',
         ignoreList: [],
         installedAt: '2025-11-01T12:00:00.000Z',
         promptsVersion: '2025.11.10.1',
@@ -17,7 +18,8 @@ export function createTestConfig(overrides: Partial<RulesConfig> = {}): RulesCon
         settings: {
             language: 'ru',
         },
-        source: 'cursor-rules',
+        source: 'ai-rules-kit',
+        systemRulesVersion: undefined,
         updatedAt: '2025-11-01T12:00:00.000Z',
     };
 

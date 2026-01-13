@@ -17,6 +17,10 @@ vi.mock('../../lib/github-fetcher', () => ({
     getLatestSystemRulesVersion: vi.fn().mockResolvedValue(null),
 }));
 
+vi.mock('@clack/prompts', () => ({
+    select: vi.fn().mockResolvedValue('cursor'),
+}));
+
 describe('Init Command E2E', () => {
     let tempDirPath: string;
     const packageDir = process.cwd();

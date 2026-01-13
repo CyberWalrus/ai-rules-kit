@@ -19,6 +19,10 @@ vi.mock('../../lib/github-fetcher', () => ({
     getLatestSystemRulesVersion: vi.fn().mockResolvedValue(null),
 }));
 
+vi.mock('@clack/prompts', () => ({
+    select: vi.fn().mockResolvedValue('cursor'),
+}));
+
 describe('Full Cycle E2E', () => {
     let tempDirPath: string;
     const packageDir = process.cwd();
@@ -48,7 +52,7 @@ describe('Full Cycle E2E', () => {
         expect(configAfterInit).toHaveProperty('promptsVersion');
         expect(configAfterInit).toHaveProperty('installedAt');
         expect(configAfterInit).toHaveProperty('updatedAt');
-        expect(configAfterInit).toHaveProperty('source', 'cursor-rules');
+        expect(configAfterInit).toHaveProperty('source', 'ai-rules-kit');
         expect(configAfterInit).toHaveProperty('configVersion', '1.0.0');
 
         const timestampAfterInit = new Date(configAfterInit.installedAt).getTime();
@@ -119,9 +123,9 @@ describe('Full Cycle E2E', () => {
         await upgradeCommand(packageDir, tempDir3);
         await replaceAllCommand(packageDir, tempDir3);
 
-        const cursorRulesDir: string = join(tempDir3, '.cursor', 'rules');
-        const cursorDocsDir: string = join(tempDir3, '.cursor', 'docs');
-        const cursorCommandsDir: string = join(tempDir3, '.cursor', 'commands');
+        const cursorRulesDir: string = join(tempDir3, '.cursor', 'rules-kit', 'rules');
+        const cursorDocsDir: string = join(tempDir3, '.cursor', 'rules-kit', 'docs');
+        const cursorCommandsDir: string = join(tempDir3, '.cursor', 'rules-kit', 'commands');
         const configFilePath: string = join(tempDir3, '.cursor', VERSION_FILE_NAME);
 
         await expect(access(cursorRulesDir, constants.F_OK)).resolves.toBeUndefined();

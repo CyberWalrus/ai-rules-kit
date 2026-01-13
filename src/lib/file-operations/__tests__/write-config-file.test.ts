@@ -32,15 +32,16 @@ describe('writeConfigFile', () => {
 
         const targetDir = getTestPath('target');
 
-        await writeConfigFile(targetDir, config);
+        await writeConfigFile(targetDir, config, 'cursor');
 
         expect(mockMkdir).toHaveBeenCalledWith(join(targetDir, '.cursor'), { recursive: true });
         const expectedConfig = {
-            $schema: `https://raw.githubusercontent.com/CyberWalrus/cursor-rules-cli/main/schemas/cursor-rules-config-${config.configVersion}.schema.json`,
+            $schema: `https://raw.githubusercontent.com/CyberWalrus/ai-rules-kit/main/schemas/ai-rules-kit-config-${config.configVersion}.schema.json`,
             ...config,
+            ideType: 'cursor',
         };
         expect(mockWriteFile).toHaveBeenCalledWith(
-            join(targetDir, '.cursor', 'cursor-rules-config.json'),
+            join(targetDir, '.cursor', 'ai-rules-kit-config.json'),
             JSON.stringify(expectedConfig, null, 2),
             'utf-8',
         );
@@ -49,19 +50,21 @@ describe('writeConfigFile', () => {
     it('должен выбрасывать ошибку если targetDir пустой', async () => {
         const config: RulesConfig = createTestConfig();
 
-        await expect(writeConfigFile('', config)).rejects.toThrow('targetDir is required');
+        await expect(writeConfigFile('', config, 'cursor')).rejects.toThrow('targetDir is required');
     });
 
     it('должен выбрасывать ошибку если config null', async () => {
         const targetDir = getTestPath('target');
 
-        await expect(writeConfigFile(targetDir, null as unknown as RulesConfig)).rejects.toThrow('config is required');
+        await expect(writeConfigFile(targetDir, null as unknown as RulesConfig, 'cursor')).rejects.toThrow(
+            'config is required',
+        );
     });
 
     it('должен выбрасывать ошибку если config undefined', async () => {
         const targetDir = getTestPath('target');
 
-        await expect(writeConfigFile(targetDir, undefined as unknown as RulesConfig)).rejects.toThrow(
+        await expect(writeConfigFile(targetDir, undefined as unknown as RulesConfig, 'cursor')).rejects.toThrow(
             'config is required',
         );
     });
@@ -74,6 +77,6 @@ describe('writeConfigFile', () => {
 
         const targetDir = getTestPath('target');
 
-        await expect(writeConfigFile(targetDir, config)).rejects.toThrow('Failed to write config file');
+        await expect(writeConfigFile(targetDir, config, 'cursor')).rejects.toThrow('Failed to write config file');
     });
 });

@@ -4,9 +4,11 @@ import { join } from 'node:path';
 import type { RulesConfig } from '../../model';
 import { VERSION_FILE_NAME } from '../../model';
 import { isEmptyString } from '../helpers';
+import type { IdeType } from '../ide-config';
+import { getProjectIdeDir } from '../ide-config';
 
 /** Записывает файл конфигурации в целевую директорию */
-export async function writeConfigFile(targetDir: string, config: RulesConfig): Promise<void> {
+export async function writeConfigFile(targetDir: string, config: RulesConfig, ideType: IdeType): Promise<void> {
     if (isEmptyString(targetDir)) {
         throw new Error('targetDir is required');
     }
@@ -14,16 +16,17 @@ export async function writeConfigFile(targetDir: string, config: RulesConfig): P
         throw new Error('config is required');
     }
 
-    const cursorDir = join(targetDir, '.cursor');
-    const configFilePath = join(cursorDir, VERSION_FILE_NAME);
+    const ideDir = getProjectIdeDir(ideType);
+    const configFilePath = join(targetDir, ideDir, VERSION_FILE_NAME);
     const configWithSchema = {
-        $schema: `https://raw.githubusercontent.com/CyberWalrus/cursor-rules-cli/main/schemas/cursor-rules-config-${config.configVersion}.schema.json`,
+        $schema: `https://raw.githubusercontent.com/CyberWalrus/ai-rules-kit/main/schemas/ai-rules-kit-config-${config.configVersion}.schema.json`,
         ...config,
+        ideType,
     };
     const content = JSON.stringify(configWithSchema, null, 2);
 
     try {
-        await mkdir(cursorDir, { recursive: true });
+        await mkdir(join(targetDir, ideDir), { recursive: true });
         await writeFile(configFilePath, content, 'utf-8');
     } catch (error) {
         throw new Error(`Failed to write config file: ${String(error)}`);

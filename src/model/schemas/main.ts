@@ -22,6 +22,7 @@ export const rulesConfigSchema = z.object({
     cliVersion: z.string().regex(/^\d+\.\d+\.\d+$/, 'CLI version must be in semver format (x.y.z)'),
     configVersion: z.string().regex(/^\d+\.\d+\.\d+$/, 'Config version must be in semver format (x.y.z)'),
     fileOverrides: z.array(fileOverrideSchema).optional(),
+    ideType: z.enum(['cursor', 'trae'], { message: 'IDE type must be "cursor" or "trae"' }),
     ignoreList: z.array(z.string()).optional(),
     installedAt: z.string().datetime({ message: 'installedAt must be a valid ISO 8601 datetime' }),
     promptsVersion: z
@@ -70,6 +71,7 @@ export const mcpSettingsSchema = z.object({
 export const userConfigSchema = z
     .object({
         githubToken: z.string().min(1, 'GitHub token cannot be empty').optional(),
+        ideType: z.enum(['cursor', 'trae']).optional(),
         language: z.enum(['en', 'ru'], { message: 'Language must be "en" or "ru"' }),
         mcpSettings: mcpSettingsSchema.optional(),
         metaInfo: userMetaInfoSchema.optional(),

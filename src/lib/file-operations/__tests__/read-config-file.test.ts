@@ -51,7 +51,7 @@ describe('readConfigFile', () => {
 
         expect(result).toEqual(config);
         expect(mockPathExists).toHaveBeenCalled();
-        expect(mockReadFile).toHaveBeenCalledWith(join(targetDir, '.cursor', 'cursor-rules-config.json'), 'utf-8');
+        expect(mockReadFile).toHaveBeenCalledWith(join(targetDir, '.cursor', 'ai-rules-kit-config.json'), 'utf-8');
     });
 
     it('должен возвращать null если файл не существует', async () => {
@@ -100,7 +100,7 @@ describe('readConfigFile', () => {
         const config: RulesConfig = createTestConfig();
         const oldConfigContent = {
             $schema:
-                'https://raw.githubusercontent.com/CyberWalrus/cursor-rules-cli/main/.cursor/cursor-rules-config-1.0.0.schema.json',
+                'https://raw.githubusercontent.com/CyberWalrus/cursor-rules-cli/main/.cursor/ai-rules-kit-config-1.0.0.schema.json',
             ...config,
         };
 
@@ -115,8 +115,9 @@ describe('readConfigFile', () => {
         expect(result).not.toBeNull();
         expect(result?.configVersion).toBe(config.configVersion);
         expect(mockWriteConfigFile).toHaveBeenCalledWith(
-            targetDir,
+            join(targetDir, '.cursor'),
             expect.objectContaining({ configVersion: '1.0.0' }),
+            'cursor',
         );
     });
 });

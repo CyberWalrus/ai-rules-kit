@@ -43,6 +43,8 @@ export async function upgradeCommand(packageDir: string, targetDir: string): Pro
         throw new Error(t('command.upgrade.config-not-found'));
     }
 
+    const ideType = config.ideType ?? 'cursor';
+
     const ruleSetsToUpdate = config.ruleSets.filter((ruleSet) => ruleSet.update);
 
     if (ruleSetsToUpdate.length === 0) {
@@ -117,7 +119,7 @@ export async function upgradeCommand(packageDir: string, targetDir: string): Pro
                 : Promise.resolve(),
         ]);
         await calculateDiff(tmpDir, targetDir);
-        await copyRulesToTarget(tmpDir, targetDir, config.ignoreList ?? [], config.fileOverrides ?? []);
+        await copyRulesToTarget(tmpDir, targetDir, ideType, config.ignoreList ?? [], config.fileOverrides ?? []);
 
         const cliVersion = await getPackageVersion(packageDir);
         config.cliVersion = cliVersion;
@@ -126,7 +128,7 @@ export async function upgradeCommand(packageDir: string, targetDir: string): Pro
             config.systemRulesVersion = latestSystemRulesVersion;
         }
         config.updatedAt = new Date().toISOString();
-        await writeConfigFile(targetDir, config);
+        await writeConfigFile(targetDir, config, ideType);
 
         console.log(t('command.upgrade.success', { current: currentPromptsVersion, latest: latestPromptsVersion }));
     } finally {

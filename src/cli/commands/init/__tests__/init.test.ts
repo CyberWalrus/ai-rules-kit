@@ -15,6 +15,9 @@ import { getVersionsWithRetry } from '../../../../lib/version-manager/get-versio
 import { initCommand } from '../index';
 
 vi.mock('node:fs/promises');
+vi.mock('@clack/prompts', () => ({
+    select: vi.fn().mockResolvedValue('cursor'),
+}));
 vi.mock('../../../../lib/file-operations/copy-rules-to-target');
 vi.mock('../../../../lib/file-operations/copy-system-rules-to-target');
 vi.mock('../../../../lib/file-operations/write-config-file');
@@ -60,29 +63,35 @@ describe('initCommand', () => {
         expect(mockFetchPromptsTarball).toHaveBeenCalledWith(
             'CyberWalrus/cursor-rules',
             '2025.11.10.1',
-            expect.stringContaining('cursor-rules-'),
+            expect.any(String),
         );
         expect(mockCopyRulesToTarget).toHaveBeenCalled();
         expect(mockGetPackageVersion).toHaveBeenCalledWith('/package/dir');
-        expect(mockWriteConfigFile).toHaveBeenCalledWith('/target/dir', {
-            cliVersion: '1.0.0',
-            configVersion: '1.0.0',
-            fileOverrides: [],
-            ignoreList: [],
-            installedAt: expect.any(String),
-            promptsVersion: '2025.11.10.1',
-            ruleSets: [
-                {
-                    id: 'base',
-                    update: true,
+        expect(mockWriteConfigFile).toHaveBeenCalledWith(
+            '/target/dir',
+            {
+                cliVersion: '1.0.0',
+                configVersion: '1.0.0',
+                fileOverrides: [],
+                ideType: 'cursor',
+                ignoreList: [],
+                installedAt: expect.any(String),
+                promptsVersion: '2025.11.10.1',
+                ruleSets: [
+                    {
+                        id: 'base',
+                        update: true,
+                    },
+                ],
+                settings: {
+                    language: 'en',
                 },
-            ],
-            settings: {
-                language: 'en',
+                source: 'ai-rules-kit',
+                systemRulesVersion: undefined,
+                updatedAt: expect.any(String),
             },
-            source: 'cursor-rules',
-            updatedAt: expect.any(String),
-        });
+            'cursor',
+        );
     });
 
     it('должен выбрасывать ошибку если packageDir не указан', async () => {
@@ -135,25 +144,31 @@ describe('initCommand', () => {
         await initCommand('/package/dir', '/target/dir');
 
         expect(mockWriteConfigFile).toHaveBeenCalledTimes(1);
-        expect(mockWriteConfigFile).toHaveBeenCalledWith('/target/dir', {
-            cliVersion: '2.0.0',
-            configVersion: '1.0.0',
-            fileOverrides: [],
-            ignoreList: [],
-            installedAt: expect.any(String),
-            promptsVersion: '2025.11.10.1',
-            ruleSets: [
-                {
-                    id: 'base',
-                    update: true,
+        expect(mockWriteConfigFile).toHaveBeenCalledWith(
+            '/target/dir',
+            {
+                cliVersion: '2.0.0',
+                configVersion: '1.0.0',
+                fileOverrides: [],
+                ideType: 'cursor',
+                ignoreList: [],
+                installedAt: expect.any(String),
+                promptsVersion: '2025.11.10.1',
+                ruleSets: [
+                    {
+                        id: 'base',
+                        update: true,
+                    },
+                ],
+                settings: {
+                    language: 'en',
                 },
-            ],
-            settings: {
-                language: 'en',
+                source: 'ai-rules-kit',
+                systemRulesVersion: undefined,
+                updatedAt: expect.any(String),
             },
-            source: 'cursor-rules',
-            updatedAt: expect.any(String),
-        });
+            'cursor',
+        );
     });
 
     it('должен записывать корректный ISO timestamp в installedAt и updatedAt', async () => {
