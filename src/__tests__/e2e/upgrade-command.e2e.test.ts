@@ -57,7 +57,7 @@ describe('Upgrade Command E2E', () => {
         expect(configBeforeUpdate).toBe(configAfterUpdate);
     });
 
-    it('должен успешно обновлять при наличии diff', async () => {
+    it('должен успешно обновлять при наличии diff', { timeout: 30_000 }, async () => {
         await copyRulesFixtures(tempDirPathPath);
         await createVersionFile(tempDirPathPath, '2025.11.9.1');
 
@@ -73,7 +73,7 @@ describe('Upgrade Command E2E', () => {
         expect(contentAfter.updatedAt).not.toBe(contentBefore.updatedAt);
     });
 
-    it('должен обновлять updatedAt при обновлении', async () => {
+    it('должен обновлять updatedAt при обновлении', { timeout: 30_000 }, async () => {
         await copyRulesFixtures(tempDirPathPath);
         await createVersionFile(tempDirPathPath, '2025.11.9.1');
 

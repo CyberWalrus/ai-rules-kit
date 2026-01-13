@@ -1,3 +1,4 @@
+import { dirname } from 'node:path';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
@@ -23,7 +24,7 @@ async function readAndParseConfig(configFilePath: string): Promise<RulesConfig |
         if (hasOldSchema && config.configVersion && config.ideType) {
             const newSchema = `https://raw.githubusercontent.com/CyberWalrus/ai-rules-kit/main/schemas/ai-rules-kit-config-${config.configVersion}.schema.json`;
             if (parsed.$schema !== newSchema) {
-                const targetDir = configFilePath.substring(0, configFilePath.lastIndexOf('/'));
+                const targetDir = dirname(configFilePath);
                 const { ideType } = config;
                 await writeConfigFile(targetDir, config, ideType);
             }
