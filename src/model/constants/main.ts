@@ -1,8 +1,8 @@
 /** Имя файла для хранения конфигурации правил */
-export const VERSION_FILE_NAME = 'cursor-rules-config.json';
+export const VERSION_FILE_NAME = 'ai-rules-kit-config.json';
 
 /** Директории с правилами для копирования (относительно корня пакета) */
-export const RULES_DIRS = ['cursor/rules', 'cursor/docs', 'cursor/commands'] as const;
+export const RULES_DIRS = ['rules-kit/rules', 'rules-kit/docs', 'rules-kit/commands'] as const;
 
 /** GitHub репозиторий с правилами */
 export const GITHUB_REPO = 'CyberWalrus/cursor-rules' as const;
