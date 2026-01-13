@@ -7,6 +7,7 @@ import { copyRulesToTarget, readConfigFile, writeConfigFile } from '../../../lib
 import { fetchPromptsTarball, fetchSystemRulesTarball } from '../../../lib/github-fetcher';
 import { askConfirmation } from '../../../lib/helpers';
 import { t } from '../../../lib/i18n';
+import { getIdeRulesDir } from '../../../lib/ide-config';
 import { compareCalVerVersions } from '../../../lib/version-manager/compare-calver-versions';
 import { getCurrentVersion } from '../../../lib/version-manager/get-current-version';
 import { getPackageVersion } from '../../../lib/version-manager/get-package-version';
@@ -118,8 +119,15 @@ export async function upgradeCommand(packageDir: string, targetDir: string): Pro
                 ? fetchSystemRulesTarball(GITHUB_REPO, latestSystemRulesVersion, tmpDir)
                 : Promise.resolve(),
         ]);
-        await calculateDiff(tmpDir, targetDir);
-        await copyRulesToTarget(tmpDir, targetDir, ideType, config.ignoreList ?? [], config.fileOverrides ?? []);
+        await calculateDiff(tmpDir, targetDir, getIdeRulesDir(ideType));
+        await copyRulesToTarget(
+            tmpDir,
+            targetDir,
+            ideType,
+            config.ignoreList ?? [],
+            config.fileOverrides ?? [],
+            getIdeRulesDir(ideType),
+        );
 
         const cliVersion = await getPackageVersion(packageDir);
         config.cliVersion = cliVersion;

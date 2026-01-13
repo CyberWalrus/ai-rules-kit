@@ -72,7 +72,7 @@ describe('runCli', () => {
         const mainConfig = mockRunMain.mock.calls[0][0] as Record<string, unknown>;
 
         expect(mainConfig).toHaveProperty('meta');
-        expect(mainConfig.meta).toHaveProperty('name', 'cursor-rules');
+        expect(mainConfig.meta).toHaveProperty('name', 'ai-rules-kit');
         expect(mainConfig.meta).toHaveProperty('description');
         expect(mainConfig.meta).toHaveProperty('version');
 

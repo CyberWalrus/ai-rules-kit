@@ -157,8 +157,8 @@ jobs:
             echo "## [$VERSION] - $(date +%Y-%m-%d)" > release_notes.md
             echo "" >> release_notes.md
             echo "### Changes" >> release_notes.md
-            echo "- See [Full Changelog](https://github.com/CyberWalrus/cursor-rules-cli/commits/v$VERSION) for details" >> release_notes.md
-            echo "- View [All Releases](https://github.com/CyberWalrus/cursor-rules-cli/releases) for complete history" >> release_notes.md
+            echo "- See [Full Changelog](https://github.com/CyberWalrus/ai-rules-kit/commits/v$VERSION) for details" >> release_notes.md
+            echo "- View [All Releases](https://github.com/CyberWalrus/ai-rules-kit/releases) for complete history" >> release_notes.md
           else
             echo "Successfully extracted changelog for version $VERSION"
             echo "Changelog preview:"

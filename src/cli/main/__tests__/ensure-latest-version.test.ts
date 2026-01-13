@@ -23,7 +23,7 @@ describe('ensureLatestVersion', () => {
         expect(mockGetPackageVersion).toHaveBeenCalledTimes(1);
         expect(mockGetPackageVersion).toHaveBeenCalledWith(packageDir);
         expect(mockNotifyIfUpdateAvailable).toHaveBeenCalledTimes(1);
-        expect(mockNotifyIfUpdateAvailable).toHaveBeenCalledWith('cursor-rules-cli', '1.0.0');
+        expect(mockNotifyIfUpdateAvailable).toHaveBeenCalledWith('ai-rules-kit', '1.0.0');
     });
 
     it('должен выбрасывать ошибку при null packageDir', async () => {

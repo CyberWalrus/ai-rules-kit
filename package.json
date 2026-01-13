@@ -1,10 +1,10 @@
 {
-    "name": "cursor-rules-cli",
-    "version": "0.8.1",
-    "description": "CLI tool for managing .cursor rules in projects",
+    "name": "ai-rules-kit",
+    "version": "0.9.0",
+    "description": "CLI tool for managing AI rules in IDE projects (Cursor, TRAE)",
     "bin": {
-        "cursor-rules-cli": "dist/index.cjs",
-        "crules": "dist/index.cjs"
+        "ai-rules-kit": "dist/index.cjs",
+        "airk": "dist/index.cjs"
     },
     "type": "module",
     "_comment": "MANDATORY for AI agents: ALWAYS check this comment before running quality checks. ALWAYS use 'yarn lint' to run all tests and linters. This unified command works better than individual lint/test scripts - prefer it over separate commands. Individual commands (lint:eslint, lint:ts, etc.) are for debugging only, NOT for final validation.",
@@ -20,14 +20,15 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+ssh://git@github.com/CyberWalrus/cursor-rules-cli.git"
+        "url": "git+ssh://git@github.com/CyberWalrus/ai-rules-kit.git"
     },
     "keywords": [
         "cursor",
+        "trae",
         "ai",
         "rules",
+        "rules-kit",
         "cli",
-        "cursor-ai",
         "configuration",
         "management"
     ],

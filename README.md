@@ -1,10 +1,10 @@
-# Cursor Rules CLI
+# AI Rules Kit
 
-[![npm version](https://img.shields.io/npm/v/cursor-rules-cli.svg)](https://www.npmjs.com/package/cursor-rules-cli)
+[![npm version](https://img.shields.io/npm/v/ai-rules-kit.svg)](https://www.npmjs.com/package/ai-rules-kit)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Node.js Version](https://img.shields.io/node/v/cursor-rules-cli.svg)](https://nodejs.org)
+[![Node.js Version](https://img.shields.io/node/v/ai-rules-kit.svg)](https://nodejs.org)
 
-Модульная система AI-промптов для Cursor IDE с автоматической классификацией задач и встроенной валидацией качества. Обеспечивает консистентность кода, архитектурную целостность и автоматическое следование best practices.
+Модульная система AI-промптов для IDE (Cursor, TRAE) с автоматической классификацией задач и встроенной валидацией качества. Обеспечивает консистентность кода, архитектурную целостность и автоматическое следование best practices.
 
 > **📖 Методики промптинга:** Все методики с примерами → [prompt-engineering-techniques.md](./prompt-engineering-techniques.md)
 
@@ -33,9 +33,9 @@
 
 ## Как быстро начать
 
-**Установка:** `npm install -g cursor-rules-cli` или `npx cursor-rules-cli`
+**Установка:** `npm install -g ai-rules-kit` или `npx ai-rules-kit`
 
-**Основной способ использования:** запустите `cursor-rules-cli` без аргументов — откроется интерактивное меню:
+**Основной способ использования:** запустите `ai-rules-kit` без аргументов — откроется интерактивное меню:
 
 - **init** — инициализация правил в проекте
 - **system-files** — копирование системных файлов (meta-info, core-system-instructions, mcp-config, current-date)
@@ -74,24 +74,27 @@
 
 ```bash
 # Глобальная установка через npm
-npm install -g cursor-rules-cli
+npm install -g ai-rules-kit
 
 # Или через yarn
-yarn global add cursor-rules-cli
+yarn global add ai-rules-kit
 
 # Или использование без установки
-npx cursor-rules-cli
+npx ai-rules-kit
+
+# Короткий алиас
+airk
 ```
 
 ### Инициализация Workspace Rules
 
-Запустите `cursor-rules-cli` и выберите **init** (или напрямую: `cursor-rules-cli init`).
+Запустите `ai-rules-kit` и выберите **init** (или напрямую: `ai-rules-kit init` или `airk init`).
 
 Команда автоматически:
 
-- Создаёт директорию `.cursor/` в корне проекта
+- Создаёт директорию `.cursor/` (или `.trae/` для TRAE) в корне проекта
 - Копирует все правила, документацию и команды
-- Создаёт файл конфигурации `.cursor/cursor-rules-config.json`
+- Создаёт файл конфигурации `.cursor/ai-rules-kit-config.json`
 - Настраивает базовую конфигурацию
 
 **Автоматически активируются (alwaysApply: true):**
@@ -108,7 +111,7 @@ npx cursor-rules-cli
 
 **Путь:** `Cursor Settings` → `Rules, Memories, Commands` → `User Rules`
 
-1. Запустите `cursor-rules-cli` и выберите **system-files**
+1. Запустите `ai-rules-kit` и выберите **system-files**
 2. Выберите нужный файл (например, `meta-info`)
 3. Файл будет скопирован в буфер обмена
 4. Откройте Cursor Settings (`Cmd + ,` на macOS или `Ctrl + ,` на Windows/Linux)
@@ -123,16 +126,16 @@ npx cursor-rules-cli
 
 ### Конфигурация правил
 
-После инициализации создается файл `.cursor/cursor-rules-config.json`:
+После инициализации создается файл `.cursor/ai-rules-kit-config.json`:
 
 ```json
 {
-    "$schema": "https://raw.githubusercontent.com/CyberWalrus/cursor-rules-cli/main/schemas/cursor-rules-config-1.0.0.schema.json",
+    "$schema": "https://raw.githubusercontent.com/CyberWalrus/ai-rules-kit/main/schemas/ai-rules-kit-config-1.0.0.schema.json",
     "configVersion": "1.0.0",
     "installedAt": "2025-11-07T10:00:00.000Z",
     "updatedAt": "2025-11-07T10:00:00.000Z",
-    "source": "cursor-rules",
-    "version": "0.7.1",
+    "source": "ai-rules-kit",
+    "version": "0.8.1",
     "settings": {
         "language": "ru"
     },
@@ -160,7 +163,7 @@ npx cursor-rules-cli
 
 > **⚠️ Примечание:** Система может работать без `mcp-validator`, но качество снизится — не будет автоматической валидации кода (score ≥85).
 
-**Настройка:** Запустите `cursor-rules-cli` → **system-files** → **mcp-config** — конфигурация будет скопирована в буфер обмена. Добавьте серверы в Cursor Settings → **Tools & MCP** → **New MCP Server** и замените `YOUR_OPENROUTER_API_KEY_HERE` на реальный API ключ.
+**Настройка:** Запустите `ai-rules-kit` → **system-files** → **mcp-config** — конфигурация будет скопирована в буфер обмена. Добавьте серверы в Cursor Settings → **Tools & MCP** → **New MCP Server** и замените `YOUR_OPENROUTER_API_KEY_HERE` на реальный API ключ.
 
 ### Получение API ключа OpenRouter
 
@@ -182,7 +185,7 @@ npx cursor-rules-cli
 
 **Как получить:** [GitHub Settings → Developer settings → Personal access tokens → Tokens (classic)](https://github.com/settings/tokens) → "Generate new token (classic)" → scope `public_repo` → скопируйте токен (формат: `ghp_...`).
 
-**Использование:** `export GITHUB_TOKEN=ghp_your_token_here` или `GITHUB_TOKEN=ghp_your_token_here npx cursor-rules-cli init`
+**Использование:** `export GITHUB_TOKEN=ghp_your_token_here` или `GITHUB_TOKEN=ghp_your_token_here npx ai-rules-kit init`
 
 > **💡 Примечание:** Токен опционален. При ошибке 403 установите переменную окружения `GITHUB_TOKEN`.
 
@@ -222,7 +225,7 @@ Plan Mode автоматически определяет тип задачи и
 ### Структура проекта
 
 ```
-.cursor/
+.cursor/         (или .trae/ для TRAE)
 ├── rules/       # Workspace правила (16 файлов)
 │                # Роутинг, стандарты, activity workflows
 ├── docs/        # Детальные справочники (14 файлов)
@@ -240,7 +243,7 @@ system-rules/    # Системные файлы для User Rules (не в Git)
 
 **`.cursor/commands/`** — готовые команды для Git автоматизации и анализа работы AI
 
-**`system-rules/`** — системные файлы для User Rules. Используйте команду `cursor-rules-cli system-files` для копирования в буфер обмена.
+**`system-rules/`** — системные файлы для User Rules. Используйте команду `ai-rules-kit system-files` для копирования в буфер обмена.
 
 > **📋 Полный список файлов** с описаниями см. в `.cursor/docs/rules-catalog.md`
 

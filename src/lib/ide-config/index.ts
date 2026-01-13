@@ -13,6 +13,18 @@ export function getProjectIdeDir(ideType: IdeType): string {
     throw new Error('Unsupported IDE type');
 }
 
+/** Возвращает директорию правил в исходном архиве */
+export function getIdeRulesDir(ideType: IdeType): string {
+    if (ideType === 'cursor') {
+        return 'rules-kit';
+    }
+    if (ideType === 'trae') {
+        return 'rules-kit';
+    }
+
+    throw new Error('Unsupported IDE type');
+}
+
 /** Возвращает расширение файлов правил для IDE */
 export function getIdeFileExtension(ideType: IdeType): '.md' | '.mdc' {
     if (ideType === 'cursor') {

@@ -8,6 +8,7 @@ import { writeConfigFile } from '../../../lib/file-operations/write-config-file'
 import { fetchPromptsTarball, fetchSystemRulesTarball } from '../../../lib/github-fetcher';
 import { t } from '../../../lib/i18n';
 import type { IdeType } from '../../../lib/ide-config';
+import { getIdeRulesDir } from '../../../lib/ide-config';
 import { readUserConfig } from '../../../lib/user-config';
 import { getCurrentVersion } from '../../../lib/version-manager/get-current-version';
 import { getPackageVersion } from '../../../lib/version-manager/get-package-version';
@@ -71,7 +72,7 @@ export async function initCommand(packageDir: string, targetDir: string): Promis
                 ? fetchSystemRulesTarball(GITHUB_REPO, systemRulesVersion, tmpDir)
                 : Promise.resolve(),
         ]);
-        await copyRulesToTarget(tmpDir, targetDir, ideType);
+        await copyRulesToTarget(tmpDir, targetDir, ideType, [], [], getIdeRulesDir(ideType));
 
         const cliVersion = await getPackageVersion(packageDir);
         const currentTimestamp = new Date().toISOString();

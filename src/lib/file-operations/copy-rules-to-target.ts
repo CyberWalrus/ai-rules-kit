@@ -75,6 +75,7 @@ export async function copyRulesToTarget(
     ideType: IdeType,
     ignoreList: string[] = [],
     fileOverrides: FileOverride[] = [],
+    sourceDirPrefix: string = '',
 ): Promise<void> {
     if (isEmptyString(packageDir)) {
         throw new Error('packageDir is required');
@@ -90,7 +91,7 @@ export async function copyRulesToTarget(
 
     await Promise.all(
         RULES_DIRS.map(async (ruleDir) => {
-            const sourcePath = join(packageDir, ruleDir);
+            const sourcePath = join(packageDir, sourceDirPrefix, ruleDir);
             const targetPath = join(targetIdeDir, ruleDir);
             const sourceExists = await pathExists(sourcePath);
 
@@ -98,7 +99,7 @@ export async function copyRulesToTarget(
                 return;
             }
 
-            const baseDir = packageDir;
+            const baseDir = join(packageDir, sourceDirPrefix);
             const relativeRuleDir = relative(baseDir, sourcePath).replace(/\\/g, '/');
             const shouldIgnoreDir = shouldIgnoreFile(relativeRuleDir, ignoreList);
 

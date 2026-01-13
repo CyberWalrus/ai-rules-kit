@@ -19,8 +19,8 @@ const packageDir = getPackageDir(currentFilePath);
 /** Главная команда CLI */
 const main = defineCommand({
     meta: {
-        description: 'CLI tool for managing .cursor rules in projects',
-        name: 'cursor-rules',
+        description: 'CLI tool for managing AI rules in IDE projects (Cursor, TRAE)',
+        name: 'ai-rules-kit',
         version: '0.1.3',
     },
     subCommands: {

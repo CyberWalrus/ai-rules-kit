@@ -6,7 +6,11 @@ import { isEmptyString } from '../helpers';
 import { scanDirectory } from './scan-directory';
 
 /** Вычисляет diff между версиями правил */
-export async function calculateDiff(packageDir: string, targetDir: string): Promise<VersionDiff> {
+export async function calculateDiff(
+    packageDir: string,
+    targetDir: string,
+    sourceDirPrefix: string = '',
+): Promise<VersionDiff> {
     if (isEmptyString(packageDir)) {
         throw new Error('packageDir is required');
     }
@@ -16,7 +20,7 @@ export async function calculateDiff(packageDir: string, targetDir: string): Prom
 
     const results = await Promise.all(
         RULES_DIRS.map(async (ruleDir) => {
-            const sourcePath = join(packageDir, ruleDir);
+            const sourcePath = join(packageDir, sourceDirPrefix, ruleDir);
             const targetRuleDir = `.cursor/${ruleDir}`;
             const targetPath = join(targetDir, targetRuleDir);
 

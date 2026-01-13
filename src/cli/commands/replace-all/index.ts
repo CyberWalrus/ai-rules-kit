@@ -12,6 +12,7 @@ import { fetchPromptsTarball, fetchSystemRulesTarball } from '../../../lib/githu
 import { askConfirmation } from '../../../lib/helpers';
 import { t } from '../../../lib/i18n';
 import type { IdeType } from '../../../lib/ide-config';
+import { getIdeRulesDir } from '../../../lib/ide-config';
 import { readUserConfig } from '../../../lib/user-config';
 import { getPackageVersion } from '../../../lib/version-manager/get-package-version';
 import { getVersionsWithRetry } from '../../../lib/version-manager/get-versions-with-retry';
@@ -116,7 +117,14 @@ export async function replaceAllCommand(packageDir: string, targetDir: string): 
                 : Promise.resolve(),
         ]);
         await deleteRulesFromTarget(targetDir, ideType);
-        await copyRulesToTarget(tmpDir, targetDir, ideType, config.ignoreList ?? [], config.fileOverrides ?? []);
+        await copyRulesToTarget(
+            tmpDir,
+            targetDir,
+            ideType,
+            config.ignoreList ?? [],
+            config.fileOverrides ?? [],
+            getIdeRulesDir(ideType),
+        );
         await writeConfigFile(targetDir, config, ideType);
 
         console.log(t('command.replace-all.success', { version: promptsVersion }));
