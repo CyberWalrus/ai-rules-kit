@@ -30,8 +30,8 @@ export default defineConfig({
         ...(isE2E && {
             fileParallelism: false,
             isolate: true,
-            maxConcurrency: 1,
-            testTimeout: 30_000,
+            maxConcurrency: 20,
+            testTimeout: 5_000,
             threads: false,
         }),
     },

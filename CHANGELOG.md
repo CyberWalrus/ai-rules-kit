@@ -1,5 +1,83 @@
 # Changelog
 
+## [0.8.0] - 2026-01-13
+
+<small>13.01.2026</small>
+
+### Added
+
+- **Multi-IDE support**
+    - Added support for both Cursor and TRAE IDEs with automatic file extension conversion
+    - Added interactive IDE type selection in init command
+    - Added ide-config module with helper functions for IDE-specific paths and extensions
+    - Updated all file operations to support IDE-specific configurations
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/UNCOMMITTED" target="_blank">UNCOMMITTED</a>
+
+### Changed
+
+- **Project rename to AI Rules Kit**
+    - Renamed project from cursor-rules-cli to ai-rules-kit
+    - Updated package name to ai-rules-kit-cli
+    - Updated all paths from cursor/rules to rules-kit/rules
+    - Updated configuration file name from cursor-rules-config.json to ai-rules-kit-config.json
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/UNCOMMITTED" target="_blank">UNCOMMITTED</a>
+
+- **Configuration and test optimizations**
+    - Added CLAUDE.md to .gitignore
+    - Optimized vitest configuration with increased concurrency (20) and reduced timeout (5s) for E2E tests
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/UNCOMMITTED" target="_blank">UNCOMMITTED</a>
+
+## [0.7.2] - 2026-01-04
+
+<small>04.01.2026 23:48</small>
+
+### Added
+
+- **Bootstrap app workflow**
+    - Added bootstrap-app workflow for creating applications from scratch
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/963f6d5" target="_blank">963f6d5</a>
+
+### Changed
+
+- **CLI structure refactoring**
+    - Refactored CLI structure with dedicated entry point
+    - Refactored version-manager module with extracted helpers and types
+    - Refactored i18n module with removed locales
+    - Refactored other modules and updated configuration
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/3371ae6" target="_blank">3371ae6</a>
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/6f6a530" target="_blank">6f6a530</a>
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/d4811a8" target="_blank">d4811a8</a>
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/87c072f" target="_blank">87c072f</a>
+
+- **CLI paths update**
+    - Updated CLI paths and configuration
+    - Updated dependencies
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/d74914e" target="_blank">d74914e</a>
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/8fbb934" target="_blank">8fbb934</a>
+
+### Docs
+
+- **Workflow improvements**
+    - Updated plan creation process with context and clarified steps in workflow
+    - Updated structure and added templates for scripts and devDependencies in workflow
+    - Updated documentation with protocol for first response and task execution requirements
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/fb66166" target="_blank">fb66166</a>
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/a6f1898" target="_blank">a6f1898</a>
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/24b2b2d" target="_blank">24b2b2d</a>
+
+- **Documentation reorganization**
+    - Removed outdated first response protocol and reorganized structure
+    - Updated documentation
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/c4d8548" target="_blank">c4d8548</a>
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/0576e9c" target="_blank">0576e9c</a>
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/fbdbf8e" target="_blank">fbdbf8e</a>
+
+### Style
+
+- **Formatting**
+    - Formatted markdown tables in workflow files
+    - <a href="https://github.com/CyberWalrus/cursor-rules-cli/commit/49118f4" target="_blank">49118f4</a>
+
 ## [0.7.1] - 2026-01-04
 
 <small>04.01.2026 22:27</small>
