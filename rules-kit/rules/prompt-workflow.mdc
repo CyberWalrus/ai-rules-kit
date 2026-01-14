@@ -1,7 +1,7 @@
 ---
 id: prompt-workflow
 type: combo
-globs: **/*.mdc, .cursor/**/*.md
+globs: "**/*.mdc, .cursor/**/*.md"
 alwaysApply: false
 ---
 

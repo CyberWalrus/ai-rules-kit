@@ -1,7 +1,7 @@
 ---
 id: ai-documentation-integration-analysis
 type: reference
-globs: **/package-ai-docs.md, **/module-ai-docs.md
+globs: "**/package-ai-docs.md, **/module-ai-docs.md"
 alwaysApply: false
 ---
 
