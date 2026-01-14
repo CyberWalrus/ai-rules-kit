@@ -14,7 +14,7 @@ alwaysApply: true
 
 **ВАЖНО: Все ответы должны быть на русском языке.**
 
-Read full reference: `.cursor/docs/code-standards.md` for detailed examples.
+Read full reference: `{{DOCS_DIR}}/code-standards.md` for detailed examples.
 
 ## Core Rules
 
@@ -22,39 +22,39 @@ Read full reference: `.cursor/docs/code-standards.md` for detailed examples.
 
 BEFORE creating/editing any `.ts/.tsx` file, CHECK:
 
-| File Name | Multiple Functions? | What It Contains |
-|:---|:---|:---|
-| `helpers.ts` | ✅ YES | Multiple related functions |
-| `constants.ts` | ❌ NO | Only constants |
-| `types.ts` | ❌ NO | Only types |
-| `schemas.ts` | ❌ NO | Only schemas |
-| `index.ts` (barrel) | ❌ NO | Only re-exports |
-| **Any other file** | ❌ **NO** | **Exactly ONE function** |
+| File Name           | Multiple Functions? | What It Contains           |
+| :------------------ | :------------------ | :------------------------- |
+| `helpers.ts`        | ✅ YES              | Multiple related functions |
+| `constants.ts`      | ❌ NO               | Only constants             |
+| `types.ts`          | ❌ NO               | Only types                 |
+| `schemas.ts`        | ❌ NO               | Only schemas               |
+| `index.ts` (barrel) | ❌ NO               | Only re-exports            |
+| **Any other file**  | ❌ **NO**           | **Exactly ONE function**   |
 
 **SELF-CHECK:** "Is this file NOT `helpers.ts` AND has 2+ exported functions?" → YES = VIOLATION
 
 **Entity Separation (CRITICAL - ZERO TOLERANCE):**
 
-| Entity | Goes To | NEVER In |
-|:---|:---|:---|
+| Entity    | Goes To                      | NEVER In               |
+| :-------- | :--------------------------- | :--------------------- |
 | Functions | `feature.ts` or `helpers.ts` | types.ts, constants.ts |
-| Types | `types.ts` | function files |
-| Constants | `constants.ts` | function files |
+| Types     | `types.ts`                   | function files         |
+| Constants | `constants.ts`               | function files         |
 
 **CRITICAL VIOLATIONS (INSTANT FAILURE):**
 
 ```typescript
 // ❌ Two functions in non-helpers file
-export function doA() { }
-export function doB() { }  // VIOLATION
+export function doA() {}
+export function doB() {} // VIOLATION
 
 // ❌ Type in function file
-export type Result = { };   // VIOLATION
-export function process() { }
+export type Result = {}; // VIOLATION
+export function process() {}
 
 // ❌ Constant in function file
-export const MAX = 100;     // VIOLATION
-export function validate() { }
+export const MAX = 100; // VIOLATION
+export function validate() {}
 ```
 
 **Other Structure Rules:**
@@ -140,21 +140,7 @@ export function validate() { }
 2. **Mixing entities** - function + type/constant in same file
 3. Files >150 lines (exception: tests, constants.ts, types.ts, schemas.ts)
 
-**Code Patterns:**
-4. for/while loops (exception: math algorithms)
-5. class keyword
-6. export default (exception: Storybook)
-7. Multiline JSDoc
-8. Implicit comparisons (!value, !!value)
-9. Deep if/else
-10. Comments in function bodies (except tool directives)
-11. Inline types - use types.ts
-12. Node.js imports without node: prefix
-13. CommonJS (require, module.exports)
-14. Function type - use concrete signatures
-15. any type - use unknown
-16. JSX.Element - use ReactNode
-17. **Nested JSX/components** - extract to separate files
+**Code Patterns:** 4. for/while loops (exception: math algorithms) 5. class keyword 6. export default (exception: Storybook) 7. Multiline JSDoc 8. Implicit comparisons (!value, !!value) 9. Deep if/else 10. Comments in function bodies (except tool directives) 11. Inline types - use types.ts 12. Node.js imports without node: prefix 13. CommonJS (require, module.exports) 14. Function type - use concrete signatures 15. any type - use unknown 16. JSX.Element - use ReactNode 17. **Nested JSX/components** - extract to separate files
 
 Violation = Task Failure
 

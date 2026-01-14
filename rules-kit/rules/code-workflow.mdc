@@ -72,8 +72,8 @@ Think step-by-step: read context, understand request, design solution, validate,
 - [ ] `package.json` → extract: dependencies, scripts (lint, test, e2e, unified commands)
 - [ ] `package-ai-docs.md` → extract: development_context, tech_stack, architecture_docs
 - [ ] `architecture.xml` → extract: current structure, layers, modules
-- [ ] `.cursor/docs/code-standards.md` → extract: key coding rules
-- [ ] `.cursor/docs/architecture.md` → extract: architecture principles
+- [ ] `{{DOCS_DIR}}/code-standards.md` → extract: key coding rules
+- [ ] `{{DOCS_DIR}}/architecture.md` → extract: architecture principles
 
 **⚠️ VERIFICATION (record actual paths read):**
 
@@ -137,11 +137,11 @@ From `scripts` section, identify and record:
 
 Before MCP validation, EXPLICITLY reason about structural changes in chat:
 
-| Category | Analysis Question | Your Answer |
-|:---|:---|:---|
-| NEW files | Will new files/folders be created? | YES (list) / NO |
-| REMOVED files | Will files/folders be deleted? | YES (list) / NO |
-| MODIFIED only | Only changes to existing files? | YES / NO |
+| Category      | Analysis Question                  | Your Answer     |
+| :------------ | :--------------------------------- | :-------------- |
+| NEW files     | Will new files/folders be created? | YES (list) / NO |
+| REMOVED files | Will files/folders be deleted?     | YES (list) / NO |
+| MODIFIED only | Only changes to existing files?    | YES / NO        |
 
 **Decision Logic:**
 
@@ -169,16 +169,17 @@ Collect planned changes into diff format:
 - REMOVED: files/modules to be deleted
 
 ```javascript
-mcp_mcp-validator_validate({
-    validationType: 'architecture',
-    input: { type: 'file', data: '${PKG_ROOT}/architecture.xml' },
-    context: `Architecture validation: ${architecture_type}; scope=planning; target MCP>=85
+mcp_mcp -
+    validator_validate({
+        validationType: 'architecture',
+        input: { type: 'file', data: '${PKG_ROOT}/architecture.xml' },
+        context: `Architecture validation: ${architecture_type}; scope=planning; target MCP>=85
 DIFF: Planning mode - focus on changes
 - NEW: [files/modules to be added from Step 3]
 - MODIFIED: [files/modules to be changed from Step 3]
 - REMOVED: [files/modules to be deleted from Step 3]
-Files affected: [count] files, [count] modules`
-})
+Files affected: [count] files, [count] modules`,
+    });
 ```
 
 - Score ≥85 → proceed to Step 5
@@ -187,11 +188,11 @@ Files affected: [count] files, [count] modules`
 
 **⚠️ MCP RESULT RECORD (MANDATORY):**
 
-| Field | Value |
-|:---|:---|
-| MCP called | YES / NO |
-| Score | ___/100 |
-| If skipped | Reason: ___ |
+| Field      | Value          |
+| :--------- | :------------- |
+| MCP called | YES / NO       |
+| Score      | \_\_\_/100     |
+| If skipped | Reason: \_\_\_ |
 
 ❌ Score field empty → FORBIDDEN to proceed to Step 5
 ❌ NO without documented reason → VIOLATION
@@ -205,15 +206,15 @@ Files affected: [count] files, [count] modules`
 
 **Based on designed solution and validated architecture, decide AI docs action:**
 
-| Change Type | AI Docs Action |
-|:---|:---|
-| New module/package | CREATE module-ai-docs.md / package-ai-docs.md |
-| Changed public API (signatures, types) | UPDATE contract section |
-| Added/removed dependency | UPDATE dependencies section |
-| Fixed behavior bug | UPDATE edge_cases section |
-| Refactoring without API change | NO UPDATE needed |
+| Change Type                            | AI Docs Action                                |
+| :------------------------------------- | :-------------------------------------------- |
+| New module/package                     | CREATE module-ai-docs.md / package-ai-docs.md |
+| Changed public API (signatures, types) | UPDATE contract section                       |
+| Added/removed dependency               | UPDATE dependencies section                   |
+| Fixed behavior bug                     | UPDATE edge_cases section                     |
+| Refactoring without API change         | NO UPDATE needed                              |
 
-**For detailed instructions:** Read `.cursor/rules/ai-docs-workflow.mdc`
+**For detailed instructions:** Read `{{RULES_DIR}}/ai-docs-workflow{{FILE_EXT}}`
 
 **Record decision:** `ai_docs_action`: CREATE / UPDATE [section] / NO UPDATE
 
@@ -262,15 +263,18 @@ Steps 1-5 complete when:
 Mark each group: [SEQUENTIAL] or [PARALLEL]
 
 **[SEQUENTIAL] Step 1: [Name]**
+
 - Action: [specific action]
 - File: [path/to/file.ts]
 - Details: [implementation specifics, code patterns to use]
 
 **[PARALLEL] Steps 2-3: [Name]**
+
 - 2.1: [action] → [file]
 - 2.2: [action] → [file]
 
 **[SEQUENTIAL] Step N: Validation & Quality Checks**
+
 - MCP validation: run in PARALLEL for ALL changed files, target >=85
 - Lint + typecheck: `[lint_cmd from Step 1]` — 0 errors
 - Unit tests: `[unit_test_cmd from Step 1]` — 0 failures
@@ -278,6 +282,7 @@ Mark each group: [SEQUENTIAL] or [PARALLEL]
 - Fix any failures before proceeding
 
 **[SEQUENTIAL] Step N+1: AI Docs**
+
 - Action: `[ai_docs_action from Step 5]` (CREATE/UPDATE/NO UPDATE)
 - If CREATE: create file with initial sections
 - If UPDATE: update specified section
@@ -285,29 +290,32 @@ Mark each group: [SEQUENTIAL] or [PARALLEL]
 ## 2. Architecture Changes
 
 **New Files:**
+
 - `src/[path]/index.ts` — [purpose, what it exports]
 - `src/[path]/__tests__/[name].test.ts` — tests for [what]
 
 **Modified Files:**
+
 - `src/[path]/[file].ts` — [specific changes]
 
 **Folder Structure:**
 src/[feature]/
 ├── index.ts
 ├── types.ts
-└── __tests__/
+└── **tests**/
 
 ## 3. Dependencies
 
-| Package | Version | Purpose |
-|:---|:---|:---|
-| [name] | ^[X.Y.Z] | [why needed] |
+| Package | Version  | Purpose      |
+| :------ | :------- | :----------- |
+| [name]  | ^[X.Y.Z] | [why needed] |
 
-*Versions verified via Context7*
+_Versions verified via Context7_
 
 ## 4. Project Context
 
 **For executing agent:**
+
 - Tech Stack: [from package-ai-docs.md]
 - Development Context: [module/package/monorepo]
 - Code Standards: [key rules to follow]
@@ -322,6 +330,7 @@ src/[feature]/
 `[lint_cmd] && [typecheck_cmd] && [unit_test_cmd]`
 
 **MCP Validation (PARALLEL):**
+
 - Run in PARALLEL for ALL changed files (one MCP call per file)
 - Code files (.ts/.tsx): validationType="code", target ≥85
 - Test files (.test.ts): validationType="tests", target ≥85
@@ -333,6 +342,7 @@ src/[feature]/
 **Score ≥85 = BLOCKING GATE.** "80 is almost 85" = WRONG → Fix until ≥85.
 
 **Every Issue Must Be Addressed:**
+
 1. Parse ALL issues (critical/warning/suggestion)
 2. For EACH → FIX or REJECT with documented reason
 3. "I fixed something" ≠ ignore remaining
@@ -346,12 +356,14 @@ src/[feature]/
 **Report:** `MCP: [score]/100 | Fixed: [N]/[total] | Rejected: [N] ([reasons])`
 
 **Tests (MANDATORY - ZERO TOLERANCE):**
+
 - Unit tests: `[unit_test_cmd from Step 1]` — 0 failures REQUIRED
 - E2E tests: `[e2e_test_cmd from Step 1]` — 0 failures REQUIRED (skip if project has no e2e)
 - **CRITICAL:** If code changes break ANY existing test (unit OR e2e) → FIX the test BEFORE claiming task completion
 - Skipping broken tests = TASK FAILURE
 
 **AI Docs:**
+
 - Action: `[ai_docs_action from Step 5]`
 - If CREATE: specify file path and initial sections
 - If UPDATE: specify which section and what changes

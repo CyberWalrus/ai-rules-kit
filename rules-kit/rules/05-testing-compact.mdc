@@ -8,7 +8,7 @@ alwaysApply: true
 
 <testing_essentials>
 
-Read full reference: `.cursor/docs/testing.md` for advanced patterns.
+Read full reference: `{{DOCS_DIR}}/testing.md` for advanced patterns.
 
 **Core Rules:**
 

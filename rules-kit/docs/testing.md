@@ -552,66 +552,71 @@ When writing tests that work on Windows, macOS, and Linux, consider: path separa
 **CRITICAL RULES:**
 
 1. **Use path.join() for all path construction:**
-   ```typescript
-   // ❌ WRONG
-   const path = '/test' + '/' + 'file.txt';
-   const path = baseDir + '\\' + 'file.txt';
-   
-   // ✅ CORRECT
-   import { join } from 'node:path';
-   const path = join('/test', 'file.txt');
-   const path = join(baseDir, 'file.txt');
-   ```
+
+    ```typescript
+    // ❌ WRONG
+    const path = '/test' + '/' + 'file.txt';
+    const path = baseDir + '\\' + 'file.txt';
+
+    // ✅ CORRECT
+    import { join } from 'node:path';
+    const path = join('/test', 'file.txt');
+    const path = join(baseDir, 'file.txt');
+    ```
 
 2. **Normalize paths for comparisons:**
-   ```typescript
-   // ❌ WRONG
-   const normalized = path.replace(/\\/g, '/');
-   
-   // ✅ CORRECT
-   import { normalize } from 'node:path';
-   const normalized = normalize(path);
-   // Or for cross-platform string comparison:
-   import { posix } from 'node:path';
-   const normalized = posix.normalize(path.replace(/\\/g, '/'));
-   ```
+
+    ```typescript
+    // ❌ WRONG
+    const normalized = path.replace(/\\/g, '/');
+
+    // ✅ CORRECT
+    import { normalize } from 'node:path';
+    const normalized = normalize(path);
+    // Or for cross-platform string comparison:
+    import { posix } from 'node:path';
+    const normalized = posix.normalize(path.replace(/\\/g, '/'));
+    ```
 
 3. **Avoid hardcoded absolute paths in tests:**
-   ```typescript
-   // ❌ WRONG (Unix-only)
-   await copyRules('/package', '/target');
-   
-   // ✅ CORRECT (use temp dirs or relative paths)
-   import { tmpdir } from 'node:os';
-   import { join } from 'node:path';
-   const tempDir = join(tmpdir(), 'test-' + Date.now());
-   await copyRules(packageDir, tempDir);
-   ```
+
+    ```typescript
+    // ❌ WRONG (Unix-only)
+    await copyRules('/package', '/target');
+
+    // ✅ CORRECT (use temp dirs or relative paths)
+    import { tmpdir } from 'node:os';
+    import { join } from 'node:path';
+    const tempDir = join(tmpdir(), 'test-' + Date.now());
+    await copyRules(packageDir, tempDir);
+    ```
 
 4. **Use path.resolve() for absolute paths:**
-   ```typescript
-   // ❌ WRONG
-   const absolute = '/project/src';
-   
-   // ✅ CORRECT
-   import { resolve } from 'node:path';
-   const absolute = resolve('src');
-   ```
+
+    ```typescript
+    // ❌ WRONG
+    const absolute = '/project/src';
+
+    // ✅ CORRECT
+    import { resolve } from 'node:path';
+    const absolute = resolve('src');
+    ```
 
 5. **Mock file system operations consistently:**
-   ```typescript
-   vi.mock('node:fs', async (importOriginal) => {
-       const actual = await importOriginal<typeof import('node:fs')>();
-       return {
-           ...actual,
-           // Mocks should return normalized paths
-           readFileSync: vi.fn((path: string) => {
-               const normalized = normalize(path);
-               // ... implementation
-           }),
-       };
-   });
-   ```
+
+    ```typescript
+    vi.mock('node:fs', async (importOriginal) => {
+        const actual = await importOriginal<typeof import('node:fs')>();
+        return {
+            ...actual,
+            // Mocks should return normalized paths
+            readFileSync: vi.fn((path: string) => {
+                const normalized = normalize(path);
+                // ... implementation
+            }),
+        };
+    });
+    ```
 
 <completion_criteria>
 Tests run successfully on Windows, macOS, and Linux without path-related failures

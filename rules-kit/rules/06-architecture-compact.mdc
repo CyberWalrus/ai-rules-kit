@@ -8,7 +8,7 @@ alwaysApply: true
 
 <architecture_placement>
 
-Read full reference: `.cursor/docs/architecture.md` for detailed architecture types.
+Read full reference: `{{DOCS_DIR}}/architecture.md` for detailed architecture types.
 
 ## Primary Principle
 
@@ -26,18 +26,18 @@ Read full reference: `.cursor/docs/architecture.md` for detailed architecture ty
 
 ## File Placement Quick Reference
 
-| **What to create?** | **Simple structure** | **Complex structure** |
-|:---|:---|:---|
-| TypeScript type | `types.ts` | `model/types/main.ts` |
-| Zod schema | `schemas.ts` | `model/schemas/main.ts` |
-| Constant | `constants.ts` | `model/constants/main.ts` |
-| Pure function | `helpers.ts` | `lib/helpers/func/index.ts` |
-| React hook | `hooks.ts` | `lib/hooks/hook-name/index.ts` |
-| File operations | `file.ts` | `services/adapters/file/index.ts` |
-| localStorage | `storage.ts` | `services/gateways/storage/index.ts` |
-| Business logic | `process.ts` | `services/workflows/process/index.ts` |
-| HTTP request | `endpoints.ts` | `api/endpoint/index.ts` |
-| React component | `component.tsx` | `ui/component/index.tsx` |
+| **What to create?** | **Simple structure** | **Complex structure**                 |
+| :------------------ | :------------------- | :------------------------------------ |
+| TypeScript type     | `types.ts`           | `model/types/main.ts`                 |
+| Zod schema          | `schemas.ts`         | `model/schemas/main.ts`               |
+| Constant            | `constants.ts`       | `model/constants/main.ts`             |
+| Pure function       | `helpers.ts`         | `lib/helpers/func/index.ts`           |
+| React hook          | `hooks.ts`           | `lib/hooks/hook-name/index.ts`        |
+| File operations     | `file.ts`            | `services/adapters/file/index.ts`     |
+| localStorage        | `storage.ts`         | `services/gateways/storage/index.ts`  |
+| Business logic      | `process.ts`         | `services/workflows/process/index.ts` |
+| HTTP request        | `endpoints.ts`       | `api/endpoint/index.ts`               |
+| React component     | `component.tsx`      | `ui/component/index.tsx`              |
 
 **Note:** In `model` layer: `constants/`, `schemas/`, `types/` are container folders (NOT modular units). Actual modular units are `main.ts` files inside.
 
@@ -45,19 +45,19 @@ Read full reference: `.cursor/docs/architecture.md` for detailed architecture ty
 
 ## Modular Unit Types
 
-| Type | Structure | Facade | Example |
-|:---|:---|:---|:---|
-| **File-module** | Single file | File IS facade | `format-date.ts` |
+| Type              | Structure       | Facade                   | Example                   |
+| :---------------- | :-------------- | :----------------------- | :------------------------ |
+| **File-module**   | Single file     | File IS facade           | `format-date.ts`          |
 | **Folder-module** | Folder <6 files | `index.ts` with function | `validate-email/index.ts` |
-| **Container** | Groups modules | Barrel (re-exports) | `shared/lib/index.ts` |
+| **Container**     | Groups modules  | Barrel (re-exports)      | `shared/lib/index.ts`     |
 
 ## Facade Types (CRITICAL - NO FALSE POSITIVES)
 
-| Facade Type | Contains | When |
-|:---|:---|:---|
-| **File-facade** | Function implementation | Module = 1 file, NO index.ts needed |
-| **Folder-facade** | Function implementation | Module = folder <6 files |
-| **Barrel** | ONLY re-exports | Container grouping modules |
+| Facade Type       | Contains                | When                                |
+| :---------------- | :---------------------- | :---------------------------------- |
+| **File-facade**   | Function implementation | Module = 1 file, NO index.ts needed |
+| **Folder-facade** | Function implementation | Module = folder <6 files            |
+| **Barrel**        | ONLY re-exports         | Container grouping modules          |
 
 **DO NOT require** index.ts for:
 

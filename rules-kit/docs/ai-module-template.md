@@ -82,13 +82,13 @@ Completion: Documentation passes quality checks, adds unique value
 - **XML sections:** Each main section wrapped in corresponding XML tags
 - **Language:** Generated documentation in Russian (as per expert_role instruction)
 - **Limits:** Maximum 150 lines for generated module documentation
-</output_format>
+  </output_format>
 
 <module_template>
 
 **Template for module-ai-docs.md (output in Russian):**
 
-````markdown
+```markdown
 ---
 id: module-${MODULE_NAME}
 documentation_type: 'ai-module-documentation'
@@ -117,7 +117,7 @@ ${2_SENTENCES_PURPOSE_AND_SCOPE}
 - Output: `${OUTPUT_TYPE}` — ${OUTPUT_GUARANTEES}
 - Errors: ${ERROR_CASES}
 - Side effects: ${SIDE_EFFECTS_OR_NONE}
-</contract>
+  </contract>
 
 <design_decisions>
 **Why this approach was chosen:**
@@ -135,14 +135,14 @@ ${2_SENTENCES_PURPOSE_AND_SCOPE}
 - Business goal: ${BUSINESS_GOAL}
 - Users: ${WHO_USES_IT}
 - Criticality: high|medium|low
-</business_context>
+  </business_context>
 
 <edge_cases>
 **Edge cases:**
 
 - ${EDGE_CASE_1}: ${HOW_HANDLED}
 - ${EDGE_CASE_2}: ${HOW_HANDLED}
-</edge_cases>
+  </edge_cases>
 
 <public_api>
 **Functions:**
@@ -152,14 +152,14 @@ ${2_SENTENCES_PURPOSE_AND_SCOPE}
 **Types:**
 
 - `${TYPE_NAME}` — ${DESCRIPTION}
-</public_api>
+  </public_api>
 
 <dependencies>
 **Node.js:** ${NODE_MODULES_LIST}
 **External:** ${EXTERNAL_PACKAGES_LIST}
 **Internal:** ${INTERNAL_IMPORTS_LIST}
 </dependencies>
-````
+```
 
 </module_template>
 
@@ -193,7 +193,7 @@ ${2_SENTENCES_PURPOSE_AND_SCOPE}
 <example type="validation_module">
 **Example generated module-ai-docs.md (Russian output):**
 
-````markdown
+```markdown
 ---
 id: module-validation
 documentation_type: 'ai-module-documentation'
@@ -222,7 +222,7 @@ Module unit for validating code and prompts via AI models. Provides TypeScript/J
 - Output: `ValidationResult` — score: number, issues: Issue[], passed: boolean
 - Errors: `FileNotFoundError`, `FileTooLargeError`, `APITimeoutError`
 - Side effects: HTTP requests to OpenRouter API
-</contract>
+  </contract>
 
 <design_decisions>
 **Why this approach was chosen:**
@@ -240,7 +240,7 @@ Module unit for validating code and prompts via AI models. Provides TypeScript/J
 - Business goal: automated code quality checks in CI/CD
 - Users: agent-mode-workflow, CLI commands
 - Criticality: high (blocks low-quality code)
-</business_context>
+  </business_context>
 
 <edge_cases>
 **Edge cases:**
@@ -248,7 +248,7 @@ Module unit for validating code and prompts via AI models. Provides TypeScript/J
 - Empty file: returns score 100, empty issues list
 - File >100KB: throws FileTooLargeError without API call
 - API timeout: retry 3 times with exponential backoff, then APITimeoutError
-</edge_cases>
+  </edge_cases>
 
 <public_api>
 **Functions:**
@@ -260,14 +260,14 @@ Module unit for validating code and prompts via AI models. Provides TypeScript/J
 
 - `ValidationInput` — input data (type: 'file'|'content', data: string)
 - `ValidationResult` — result (score, issues, passed)
-</public_api>
+  </public_api>
 
 <dependencies>
 **Node.js:** node:fs, node:crypto
 **External:** openai, zod
 **Internal:** ../adapters/openrouter-client
 </dependencies>
-````
+```
 
 </example>
 

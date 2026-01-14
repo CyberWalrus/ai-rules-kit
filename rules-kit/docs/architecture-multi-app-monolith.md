@@ -34,12 +34,12 @@ You are a software architect specializing in multi-application monorepo design.
 
 ## When to Use
 
-| Condition | Multi-App Monolith | Other |
-|:---|:---|:---|
-| Applications | 2-7 independent apps | 1 app → fsd_standard |
-| Isolation | Only through common | Direct imports → not suitable |
-| Shared code | In applications/common | No reuse → separate repos |
-| Entry points | Own for each app | Single → fsd_standard |
+| Condition    | Multi-App Monolith     | Other                         |
+| :----------- | :--------------------- | :---------------------------- |
+| Applications | 2-7 independent apps   | 1 app → fsd_standard          |
+| Isolation    | Only through common    | Direct imports → not suitable |
+| Shared code  | In applications/common | No reuse → separate repos     |
+| Entry points | Own for each app       | Single → fsd_standard         |
 
 </when_to_use>
 
@@ -136,13 +136,13 @@ cli-tools/               # Simple structure
 
 ### Applications vs Modules
 
-| Element | Is Modular Unit? | Facade Type |
-|:---|:---|:---|
-| `applications/` | NO (container) | — |
-| `applications/admin-frontend/` | NO (application) | Entry point |
-| `applications/common/` | NO (shared app) | Entry point |
-| `applications/common/lib/format-date.ts` | YES (file-module) | File-facade |
-| `applications/common/ui/button/` | YES (folder-module) | Folder-facade |
+| Element                                  | Is Modular Unit?    | Facade Type   |
+| :--------------------------------------- | :------------------ | :------------ |
+| `applications/`                          | NO (container)      | —             |
+| `applications/admin-frontend/`           | NO (application)    | Entry point   |
+| `applications/common/`                   | NO (shared app)     | Entry point   |
+| `applications/common/lib/format-date.ts` | YES (file-module)   | File-facade   |
+| `applications/common/ui/button/`         | YES (folder-module) | Folder-facade |
 
 ### Application Entry Points
 

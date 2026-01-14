@@ -39,12 +39,12 @@ You are an Architecture Enforcer specializing in TypeScript/React projects.
 
 ### Placement Rules
 
-| Where is code used? | Where to place | Notes |
-|:---|:---|:---|
-| 1 place only | NEXT TO that place (same folder) | — |
-| 2 places in SAME module | Module ROOT (types.ts, helpers.ts) | — |
-| 3+ modules OR >50 lines | ASK USER before extracting | Confirm it's not coincidentally similar; confirm it won't diverge |
-| Already in shared, used by 1-2 | Consider moving back to usage site | — |
+| Where is code used?            | Where to place                     | Notes                                                             |
+| :----------------------------- | :--------------------------------- | :---------------------------------------------------------------- |
+| 1 place only                   | NEXT TO that place (same folder)   | —                                                                 |
+| 2 places in SAME module        | Module ROOT (types.ts, helpers.ts) | —                                                                 |
+| 3+ modules OR >50 lines        | ASK USER before extracting         | Confirm it's not coincidentally similar; confirm it won't diverge |
+| Already in shared, used by 1-2 | Consider moving back to usage site | —                                                                 |
 
 ### Decision Questions
 
@@ -103,11 +103,11 @@ features/auth/auth-form.tsx
 
 ### Internal Structure
 
-| Size | Structure | Facade | Example |
-|:---|:---|:---|:---|
-| Single file | File-module | File = facade | `validate-email.ts` |
-| 2-5 files | Folder-module | index.ts with function | `validate-email/index.ts` |
-| 6+ files | With segments | index.ts in ROOT only | `auth/index.ts` (segments have NO index.ts) |
+| Size        | Structure     | Facade                 | Example                                     |
+| :---------- | :------------ | :--------------------- | :------------------------------------------ |
+| Single file | File-module   | File = facade          | `validate-email.ts`                         |
+| 2-5 files   | Folder-module | index.ts with function | `validate-email/index.ts`                   |
+| 6+ files    | With segments | index.ts in ROOT only  | `auth/index.ts` (segments have NO index.ts) |
 
 **CRITICAL: Segments are NOT modular units**
 
@@ -158,10 +158,10 @@ export { useAuth } from './model/use-auth';
 
 ### File-Module vs Folder-Module
 
-| Type | Structure | Facade | When to use |
-|:---|:---|:---|:---|
-| **File-module** | Single file `validate-email.ts` | File itself = facade | 1 file, no helpers needed |
-| **Folder-module** | Folder with <6 files | `index.ts` with function | 2-5 files, has types/constants |
+| Type              | Structure                       | Facade                   | When to use                    |
+| :---------------- | :------------------------------ | :----------------------- | :----------------------------- |
+| **File-module**   | Single file `validate-email.ts` | File itself = facade     | 1 file, no helpers needed      |
+| **Folder-module** | Folder with <6 files            | `index.ts` with function | 2-5 files, has types/constants |
 
 ### File-Module
 
@@ -213,11 +213,11 @@ Upgrade to folder-module when:
 
 ### Three Types of Facades
 
-| Type | Contains | Purpose | Example |
-|:---|:---|:---|:---|
-| **File-facade** | Function implementation | Module = 1 file | `format-date.ts` |
+| Type              | Contains                | Purpose                  | Example                   |
+| :---------------- | :---------------------- | :----------------------- | :------------------------ |
+| **File-facade**   | Function implementation | Module = 1 file          | `format-date.ts`          |
 | **Folder-facade** | Function implementation | Module = folder <6 files | `validate-email/index.ts` |
-| **Barrel** | Only re-exports | Slice with segments | `features/auth/index.ts` |
+| **Barrel**        | Only re-exports         | Slice with segments      | `features/auth/index.ts`  |
 
 ### File-Facade
 
@@ -252,12 +252,12 @@ export { useAuth } from './model/use-auth';
 
 ### Facade Detection Rules
 
-| Check | File-facade | Folder-facade | Barrel |
-|:---|:---|:---|:---|
-| Is single file? | YES | NO | NO |
-| Contains function? | YES | YES | NO |
-| Has internal files? | NO | YES | NO |
-| Only re-exports? | NO | NO | YES |
+| Check               | File-facade | Folder-facade | Barrel |
+| :------------------ | :---------- | :------------ | :----- |
+| Is single file?     | YES         | NO            | NO     |
+| Contains function?  | YES         | YES           | NO     |
+| Has internal files? | NO          | YES           | NO     |
+| Only re-exports?    | NO          | NO            | YES    |
 
 ### CRITICAL: No False Positives
 
@@ -281,13 +281,13 @@ export { useAuth } from './model/use-auth';
 
 ### Key Distinction
 
-| Element | Is Modular Unit? | Needs index.ts? | What index.ts contains |
-|:---|:---|:---|:---|
-| `shared/lib/` | NO (container) | NO | — |
-| `shared/lib/format-date.ts` | YES (file-module) | NO | — |
-| `shared/lib/validate-email/` | YES (folder-module) | YES | Function implementation |
-| `features/` | NO (layer) | NO | — |
-| `features/auth/` | YES (slice) | YES | Depends on size |
+| Element                      | Is Modular Unit?    | Needs index.ts? | What index.ts contains  |
+| :--------------------------- | :------------------ | :-------------- | :---------------------- |
+| `shared/lib/`                | NO (container)      | NO              | —                       |
+| `shared/lib/format-date.ts`  | YES (file-module)   | NO              | —                       |
+| `shared/lib/validate-email/` | YES (folder-module) | YES             | Function implementation |
+| `features/`                  | NO (layer)          | NO              | —                       |
+| `features/auth/`             | YES (slice)         | YES             | Depends on size         |
 
 ### Container Folders
 
@@ -373,12 +373,12 @@ import { Button } from '$shared/ui/button';
 import { formatDate } from '$shared/lib/format-date';
 ```
 
-| Context | Folder | Has index.ts? |
-|:---|:---|:---|
-| shared/ui/ | Container | NO |
-| shared/lib/ | Container | NO |
-| shared/ui/button/ | Modular unit | YES |
-| features/auth/ui/ | Segment | NO |
+| Context           | Folder       | Has index.ts? |
+| :---------------- | :----------- | :------------ |
+| shared/ui/        | Container    | NO            |
+| shared/lib/       | Container    | NO            |
+| shared/ui/button/ | Modular unit | YES           |
+| features/auth/ui/ | Segment      | NO            |
 
 </container_vs_unit>
 
@@ -406,13 +406,13 @@ Modules communicate only through:
 
 ### Dependency Direction (FSD Layers)
 
-| Layer | Can import from |
-|:---|:---|
-| pages | widgets, features, entities, shared |
-| widgets | features, entities, shared |
-| features | entities, shared |
-| entities | shared only |
-| shared | nothing (leaf layer) |
+| Layer    | Can import from                     |
+| :------- | :---------------------------------- |
+| pages    | widgets, features, entities, shared |
+| widgets  | features, entities, shared          |
+| features | entities, shared                    |
+| entities | shared only                         |
+| shared   | nothing (leaf layer)                |
 
 **Rules:**
 
@@ -433,28 +433,29 @@ Modules communicate only through:
 **Auxiliary file** = helper function OR private component used by **ONLY ONE parent file**.
 
 Key distinction:
+
 - **Auxiliary** — used by 1 parent → stays with parent
 - **Shared** — used by 2+ consumers → extract to shared layer
 
 ### Placement Rules
 
-| Condition | Placement |
-|:---|:---|
-| Used by 1 file only | Place NEXT TO parent (same folder) |
-| Used by 2+ files | NOT auxiliary → extract to shared |
-| 1-3 auxiliaries in module | Flat structure (same folder as parent) |
-| 4+ auxiliaries in module | Group in `_internal/` or `lib/` subfolder |
-| Auxiliary size >150 lines | Must be separate modular unit |
+| Condition                 | Placement                                 |
+| :------------------------ | :---------------------------------------- |
+| Used by 1 file only       | Place NEXT TO parent (same folder)        |
+| Used by 2+ files          | NOT auxiliary → extract to shared         |
+| 1-3 auxiliaries in module | Flat structure (same folder as parent)    |
+| 4+ auxiliaries in module  | Group in `_internal/` or `lib/` subfolder |
+| Auxiliary size >150 lines | Must be separate modular unit             |
 
 ### Naming Convention
 
 Format: `[parent-context]-[purpose].ts`
 
-| Type | Example |
-|:---|:---|
-| Helper for `user-card` | `user-card-utils.ts` |
+| Type                              | Example                |
+| :-------------------------------- | :--------------------- |
+| Helper for `user-card`            | `user-card-utils.ts`   |
 | Private component for `user-card` | `user-card-avatar.tsx` |
-| Internal subfolder | `_internal/` |
+| Internal subfolder                | `_internal/`           |
 
 ### Structure Examples
 
@@ -492,6 +493,7 @@ Extract to shared when:
 3. Size grows beyond modular unit (>150 lines with own types/constants)
 
 **Before extraction, ask:** "Will this logic diverge between consumers?"
+
 - YES → keep duplicated (each consumer maintains own copy)
 - NO → extract to shared
 
@@ -505,14 +507,14 @@ Extract to shared when:
 
 ### Absolute Bans
 
-| Practice | Why Forbidden | Fix |
-|:---|:---|:---|
-| God files (`shared/utils.ts` 500+ lines) | Dump for unrelated code | Split into modular units |
-| Cross-imports between same-layer modules | Creates hidden coupling | Extract to lower layer or duplicate |
-| Scattered related code | Breaks cohesion | Move to single module |
-| Internal imports (bypass facade) | Breaks encapsulation | Import from index.ts only |
-| Circular dependencies | Architectural violation | Restructure or extract |
-| Auto-extracting to shared | Creates premature abstractions | Ask user first |
+| Practice                                 | Why Forbidden                  | Fix                                 |
+| :--------------------------------------- | :----------------------------- | :---------------------------------- |
+| God files (`shared/utils.ts` 500+ lines) | Dump for unrelated code        | Split into modular units            |
+| Cross-imports between same-layer modules | Creates hidden coupling        | Extract to lower layer or duplicate |
+| Scattered related code                   | Breaks cohesion                | Move to single module               |
+| Internal imports (bypass facade)         | Breaks encapsulation           | Import from index.ts only           |
+| Circular dependencies                    | Architectural violation        | Restructure or extract              |
+| Auto-extracting to shared                | Creates premature abstractions | Ask user first                      |
 
 ### Allowed "Garbage" Place
 
@@ -564,27 +566,27 @@ import { AuthForm } from '$features/auth';
 
 ### Types Overview
 
-| Type | Use Case | Key Characteristic |
-|:---|:---|:---|
-| single_module | One function/component | Entire package = one module |
-| layered_library | Component library, utils | Layers: api, ui, lib, model |
-| fsd_standard | Frontend application | Layers: app, pages, [widgets], [features], [entities], shared |
-| fsd_domain | Frontend with domains | FSD + domain grouping (user, payments) |
-| server_fsd | Backend/CLI application | Layers: controllers, services, models |
-| multi_app_monolith | Multiple apps in monorepo | Applications container + common |
+| Type               | Use Case                  | Key Characteristic                                            |
+| :----------------- | :------------------------ | :------------------------------------------------------------ |
+| single_module      | One function/component    | Entire package = one module                                   |
+| layered_library    | Component library, utils  | Layers: api, ui, lib, model                                   |
+| fsd_standard       | Frontend application      | Layers: app, pages, [widgets], [features], [entities], shared |
+| fsd_domain         | Frontend with domains     | FSD + domain grouping (user, payments)                        |
+| server_fsd         | Backend/CLI application   | Layers: controllers, services, models                         |
+| multi_app_monolith | Multiple apps in monorepo | Applications container + common                               |
 
 ### FSD Layers
 
 Only `app` is mandatory. Add layers as project grows:
 
-| Layer | When to add |
-|:---|:---|
-| app/ | MANDATORY: entry point, providers |
-| pages/ | When you have routes |
-| widgets/ | For complex page sections |
-| features/ | For user interactions |
-| entities/ | For business entities |
-| shared/ | For cross-cutting code |
+| Layer     | When to add                       |
+| :-------- | :-------------------------------- |
+| app/      | MANDATORY: entry point, providers |
+| pages/    | When you have routes              |
+| widgets/  | For complex page sections         |
+| features/ | For user interactions             |
+| entities/ | For business entities             |
+| shared/   | For cross-cutting code            |
 
 ### Links to Detailed Rules
 
@@ -605,16 +607,16 @@ Only `app` is mandatory. Add layers as project grows:
 
 ### Common Tags
 
-| Tag | Purpose | Required Attributes |
-|:---|:---|:---|
-| `<package_root>` | Root element | — |
-| `<source_directory>` | Source folder | `name` |
-| `<entrypoint>` | Entry file | `name` |
-| `<layer>` | Semantic layer | `name`, `purpose` |
-| `<module>` | Modular unit | `name` |
-| `<facade>` | Module facade | `name`, `role` |
-| `<file>` | Code file | `name`, `role` |
-| `<test>` | Test file | `name`, `role` |
+| Tag                  | Purpose        | Required Attributes |
+| :------------------- | :------------- | :------------------ |
+| `<package_root>`     | Root element   | —                   |
+| `<source_directory>` | Source folder  | `name`              |
+| `<entrypoint>`       | Entry file     | `name`              |
+| `<layer>`            | Semantic layer | `name`, `purpose`   |
+| `<module>`           | Modular unit   | `name`              |
+| `<facade>`           | Module facade  | `name`, `role`      |
+| `<file>`             | Code file      | `name`, `role`      |
+| `<test>`             | Test file      | `name`, `role`      |
 
 ### Minimal Example
 
@@ -641,23 +643,23 @@ Only `app` is mandatory. Add layers as project grows:
 
 ## Terminology
 
-| Term | Definition |
-|:---|:---|
-| **Modular Unit** | Isolated code block with public API and single responsibility |
-| **File-module** | Modular unit = 1 file; file itself is the facade |
-| **Folder-module** | Modular unit = folder <6 files; index.ts contains function |
-| **Container** | Folder grouping multiple modular units; has barrel index.ts |
-| **Facade** | Entry point exposing public API, hiding internals |
-| **File-facade** | Single file that IS the module (no index.ts needed) |
-| **Folder-facade** | index.ts with function implementation (NOT re-exports) |
-| **Barrel** | index.ts with ONLY re-exports (for containers) |
-| **Cohesion** | How related code is grouped together inside module |
-| **Coupling** | Dependencies between modules (lower = better) |
-| **Colocation** | Placing code next to where it's used |
-| **Auxiliary file** | Helper or private component used by ONLY ONE parent file |
-| **Layer** | Vertical abstraction level with dependency rules |
-| **Slice** | Horizontal module within a layer (FSD term) |
-| **Segment** | Functional block inside slice: ui, model, lib |
+| Term               | Definition                                                    |
+| :----------------- | :------------------------------------------------------------ |
+| **Modular Unit**   | Isolated code block with public API and single responsibility |
+| **File-module**    | Modular unit = 1 file; file itself is the facade              |
+| **Folder-module**  | Modular unit = folder <6 files; index.ts contains function    |
+| **Container**      | Folder grouping multiple modular units; has barrel index.ts   |
+| **Facade**         | Entry point exposing public API, hiding internals             |
+| **File-facade**    | Single file that IS the module (no index.ts needed)           |
+| **Folder-facade**  | index.ts with function implementation (NOT re-exports)        |
+| **Barrel**         | index.ts with ONLY re-exports (for containers)                |
+| **Cohesion**       | How related code is grouped together inside module            |
+| **Coupling**       | Dependencies between modules (lower = better)                 |
+| **Colocation**     | Placing code next to where it's used                          |
+| **Auxiliary file** | Helper or private component used by ONLY ONE parent file      |
+| **Layer**          | Vertical abstraction level with dependency rules              |
+| **Slice**          | Horizontal module within a layer (FSD term)                   |
+| **Segment**        | Functional block inside slice: ui, model, lib                 |
 
 </terminology>
 
@@ -679,27 +681,27 @@ Only `app` is mandatory. Add layers as project grows:
 
 ### Placement Table
 
-| What | Simple structure | Complex structure |
-|:---|:---|:---|
-| TypeScript type | `types.ts` | `model/types/main.ts` |
-| Zod schema | `schemas.ts` | `model/schemas/main.ts` |
-| Constant | `constants.ts` | `model/constants/main.ts` |
-| Pure function | `helpers.ts` | `lib/helpers/func/index.ts` |
-| React hook | `hooks.ts` | `lib/hooks/hook-name/index.ts` |
-| File operations | `file.ts` | `services/adapters/file/index.ts` |
-| localStorage | `storage.ts` | `services/gateways/storage/index.ts` |
-| Business logic | `process.ts` | `services/workflows/process/index.ts` |
-| HTTP request | `endpoints.ts` | `api/endpoint/index.ts` |
-| React component | `component.tsx` | `ui/component/index.tsx` |
+| What            | Simple structure | Complex structure                     |
+| :-------------- | :--------------- | :------------------------------------ |
+| TypeScript type | `types.ts`       | `model/types/main.ts`                 |
+| Zod schema      | `schemas.ts`     | `model/schemas/main.ts`               |
+| Constant        | `constants.ts`   | `model/constants/main.ts`             |
+| Pure function   | `helpers.ts`     | `lib/helpers/func/index.ts`           |
+| React hook      | `hooks.ts`       | `lib/hooks/hook-name/index.ts`        |
+| File operations | `file.ts`        | `services/adapters/file/index.ts`     |
+| localStorage    | `storage.ts`     | `services/gateways/storage/index.ts`  |
+| Business logic  | `process.ts`     | `services/workflows/process/index.ts` |
+| HTTP request    | `endpoints.ts`   | `api/endpoint/index.ts`               |
+| React component | `component.tsx`  | `ui/component/index.tsx`              |
 
 **Note:** In `model` layer: `constants/`, `schemas/`, `types/` are container folders (NOT modular units). Actual modular units are `main.ts` files inside.
 
 ### Extraction to Shared
 
-| Usage | Action |
-|:---|:---|
-| 1-2 modules | Keep in module |
-| 3+ modules | ASK USER before extracting to shared |
+| Usage       | Action                               |
+| :---------- | :----------------------------------- |
+| 1-2 modules | Keep in module                       |
+| 3+ modules  | ASK USER before extracting to shared |
 
 **Never auto-extract.** Duplication is acceptable if it improves change speed.
 

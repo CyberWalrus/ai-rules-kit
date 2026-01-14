@@ -34,12 +34,12 @@ You are a software architect specializing in modular TypeScript library design.
 
 ## When to Use
 
-| Condition | Layered Library | Other |
-|:---|:---|:---|
-| Modules | 3-15 independent units | 1-2 → single_module |
-| Organization | Thematic grouping | FSD layers → fsd_standard |
-| Type | Library/SDK | Full app → fsd_standard |
-| Dependencies | Minimal within layers | Complex cross-layer → fsd_standard |
+| Condition    | Layered Library        | Other                              |
+| :----------- | :--------------------- | :--------------------------------- |
+| Modules      | 3-15 independent units | 1-2 → single_module                |
+| Organization | Thematic grouping      | FSD layers → fsd_standard          |
+| Type         | Library/SDK            | Full app → fsd_standard            |
+| Dependencies | Minimal within layers  | Complex cross-layer → fsd_standard |
 
 </when_to_use>
 
@@ -89,12 +89,12 @@ package-name/
 
 ## Layers
 
-| Layer | Purpose | Contains |
-|:---|:---|:---|
-| `ui/` | Visual components | React components, styles |
-| `lib/` | Utilities | Hooks, helpers, formatters |
-| `api/` | External services | API clients, integrations |
-| `model/` | Data definitions | Types, constants, schemas |
+| Layer    | Purpose           | Contains                   |
+| :------- | :---------------- | :------------------------- |
+| `ui/`    | Visual components | React components, styles   |
+| `lib/`   | Utilities         | Hooks, helpers, formatters |
+| `api/`   | External services | API clients, integrations  |
+| `model/` | Data definitions  | Types, constants, schemas  |
 
 Optional layers (add as needed):
 
@@ -103,13 +103,13 @@ Optional layers (add as needed):
 
 ### Layer Dependencies
 
-| Layer | Can import from |
-|:---|:---|
-| ui | lib, model, api |
-| lib | model |
-| api | model |
-| model | nothing (leaf) |
-| config | model (optional) |
+| Layer  | Can import from    |
+| :----- | :----------------- |
+| ui     | lib, model, api    |
+| lib    | model              |
+| api    | model              |
+| model  | nothing (leaf)     |
+| config | model (optional)   |
 | assets | nothing (optional) |
 
 </layers>
@@ -122,14 +122,14 @@ Optional layers (add as needed):
 
 ### Layers vs Modules
 
-| Element | Is Modular Unit? | Facade Type |
-|:---|:---|:---|
-| `ui/` | NO (layer/container) | Barrel |
-| `ui/button/` | YES (folder-module) | Folder-facade |
-| `lib/format-date.ts` | YES (file-module) | File-facade |
-| `model/` | NO (container) | Barrel |
-| `model/types/` | NO (sub-container) | — |
-| `model/types/main.ts` | YES (file-module) | File-facade |
+| Element               | Is Modular Unit?     | Facade Type   |
+| :-------------------- | :------------------- | :------------ |
+| `ui/`                 | NO (layer/container) | Barrel        |
+| `ui/button/`          | YES (folder-module)  | Folder-facade |
+| `lib/format-date.ts`  | YES (file-module)    | File-facade   |
+| `model/`              | NO (container)       | Barrel        |
+| `model/types/`        | NO (sub-container)   | —             |
+| `model/types/main.ts` | YES (file-module)    | File-facade   |
 
 ### File-Module Example
 

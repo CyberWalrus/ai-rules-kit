@@ -34,12 +34,12 @@ You are a frontend architecture consultant specializing in Feature-Sliced Design
 
 ## When to Use
 
-| Condition | FSD Standard | Other |
-|:---|:---|:---|
-| Complexity | Medium/high | Simple → single_module |
-| Domains | No clear domains | Has domains → fsd_domain |
-| Type | Frontend app | Server → server_fsd |
-| Scale | Standard app | Multiple apps → multi_app_monolith |
+| Condition  | FSD Standard     | Other                              |
+| :--------- | :--------------- | :--------------------------------- |
+| Complexity | Medium/high      | Simple → single_module             |
+| Domains    | No clear domains | Has domains → fsd_domain           |
+| Type       | Frontend app     | Server → server_fsd                |
+| Scale      | Standard app     | Multiple apps → multi_app_monolith |
 
 </when_to_use>
 
@@ -67,14 +67,14 @@ src/
 
 ### Layer Dependencies
 
-| Layer | Can import from |
-|:---|:---|
-| app | everything below |
-| pages | widgets, features, entities, shared |
-| widgets | features, entities, shared |
-| features | entities, shared |
-| entities | shared only |
-| shared | nothing (leaf layer) |
+| Layer    | Can import from                     |
+| :------- | :---------------------------------- |
+| app      | everything below                    |
+| pages    | widgets, features, entities, shared |
+| widgets  | features, entities, shared          |
+| features | entities, shared                    |
+| entities | shared only                         |
+| shared   | nothing (leaf layer)                |
 
 ### Rules
 
@@ -92,12 +92,12 @@ src/
 
 ### Segments
 
-| Segment | Purpose |
-|:---|:---|
-| `ui/` | React components |
+| Segment  | Purpose                      |
+| :------- | :--------------------------- |
+| `ui/`    | React components             |
 | `model/` | Store, types, business logic |
-| `lib/` | Utilities for this slice |
-| `api/` | API calls for this slice |
+| `lib/`   | Utilities for this slice     |
+| `api/`   | API calls for this slice     |
 
 ### Small Slice (flat)
 
@@ -222,21 +222,21 @@ All containers (ui/, lib/, helpers/, hooks/, base/) do NOT have index.ts. Only m
 
 ### Layers vs Slices vs Modules
 
-| Element | Is Modular Unit? | Facade Type |
-|:---|:---|:---|
-| `features/` | NO (layer) | — |
-| `features/auth/` | YES (slice) | Depends on size |
-| `shared/` | NO (layer) | — |
-| `shared/lib/` | NO (container) | NO index.ts |
-| `shared/lib/format-date.ts` | YES (file-module) | File-facade |
-| `shared/lib/validate-email/` | YES (folder-module) | Folder-facade |
+| Element                      | Is Modular Unit?    | Facade Type     |
+| :--------------------------- | :------------------ | :-------------- |
+| `features/`                  | NO (layer)          | —               |
+| `features/auth/`             | YES (slice)         | Depends on size |
+| `shared/`                    | NO (layer)          | —               |
+| `shared/lib/`                | NO (container)      | NO index.ts     |
+| `shared/lib/format-date.ts`  | YES (file-module)   | File-facade     |
+| `shared/lib/validate-email/` | YES (folder-module) | Folder-facade   |
 
 ### Slice Facade Types
 
-| Slice Size | Facade Contains |
-|:---|:---|
+| Slice Size              | Facade Contains                 |
+| :---------------------- | :------------------------------ |
 | Small (1-3 files, flat) | Re-exports from component files |
-| Large (segments) | Re-exports from segments |
+| Large (segments)        | Re-exports from segments        |
 
 ### Small Slice: Barrel Facade
 
@@ -324,13 +324,13 @@ import { authReducer } from '$features/auth';
 
 ### When to Add Layers
 
-| Trigger | Add Layer |
-|:---|:---|
-| First route | `pages/` |
-| Reusable page section | `widgets/` |
-| User interaction logic | `features/` |
+| Trigger                 | Add Layer   |
+| :---------------------- | :---------- |
+| First route             | `pages/`    |
+| Reusable page section   | `widgets/`  |
+| User interaction logic  | `features/` |
 | Business entity with UI | `entities/` |
-| Cross-cutting utility | `shared/` |
+| Cross-cutting utility   | `shared/`   |
 
 </import_rules>
 

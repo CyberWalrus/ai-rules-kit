@@ -25,7 +25,7 @@ This workflow is read-only. Cannot edit files.
 
 **ВАЖНО: Все ответы должны быть на русском языке.**
 
-**Available Docs:** `.cursor/docs/` - architecture.md, code-standards.md, naming.md, testing.md, numbering-system.md (reference when needed)
+**Available Docs:** `{{DOCS_DIR}}/` - architecture.md, code-standards.md, naming.md, testing.md, numbering-system.md (reference when needed)
 
 **Available Tools:**
 
@@ -53,10 +53,10 @@ This workflow is read-only. Cannot edit files.
 
 **Special Cases:**
 
-- **Prompt engineering questions** → reference `.cursor/rules/prompt-workflow.mdc` for structure/validation/best practices
+- **Prompt engineering questions** → reference `{{RULES_DIR}}/prompt-workflow{{FILE_EXT}}` for structure/validation/best practices
 - **Creating/editing prompts** → explain user needs Agent/Composer mode (read-only limitation)
 - **Analyzing prompts** → read target .mdc or .md file, explain structure, suggest improvements as text
-- **Technical critique requests** → reference `.cursor/rules/critique-workflow.mdc` for code review, concept validation, technical analysis
+- **Technical critique requests** → reference `{{RULES_DIR}}/critique-workflow{{FILE_EXT}}` for code review, concept validation, technical analysis
 - **Critical analysis needed** → use critique workflow for deep analysis of code/ideas, architectural review, feasibility assessment
 
 **Fallbacks:** Files not found → broader search | Info incomplete → partial answer | Otherwise → deliver answer

@@ -84,12 +84,14 @@ For each group, determine commit type by following criteria:
 Change grouping plan:
 
 Commit 1: [type] Feature/task description
-  - Files: list of files
-  - Grouping reason: why these files together
+
+- Files: list of files
+- Grouping reason: why these files together
 
 Commit 2: [type] Feature/task description
-  - Files: list of files
-  - Grouping reason: why these files together
+
+- Files: list of files
+- Grouping reason: why these files together
 
 ...
 ```
@@ -148,10 +150,10 @@ Where:
 
 1. Check plan compliance: each commit must exactly match group from plan
 2. For each group from plan:
-   - Use `git add` **only** for files listed in this plan group
-   - If `git add` finished with error → output error message and stop process
-   - Create commit with type and message according to plan
-   - Check message length (≤120 characters). If length >120 characters → shorten while preserving meaning
+    - Use `git add` **only** for files listed in this plan group
+    - If `git add` finished with error → output error message and stop process
+    - Create commit with type and message according to plan
+    - Check message length (≤120 characters). If length >120 characters → shorten while preserving meaning
 3. After each commit check that it matches plan
 
 **Important:** DO NOT create commits that are not in plan. If found error in plan, stop, output corrected plan to chat, then continue.
@@ -186,12 +188,14 @@ git commit -m "PB-1234: [feat] Добавляет компонент Button"
 Change grouping plan:
 
 Commit 1: [feat] Добавляет компонент Button
-  - Files: src/components/Button.tsx, src/components/Button.test.tsx, src/components/Button.module.css
-  - Grouping reason: all files belong to one Button component
+
+- Files: src/components/Button.tsx, src/components/Button.test.tsx, src/components/Button.module.css
+- Grouping reason: all files belong to one Button component
 
 Commit 2: [style] Исправляет форматирование в utils
-  - Files: src/utils/helpers.ts, src/utils/validators.ts
-  - Grouping reason: style fixes in one directory
+
+- Files: src/utils/helpers.ts, src/utils/validators.ts
+- Grouping reason: style fixes in one directory
 ```
 
 ## ⚠️ Important

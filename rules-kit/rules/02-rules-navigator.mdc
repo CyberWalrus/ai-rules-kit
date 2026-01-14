@@ -10,8 +10,8 @@ alwaysApply: true
 
 **Quick Reference:**
 
-- Rules: `.cursor/rules/*.mdc`
-- Docs: `.cursor/docs/*.md`
-- Full catalog: `.cursor/docs/rules-catalog.mdc`
+- Rules: `{{RULES_DIR}}/*{{FILE_EXT}}`
+- Docs: `{{DOCS_DIR}}/*.md`
+- Full catalog: `{{DOCS_DIR}}/rules-catalog.md`
 
 **Usage:** When you need specific rule or doc, read the target file directly rather than asking user for guidance.

@@ -10,7 +10,7 @@ alwaysApply: true
 
 **INSTANT ENFORCEMENT - CONSISTENCY REQUIRED:**
 
-Read full reference: `.cursor/docs/naming.md` for detailed examples and edge cases.
+Read full reference: `{{DOCS_DIR}}/naming.md` for detailed examples and edge cases.
 
 ## Quick Reference
 

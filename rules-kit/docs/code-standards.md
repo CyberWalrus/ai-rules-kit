@@ -48,7 +48,7 @@ CI Pipeline:
 1. `yarn lint` — must pass (0 errors)
 2. `yarn typecheck` — must pass (0 errors)
 3. `yarn test` — must pass (100% coverage for new files)
-</tooling>
+   </tooling>
 
 <rule_id_registry>
 structural.one_file_one_function — One file = one function, max 150 lines (CRITICAL)
@@ -100,14 +100,14 @@ organization.local_types_file — Component types MUST be in local types.ts file
 
 BEFORE creating or editing any `.ts/.tsx` file, determine file type:
 
-| File Name | Multiple Functions? | What It Contains |
-|:---|:---|:---|
-| `helpers.ts` | ✅ **YES** | Multiple related functions allowed |
-| `constants.ts` | ❌ NO | Only constants |
-| `types.ts` | ❌ NO | Only types |
-| `schemas.ts` | ❌ NO | Only schemas |
-| `index.ts` (barrel) | ❌ NO | Only re-exports |
-| **Any other `.ts/.tsx`** | ❌ **NO** | **Exactly ONE exported function** |
+| File Name                | Multiple Functions? | What It Contains                   |
+| :----------------------- | :------------------ | :--------------------------------- |
+| `helpers.ts`             | ✅ **YES**          | Multiple related functions allowed |
+| `constants.ts`           | ❌ NO               | Only constants                     |
+| `types.ts`               | ❌ NO               | Only types                         |
+| `schemas.ts`             | ❌ NO               | Only schemas                       |
+| `index.ts` (barrel)      | ❌ NO               | Only re-exports                    |
+| **Any other `.ts/.tsx`** | ❌ **NO**           | **Exactly ONE exported function**  |
 
 **SELF-CHECK (MANDATORY):**
 
@@ -154,12 +154,12 @@ Code passes linter with 0 errors, 100% test coverage for new functions, all stru
 
 Each entity type goes to its dedicated file. Mixing entities = INSTANT FAILURE.
 
-| Entity | Goes To | NEVER In |
-|:---|:---|:---|
+| Entity    | Goes To                      | NEVER In               |
+| :-------- | :--------------------------- | :--------------------- |
 | Functions | `feature.ts` or `helpers.ts` | types.ts, constants.ts |
-| Types | `types.ts` | function files |
-| Constants | `constants.ts` | function files |
-| Schemas | `schemas.ts` | function files |
+| Types     | `types.ts`                   | function files         |
+| Constants | `constants.ts`               | function files         |
+| Schemas   | `schemas.ts`                 | function files         |
 
 **CRITICAL VIOLATIONS (INSTANT FAILURE):**
 
@@ -215,11 +215,11 @@ export function validateEmail(email: string): ValidationResult {
 
 **ENFORCEMENT TABLE:**
 
-| Violation | Severity | Fix |
-|:---|:---|:---|
-| 2+ exported functions (not helpers.ts) | **CRITICAL** | Split into separate files |
-| Function + type export | **CRITICAL** | Move types to types.ts |
-| Function + constant export | **CRITICAL** | Move constants to constants.ts |
+| Violation                              | Severity     | Fix                            |
+| :------------------------------------- | :----------- | :----------------------------- |
+| 2+ exported functions (not helpers.ts) | **CRITICAL** | Split into separate files      |
+| Function + type export                 | **CRITICAL** | Move types to types.ts         |
+| Function + constant export             | **CRITICAL** | Move constants to constants.ts |
 
 **REMEMBER:** Only `helpers.ts` allows multiple functions. Everything else = ONE function per file.
 
@@ -231,7 +231,9 @@ export function validateEmail(email: string): ValidationResult {
 
 ```typescript
 // ❌ classes
-class UserService { constructor(private api: ApiClient) {} }
+class UserService {
+    constructor(private api: ApiClient) {}
+}
 
 // ✅ functions and composition
 type UserServiceDeps = { apiClient: ApiClient };
@@ -244,7 +246,11 @@ export function createUserService(deps: UserServiceDeps) {
 
 ```typescript
 // ❌ deep nesting
-if (data) { if (typeof data === 'object') { if (data.name) return data.name; } }
+if (data) {
+    if (typeof data === 'object') {
+        if (data.name) return data.name;
+    }
+}
 
 // ✅ guard clauses
 if (!data) return 'Invalid';
@@ -257,7 +263,9 @@ return data.name;
 
 ```typescript
 // ❌ for loops
-for (let i = 0; i < items.length; i++) { if (items[i].isValid) results.push(items[i]); }
+for (let i = 0; i < items.length; i++) {
+    if (items[i].isValid) results.push(items[i]);
+}
 
 // ✅ array methods
 const results = items.filter((item) => item.isValid).map((item) => process(item));
@@ -294,10 +302,7 @@ const MILLISECONDS_IN_ONE_MINUTE = MILLISECONDS_IN_ONE_SECOND * 60;
 const COOKIE_EXPIRE = MILLISECONDS_IN_ONE_MINUTE * 30;
 
 // ✅ композиция массивов
-const AMPLITUDE_DELAYS = [
-    MILLISECONDS_IN_ONE_SECOND * 3,
-    MILLISECONDS_IN_ONE_SECOND * 10,
-];
+const AMPLITUDE_DELAYS = [MILLISECONDS_IN_ONE_SECOND * 3, MILLISECONDS_IN_ONE_SECOND * 10];
 ```
 
 </core_patterns>
@@ -333,7 +338,7 @@ export function UserCard({ name, email }: UserCardProps): React.ReactNode { ... 
 
 ```typescript
 // ❌ JSX.Element (deprecated)
-children: JSX.Element
+children: JSX.Element;
 
 // ✅ ReactNode for children
 export type ContainerProps = { children: React.ReactNode };
@@ -528,7 +533,7 @@ const COLORS = ['red', 'green', 'blue'];
 
 // ✅ as const for literal types (type: readonly ["red", "green", "blue"])
 const COLORS = ['red', 'green', 'blue'] as const;
-type Color = typeof COLORS[number]; // "red" | "green" | "blue"
+type Color = (typeof COLORS)[number]; // "red" | "green" | "blue"
 
 // ✅ as const for readonly object properties
 export const CONFIG = { MAX_RETRIES: 3, TIMEOUT: 5000 } as const;
@@ -787,9 +792,7 @@ describe('validatePackageName', () => {
 1. **Multiple functions in non-helpers file** - ONLY `helpers.ts` allows multiple functions
 2. **Mixing entities** - function + type/constant in same file → separate into types.ts/constants.ts
 3. Files >150 lines (exception: tests, constants.ts, types.ts, schemas.ts)
-
-**CODE PATTERNS:**
-
+   **CODE PATTERNS:**
 4. for/while loops - use array methods (exception: math algorithms)
 5. class keyword - use functions and composition
 6. export default - use named exports (exception: Storybook)
@@ -825,8 +828,12 @@ Code verified against all absolute bans, 0 violations detected, ONE-FILE-ONE-FUN
 // ✅ ALLOWED in helpers.ts or as closure
 export function createErrorBuffer(): ErrorBuffer {
     const errorQueue: unknown[] = [];
-    function call(sentry: Client): void { errorQueue.forEach((err) => sentry.captureException(err)); }
-    function push(error: unknown): void { errorQueue.push(error); }
+    function call(sentry: Client): void {
+        errorQueue.forEach((err) => sentry.captureException(err));
+    }
+    function push(error: unknown): void {
+        errorQueue.push(error);
+    }
     return { call, push };
 }
 ```

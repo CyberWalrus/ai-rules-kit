@@ -72,9 +72,9 @@ If multiple problems: ask user to prioritize or split
 <context_analysis>
 **Read essential documentation:**
 
-1. **Architecture:** `.cursor/docs/architecture.md`, `package-ai-docs.md`, identify architecture type
+1. **Architecture:** `{{DOCS_DIR}}/architecture.md`, `package-ai-docs.md`, identify architecture type
 2. **Technical environment:** `package.json`, existing code structure, key technologies
-3. **Conventions:** `.cursor/docs/naming.md`, `.cursor/docs/code-standards.md`
+3. **Conventions:** `{{DOCS_DIR}}/naming.md`, `{{DOCS_DIR}}/code-standards.md`
 
 **Output:** Architecture type, key technologies, integration points.
 </context_analysis>

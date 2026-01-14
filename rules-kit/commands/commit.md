@@ -95,7 +95,7 @@ If `CHANGELOG_EXISTS=false` → skip changelog update (sections 1.5.4 and 1.5.5)
 
 **Prerequisites:** Version changed (from section 1.5.2) AND `CHANGELOG_EXISTS=true` (from section 1.5.3).
 
-If both conditions met, execute changelog update following algorithm from `.cursor/commands/changelog.md`:
+If both conditions met, execute changelog update following algorithm from `{{COMMANDS_DIR}}/changelog.md`:
 
 **Algorithm summary (see changelog.md for details):**
 
@@ -107,7 +107,7 @@ If both conditions met, execute changelog update following algorithm from `.curs
 6. Form version blocks with headers, dates, and sections (Added/Changed/Fixed/Removed)
 7. Insert blocks into CHANGELOG.md (newest first, preserve existing entries)
 
-**Implementation:** Use commands from `.cursor/commands/changelog.md` section "🛠️ Basic commands". Follow algorithm steps 1-7 from changelog.md.
+**Implementation:** Use commands from `{{COMMANDS_DIR}}/changelog.md` section "🛠️ Basic commands". Follow algorithm steps 1-7 from changelog.md.
 
 **Error handling:**
 
@@ -229,12 +229,14 @@ For each group, determine commit type by following criteria:
 Change grouping plan:
 
 Commit 1: [type] Feature/task description
-  - Files: list of files
-  - Grouping reason: why these files together
+
+- Files: list of files
+- Grouping reason: why these files together
 
 Commit 2: [type] Feature/task description
-  - Files: list of files
-  - Grouping reason: why these files together
+
+- Files: list of files
+- Grouping reason: why these files together
 
 ...
 ```
@@ -303,10 +305,10 @@ Where:
 
 1. Check plan compliance: each commit must exactly match group from plan
 2. For each group from plan:
-   - Use `git add -p` or `git add -i` **only** for files listed in this plan group
-   - If `git add` finished with error → output error message and stop process
-   - Create commit with type and message according to plan
-   - Check message length (≤120 characters). If length >120 characters → shorten while preserving meaning
+    - Use `git add -p` or `git add -i` **only** for files listed in this plan group
+    - If `git add` finished with error → output error message and stop process
+    - Create commit with type and message according to plan
+    - Check message length (≤120 characters). If length >120 characters → shorten while preserving meaning
 3. After each commit check that it matches plan
 
 **Important:** DO NOT create commits that are not in plan. If found error in plan, stop, output corrected plan to chat, then continue.

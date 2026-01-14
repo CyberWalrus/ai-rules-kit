@@ -12,7 +12,7 @@ alwaysApply: true
 
 **ВАЖНО: Все ответы должны быть на русском языке.**
 
-**NOTE:** Mode announcement in `.cursor/rules/01-chat-mode-router.mdc`. If plan exists → follow todos.
+**NOTE:** Mode announcement in `{{RULES_DIR}}/01-chat-mode-router{{FILE_EXT}}`. If plan exists → follow todos.
 
 **🚨 ENFORCEMENT:**
 
@@ -39,11 +39,11 @@ alwaysApply: true
 
 **Triggers:** FORBIDDEN to modify until docs read.
 
-- ANY `.md/.mdc` → `.cursor/rules/prompt-structure-guide.mdc`
-- `*.test.ts` → `.cursor/rules/testing.md`
-- New `.ts/.tsx` → `.cursor/rules/architecture.md`, `.cursor/rules/naming.md`
-- Edit `.ts/.tsx` (≥20 lines) → `.cursor/rules/code-standards.md`, `.cursor/rules/naming.md`
-- AI docs → `.cursor/rules/ai-docs-workflow.mdc`
+- ANY `.md/.mdc` → `{{RULES_DIR}}/prompt-structure-guide{{FILE_EXT}}`
+- `*.test.ts` → `{{RULES_DIR}}/testing.md`
+- New `.ts/.tsx` → `{{RULES_DIR}}/architecture.md`, `{{RULES_DIR}}/naming.md`
+- Edit `.ts/.tsx` (≥20 lines) → `{{RULES_DIR}}/code-standards.md`, `{{RULES_DIR}}/naming.md`
+- AI docs → `{{RULES_DIR}}/ai-docs-workflow{{FILE_EXT}}`
 
 **AI DOCS TRIGGERS:**
 
@@ -95,6 +95,7 @@ alwaysApply: true
 **Score ≥85 = BLOCKING GATE.** "80 is almost 85" = WRONG → Fix until ≥85.
 
 **Every Issue Must Be Addressed:**
+
 1. Parse ALL issues (critical/warning/suggestion)
 2. For EACH → FIX or REJECT with documented reason
 3. "I fixed something" ≠ ignore remaining

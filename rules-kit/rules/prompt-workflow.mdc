@@ -73,10 +73,10 @@ Think step-by-step: read context, classify type, design structure, validate, the
 
 **1.1 Read Context**
 
-| Operation | Read                                                        |
-| :-------- | :---------------------------------------------------------- |
-| CREATE    | `.cursor/rules/prompt-structure-guide.mdc`, related prompts |
-| EDIT      | Target prompt file, identify working elements               |
+| Operation | Read                                                                |
+| :-------- | :------------------------------------------------------------------ |
+| CREATE    | `{{RULES_DIR}}/prompt-structure-guide{{FILE_EXT}}`, related prompts |
+| EDIT      | Target prompt file, identify working elements                       |
 
 **1.2 Classify Operation**
 
@@ -321,7 +321,7 @@ All boxes must be checked AND SELF-CHECK must return YES.
 **Research Issues:**
 
 - Existing prompt not found → ask user for correct path
-- Related prompts unclear → check `.cursor/rules/` directory
+- Related prompts unclear → check `{{RULES_DIR}}/` directory
 - MCP unavailable → manual structure check
 
 **Classification Issues:**

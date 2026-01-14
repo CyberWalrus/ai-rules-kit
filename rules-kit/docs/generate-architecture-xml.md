@@ -46,13 +46,13 @@ Think step by step about: (1) which `format` to emit (bundle/single/multi), (2) 
 - Source root is typically `src` unless explicitly provided.
 - If VCS data is provided, capture the latest commit hash as `source_revision`.
 - **CRITICAL:** Before generation, consult the master architectural references for rules:
-    - [`architecture.md`](.cursor/docs/architecture.md) (General principles and XML schemas)
-    - [`architecture-single-module.md`](.cursor/docs/architecture-single-module.md)
-    - [`architecture-layered-library.md`](.cursor/docs/architecture-layered-library.md)
-    - [`architecture-fsd-standard.md`](.cursor/docs/architecture-fsd-standard.md)
-    - [`architecture-fsd-domain.md`](.cursor/docs/architecture-fsd-domain.md)
-    - [`architecture-server-fsd.md`](.cursor/docs/architecture-server-fsd.md)
-    - [`architecture-multi-app-monolith.md`](.cursor/docs/architecture-multi-app-monolith.md)
+    - [`architecture.md`]({{DOCS_DIR}}/architecture.md) (General principles and XML schemas)
+    - [`architecture-single-module.md`]({{DOCS_DIR}}/architecture-single-module.md)
+    - [`architecture-layered-library.md`]({{DOCS_DIR}}/architecture-layered-library.md)
+    - [`architecture-fsd-standard.md`]({{DOCS_DIR}}/architecture-fsd-standard.md)
+    - [`architecture-fsd-domain.md`]({{DOCS_DIR}}/architecture-fsd-domain.md)
+    - [`architecture-server-fsd.md`]({{DOCS_DIR}}/architecture-server-fsd.md)
+    - [`architecture-multi-app-monolith.md`]({{DOCS_DIR}}/architecture-multi-app-monolith.md)
 
 <completion_criteria>
 Inputs mapped to internal variables, missing values resolved conservatively or marked as `unknown`.

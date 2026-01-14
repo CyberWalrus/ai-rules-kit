@@ -7,9 +7,9 @@ type: command
 
 **🚨 BLOCKING PROTOCOL - ZERO TOLERANCE:**
 
-**STEP 1 - MANDATORY FIRST ACTION (NO TOOLS BEFORE THIS):** Check system_reminder for `[MODE_INITIALIZED:` marker. If marker NOT FOUND → you MUST read `.cursor/rules/01-chat-mode-router.mdc` → determine current mode by priority → announce mode in format `[MODE_INITIALIZED: {MODE_NAME}] → 📄 {path} → Reading and strictly following core instructions` → output marker.
+**STEP 1 - MANDATORY FIRST ACTION (NO TOOLS BEFORE THIS):** Check system_reminder for `[MODE_INITIALIZED:` marker. If marker NOT FOUND → you MUST read `{{RULES_DIR}}/01-chat-mode-router{{FILE_EXT}}` → determine current mode by priority → announce mode in format `[MODE_INITIALIZED: {MODE_NAME}] → 📄 {path} → Reading and strictly following core instructions` → output marker.
 
-**STEP 2 - IF PLAN_MODE:** After mode announcement → you MUST read `.cursor/rules/plan-mode-dispatcher.mdc` → classify task type using algorithm → announce type in format `📋 [type] → 📄 .cursor/rules/[name].mdc → Following as primary instructions` → read workflow file → output blocking reminder.
+**STEP 2 - IF PLAN_MODE:** After mode announcement → you MUST read `{{RULES_DIR}}/plan-mode-dispatcher{{FILE_EXT}}` → classify task type using algorithm → announce type in format `📋 [type] → 📄 {{RULES_DIR}}/[name]{{FILE_EXT}} → Following as primary instructions` → read workflow file → output blocking reminder.
 
 **STEP 3 - VERIFICATION:** Before ANY other tool calls, verify: [ ] Mode announced and marker output, [ ] If PLAN_MODE → type classified and announced, [ ] Rules files read. **IF ANY CHECK FAILS → STOP → execute missing steps NOW.**
 

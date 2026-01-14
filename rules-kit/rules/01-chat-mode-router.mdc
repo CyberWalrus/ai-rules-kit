@@ -15,10 +15,10 @@ Before ANY tool call, check system_reminder for `[MODE_INITIALIZED:` marker:
 1. Marker NOT FOUND → First response → Determine mode by priority (lines 24-29) → Announce mode immediately → Then execute tools
 2. Marker FOUND → Extract mode → Check if changed (step 3) → If unchanged, skip to step 4
 3. Mode changed triggers:
-   - system_reminder contains "switched from"
-   - system_reminder "Plan mode is active" AND marker = `AGENT_MODE` → switch to PLAN_MODE
-   - system_reminder NO "Plan mode" AND marker = `PLAN_MODE` → switch to AGENT_MODE
-   - mode_specific_rule appears/changes in system_reminder
+    - system_reminder contains "switched from"
+    - system_reminder "Plan mode is active" AND marker = `AGENT_MODE` → switch to PLAN_MODE
+    - system_reminder NO "Plan mode" AND marker = `PLAN_MODE` → switch to AGENT_MODE
+    - mode_specific_rule appears/changes in system_reminder
 4. Execute tools
 
 **MODE PRIORITY (lower = higher):**
@@ -32,28 +32,28 @@ Before ANY tool call, check system_reminder for `[MODE_INITIALIZED:` marker:
 **ANNOUNCEMENT FORMAT (one line):**
 
 - Standard: `[MODE_INITIALIZED: {MODE_NAME}] → 📄 {relative_path} → Reading and strictly following core instructions`
-- PLAN_MODE: `[MODE_INITIALIZED: PLAN_MODE] → 📄 .cursor/rules/plan-mode-dispatcher.mdc → Reading core instructions now`
+- PLAN_MODE: `[MODE_INITIALIZED: PLAN_MODE] → 📄 {{RULES_DIR}}/plan-mode-dispatcher{{FILE_EXT}} → Reading core instructions now`
 
 **PLAN MODE CRITICAL OUTPUT FORMAT:**
 
 After announcement, PLAN_MODE MUST:
 
-1. Read file via `read_file('.cursor/rules/plan-mode-dispatcher.mdc')` in same batch
+1. Read file via `read_file('{{RULES_DIR}}/plan-mode-dispatcher{{FILE_EXT}}')` in same batch
 2. Output blocking reminder: "✅ Изучил правила из plan-mode-dispatcher.mdc → 🚫 ЗАПРЕЩЕНО писать план до классификации типа задачи → 🔍 Классифицирую тип задачи"
 3. Then classify task type (MANDATORY before plan creation)
-Creating plan before classification = VIOLATION.
+   Creating plan before classification = VIOLATION.
 
 **Examples:**
 
-- `[MODE_INITIALIZED: PLAN_MODE] → 📄 .cursor/rules/plan-mode-dispatcher.mdc → Reading core instructions now`
-- `[MODE_INITIALIZED: AGENT_MODE] → 📄 .cursor/rules/07-agent-mode-workflow.mdc → Reading and strictly following core instructions (already loaded)`
-- `[MODE_INITIALIZED: DEBUG_MODE] → 📄 .cursor/rules/07-agent-mode-workflow.mdc → Reading and strictly following core instructions (already loaded)`
-- `[MODE_INITIALIZED: ASK_MODE] → 📄 .cursor/rules/ask-mode-workflow.mdc → Reading and strictly following core instructions`
+- `[MODE_INITIALIZED: PLAN_MODE] → 📄 {{RULES_DIR}}/plan-mode-dispatcher{{FILE_EXT}} → Reading core instructions now`
+- `[MODE_INITIALIZED: AGENT_MODE] → 📄 {{RULES_DIR}}/07-agent-mode-workflow{{FILE_EXT}} → Reading and strictly following core instructions (already loaded)`
+- `[MODE_INITIALIZED: DEBUG_MODE] → 📄 {{RULES_DIR}}/07-agent-mode-workflow{{FILE_EXT}} → Reading and strictly following core instructions (already loaded)`
+- `[MODE_INITIALIZED: ASK_MODE] → 📄 {{RULES_DIR}}/ask-mode-workflow{{FILE_EXT}} → Reading and strictly following core instructions`
 
 **After announcement:**
 
-- PLAN MODE: Call `read_file('.cursor/rules/plan-mode-dispatcher.mdc')` in same batch, then output blocking reminder (see PLAN MODE CRITICAL OUTPUT FORMAT step 2)
-- ASK MODE: Call `read_file('.cursor/rules/ask-mode-workflow.mdc')` in same batch
+- PLAN MODE: Call `read_file('{{RULES_DIR}}/plan-mode-dispatcher{{FILE_EXT}}')` in same batch, then output blocking reminder (see PLAN MODE CRITICAL OUTPUT FORMAT step 2)
+- ASK MODE: Call `read_file('{{RULES_DIR}}/ask-mode-workflow{{FILE_EXT}}')` in same batch
 - AGENT MODE: No read_file needed (already loaded)
 - DEBUG MODE: No read_file needed (uses same workflow as AGENT MODE)
 
@@ -63,7 +63,7 @@ Creating plan before classification = VIOLATION.
 
 When user approves plan and execution starts:
 
-- **MANDATORY FIRST LINE:** Output `[MODE_INITIALIZED: AGENT_MODE] → 📄 .cursor/rules/07-agent-mode-workflow.mdc → Reading and strictly following core instructions (already loaded)` BEFORE any tools
+- **MANDATORY FIRST LINE:** Output `[MODE_INITIALIZED: AGENT_MODE] → 📄 {{RULES_DIR}}/07-agent-mode-workflow{{FILE_EXT}} → Reading and strictly following core instructions (already loaded)` BEFORE any tools
 - Then execute todos
 
 **🚨 BLOCKING RULES:**
@@ -96,6 +96,6 @@ No conditions match → DEFAULT to AGENT_MODE → announce + marker (no read_fil
 - [ ] Marker output in correct format
 - [ ] File loaded (if PLAN/ASK mode)
 - [ ] No tools called before announcement
-</completion_criteria>
+      </completion_criteria>
 
 </chat_mode_router>

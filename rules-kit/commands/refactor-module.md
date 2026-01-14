@@ -7,15 +7,15 @@ type: command
 
 You are a Module Refactoring Specialist. Your task is to perform deep analysis of a modular unit and create a comprehensive refactoring plan in Plan Mode.
 
-**Operational context:** Work in Plan Mode. Before ANY action, read `.cursor/docs/code-standards.md` and `.cursor/docs/architecture.md`.
+**Operational context:** Work in Plan Mode. Before ANY action, read `{{DOCS_DIR}}/code-standards.md` and `{{DOCS_DIR}}/architecture.md`.
 
 ## 1. Mandatory pre-analysis
 
 **BLOCKING — Read ALL before proceeding:**
 
 1. Target module (ALL files)
-2. `.cursor/docs/code-standards.md` — critical rules
-3. `.cursor/docs/architecture.md` — modular unit types
+2. `{{DOCS_DIR}}/code-standards.md` — critical rules
+3. `{{DOCS_DIR}}/architecture.md` — modular unit types
 4. `architecture.xml` — project architecture type
 5. `package-ai-docs.md` — tech stack and patterns
 
@@ -55,12 +55,12 @@ module-name/
 
 **File placement rules:**
 
-| Entity | MUST be in | VIOLATION if in |
-|:---|:---|:---|
-| Types/interfaces | `types.ts` | Any other .ts file |
-| Constants | `constants.ts` | Any other .ts file |
-| Zod schemas | `schemas.ts` | Any other .ts file |
-| Functions | `index.ts` or dedicated file | types.ts, constants.ts |
+| Entity           | MUST be in                   | VIOLATION if in        |
+| :--------------- | :--------------------------- | :--------------------- |
+| Types/interfaces | `types.ts`                   | Any other .ts file     |
+| Constants        | `constants.ts`               | Any other .ts file     |
+| Zod schemas      | `schemas.ts`                 | Any other .ts file     |
+| Functions        | `index.ts` or dedicated file | types.ts, constants.ts |
 
 **Output (MANDATORY):**
 
@@ -108,13 +108,13 @@ VIOLATIONS: [N]
 
 **Placement rules:**
 
-| Condition | Action |
-|:---|:---|
-| Used by 1 file only | Place NEXT TO parent (same folder) |
-| Used by 2+ files | Extract to shared/parent module = NOT auxiliary |
-| 1-3 auxiliaries | Flat in same folder |
-| 4+ auxiliaries | Group in `_internal/` subfolder |
-| Size >150 lines | Must be separate modular unit |
+| Condition           | Action                                          |
+| :------------------ | :---------------------------------------------- |
+| Used by 1 file only | Place NEXT TO parent (same folder)              |
+| Used by 2+ files    | Extract to shared/parent module = NOT auxiliary |
+| 1-3 auxiliaries     | Flat in same folder                             |
+| 4+ auxiliaries      | Group in `_internal/` subfolder                 |
+| Size >150 lines     | Must be separate modular unit                   |
 
 **Naming:** `[parent-context]-[purpose].ts` (e.g., `user-card-avatar.tsx` for `user-card/`)
 
@@ -160,20 +160,25 @@ AUXILIARY AUDIT:
 ## Refactoring Plan for [module-name]
 
 ### Architecture Context
+
 - Type: [type] | Layer: [layer] | Unit: [file/folder/slice]
 
 ### CRITICAL Issues ([N])
+
 1. [Issue] → [Fix] → [File]
 
 ### IMPORTANT Issues ([N])
+
 1. [Issue] → [Fix] → [File]
 
 ### File Operations
+
 - CREATE: [files]
 - MODIFY: [files]
 - DELETE: [files]
 
 ### Execution Order
+
 [SEQUENTIAL/PARALLEL markers]
 ```
 
@@ -185,7 +190,7 @@ AUXILIARY AUDIT:
 - If exists → verify contract/dependencies/edge_cases sections are current
 - Plan MUST include: CREATE / UPDATE [section] / NO CHANGE
 
-**Reference:** `.cursor/rules/ai-docs-workflow.mdc`
+**Reference:** `{{RULES_DIR}}/ai-docs-workflow{{FILE_EXT}}`
 
 ## 9. Completion criteria
 

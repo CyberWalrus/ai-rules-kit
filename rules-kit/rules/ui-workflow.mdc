@@ -230,7 +230,7 @@ Files affected: [count] files, [count] components`,
 | Added/removed dependency              | UPDATE dependencies section |
 | Refactoring without API change        | NO UPDATE needed            |
 
-**For detailed instructions:** Read `.cursor/rules/ai-docs-workflow.mdc`
+**For detailed instructions:** Read `{{RULES_DIR}}/ai-docs-workflow{{FILE_EXT}}`
 
 **Record decision:** `ai_docs_action`: CREATE / UPDATE [section] / NO UPDATE
 

@@ -34,12 +34,12 @@ You are a Server FSD Architecture Specialist for TypeScript backend projects.
 
 ## When to Use
 
-| Condition | Server FSD | Other |
-|:---|:---|:---|
-| Application type | Backend/CLI | Frontend → use fsd_standard |
-| Layers | 3-7 custom layers | Simple → use single_module |
-| Modularity | Facades, no cross-imports | Flat → use layered_library |
-| Scale | Medium to large | Library → use layered_library |
+| Condition        | Server FSD                | Other                         |
+| :--------------- | :------------------------ | :---------------------------- |
+| Application type | Backend/CLI               | Frontend → use fsd_standard   |
+| Layers           | 3-7 custom layers         | Simple → use single_module    |
+| Modularity       | Facades, no cross-imports | Flat → use layered_library    |
+| Scale            | Medium to large           | Library → use layered_library |
 
 </when_to_use>
 
@@ -49,17 +49,17 @@ You are a Server FSD Architecture Specialist for TypeScript backend projects.
 
 ## Typical Layers
 
-| Layer | Purpose | Content |
-|:---|:---|:---|
-| controllers | HTTP controllers/routes | REST endpoints, middleware |
-| services | Business logic | Workflows, use cases |
-| models | Data models/schemas | Types, Zod schemas |
-| repositories | Data access | Database queries, ORM |
-| middleware | Middleware | Auth, logging, validation |
-| config | Configuration | Environment, settings |
-| utils | Utilities/helpers | Helper functions |
-| adapters | External adapters | API clients |
-| gateways | Infrastructure | Database, message queues |
+| Layer        | Purpose                 | Content                    |
+| :----------- | :---------------------- | :------------------------- |
+| controllers  | HTTP controllers/routes | REST endpoints, middleware |
+| services     | Business logic          | Workflows, use cases       |
+| models       | Data models/schemas     | Types, Zod schemas         |
+| repositories | Data access             | Database queries, ORM      |
+| middleware   | Middleware              | Auth, logging, validation  |
+| config       | Configuration           | Environment, settings      |
+| utils        | Utilities/helpers       | Helper functions           |
+| adapters     | External adapters       | API clients                |
+| gateways     | Infrastructure          | Database, message queues   |
 
 </typical_layers>
 
@@ -110,12 +110,12 @@ src/
 
 ### Layers vs Modules
 
-| Element | Is Modular Unit? | Facade Type |
-|:---|:---|:---|
-| `controllers/` | NO (layer) | — |
-| `controllers/auth/` | YES (folder-module) | Folder-facade |
+| Element                  | Is Modular Unit?    | Facade Type   |
+| :----------------------- | :------------------ | :------------ |
+| `controllers/`           | NO (layer)          | —             |
+| `controllers/auth/`      | YES (folder-module) | Folder-facade |
 | `services/auth-service/` | YES (folder-module) | Folder-facade |
-| `lib/format-date.ts` | YES (file-module) | File-facade |
+| `lib/format-date.ts`     | YES (file-module)   | File-facade   |
 
 ### File-Module Example
 
@@ -212,21 +212,21 @@ export { usersController } from './users';
 <package_root>
   <source_directory name="src">
     <entrypoint name="index.ts" />
-    
+
     <layer name="controllers" purpose="HTTP controllers">
       <module name="auth">
         <facade name="index.ts" role="unit_facade" />
         <file name="auth-controller.ts" role="function" />
       </module>
     </layer>
-    
+
     <layer name="services" purpose="business logic">
       <module name="auth-service">
         <facade name="index.ts" role="unit_facade" />
         <file name="auth-service.ts" role="function" />
       </module>
     </layer>
-    
+
     <layer name="models" purpose="data models">
       <module name="user">
         <facade name="index.ts" role="unit_facade" />

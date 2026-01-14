@@ -39,13 +39,13 @@ Let's understand the context and plan the critique systematically.
 
 Preliminary actions:
 
-- Read `.cursor/docs/rules-catalog.mdc` for context understanding
+- Read `{{DOCS_DIR}}/rules-catalog.md` for context understanding
 - Pre-read material (≤5 files, ~20 seconds)
 - Ask clarifying questions about context (1-2 critical questions):
-  1. What problem does this code/idea solve?
-  2. What constraints and context should be considered?
-  3. Which aspects are most important for analysis?
-  4. Are there specific requirements (performance, security, scale)?
+    1. What problem does this code/idea solve?
+    2. What constraints and context should be considered?
+    3. Which aspects are most important for analysis?
+    4. Are there specific requirements (performance, security, scale)?
 
 **Question format:**
 
@@ -66,9 +66,9 @@ After receiving answers from user:
     - Proposed analysis strategy
     - Complexity and time estimate
 - Ask questions about plan structure (1-2 questions):
-  1. Which aspects to include in analysis plan?
-  2. Detailed decomposition needed or high-level plan?
-  3. Focus on specific modules or system-wide analysis?
+    1. Which aspects to include in analysis plan?
+    2. Detailed decomposition needed or high-level plan?
+    3. Focus on specific modules or system-wide analysis?
 - Decomposition plan for complex tasks
 - Document via create_plan
 

@@ -50,7 +50,7 @@ ${PACKAGE_PURPOSE_DESCRIPTION}
 
 - ${KEY_PROBLEM_1}
 - ${KEY_PROBLEM_2}
-</package_purpose>
+  </package_purpose>
 
 <package_contract>
 **Behavioral (what package MUST do):**
@@ -63,7 +63,7 @@ ${PACKAGE_PURPOSE_DESCRIPTION}
 - Exports: ${MAIN_EXPORTS_WITH_TYPES}
 - Errors: ${ERROR_TYPES_PACKAGE_CAN_THROW}
 - Side effects: ${PACKAGE_SIDE_EFFECTS}
-</package_contract>
+  </package_contract>
 
 <design_decisions>
 **Architectural decisions:**
@@ -79,7 +79,7 @@ ${PACKAGE_PURPOSE_DESCRIPTION}
 - Decision: ${DECISION_2}
 - Rationale: ${RATIONALE_2}
 - Alternatives: ${ALTERNATIVES_2}
-</design_decisions>
+  </design_decisions>
 
 <business_context>
 **Why package exists:**
@@ -88,7 +88,7 @@ ${PACKAGE_PURPOSE_DESCRIPTION}
 - Users: ${WHO_USES_PACKAGE}
 - Criticality: high|medium|low
 - Owner: ${TEAM_OR_PERSON}
-</business_context>
+  </business_context>
 
 <test_coverage>
 **Test coverage:**
@@ -107,7 +107,7 @@ ${PACKAGE_PURPOSE_DESCRIPTION}
 
 - ${NOT_COVERED_SCENARIO_1}
 - ${NOT_COVERED_SCENARIO_2}
-</test_coverage>
+  </test_coverage>
 
 <architecture_overview>
 **High-level architecture:**
@@ -119,7 +119,7 @@ ${PACKAGE_PURPOSE_DESCRIPTION}
 ${MODULES_INTERACTION}
 
 > Detailed structure: `architecture.xml` or `architecture/`
-</architecture_overview>
+> </architecture_overview>
 
 <detailed_modules>
 **Key modules:**
@@ -137,7 +137,7 @@ ${MODULES_INTERACTION}
 - Path: `${MODULE_2_PATH}`
 - Exports: ${MODULE_2_EXPORTS}
 - Contract: ${MODULE_2_CONTRACT_BRIEF}
-</detailed_modules>
+  </detailed_modules>
 
 <dependencies>
 **External dependencies:**
@@ -148,7 +148,7 @@ ${MODULES_INTERACTION}
 **Internal dependencies:**
 
 - `${INTERNAL_PACKAGE_1}` — ${WHAT_USED_FOR_1}
-</dependencies>
+  </dependencies>
 
 <development_commands>
 **Development commands:**
@@ -292,7 +292,7 @@ Tool for code, prompt, and architecture validation via MCP protocol.
 
 - Automated code quality checks in CI/CD
 - Parallel prompt consistency testing
-</package_purpose>
+  </package_purpose>
 
 <package_contract>
 **Behavioral (what package MUST do):**
@@ -305,7 +305,7 @@ Tool for code, prompt, and architecture validation via MCP protocol.
 - Exports: `validate(input: ValidateInput): Promise<ValidateResult>`
 - Errors: `ValidationError`, `APITimeoutError`, `ConfigError`
 - Side effects: HTTP requests to OpenRouter API
-</package_contract>
+  </package_contract>
 
 <design_decisions>
 **Architectural decisions:**
@@ -321,7 +321,7 @@ Tool for code, prompt, and architecture validation via MCP protocol.
 - Decision: use stdio transport for MCP
 - Rationale: universality, works with any client
 - Alternatives: HTTP API (rejected: overhead for local use)
-</design_decisions>
+  </design_decisions>
 
 <business_context>
 **Why package exists:**
@@ -330,7 +330,7 @@ Tool for code, prompt, and architecture validation via MCP protocol.
 - Users: developers via Cursor IDE, CI/CD pipelines
 - Criticality: high (blocks low-quality code)
 - Owner: platform team
-</business_context>
+  </business_context>
 
 <test_coverage>
 **Test coverage:**
@@ -349,7 +349,7 @@ Tool for code, prompt, and architecture validation via MCP protocol.
 
 - Very large file handling (>1MB)
 - Parallel requests from multiple clients
-</test_coverage>
+  </test_coverage>
 
 <architecture_overview>
 **High-level architecture:**
@@ -362,7 +362,7 @@ Tool for code, prompt, and architecture validation via MCP protocol.
 MCP Server → Validation Workflows → OpenRouter Client → Response
 
 > Detailed structure: `architecture.xml`
-</architecture_overview>
+> </architecture_overview>
 
 <detailed_modules>
 **Key modules:**
@@ -380,7 +380,7 @@ MCP Server → Validation Workflows → OpenRouter Client → Response
 - Path: `src/services/adapters/mcp-server/`
 - Exports: initializeMCPServer, handleMCPRequest
 - Contract: JSON-RPC over stdio
-</detailed_modules>
+  </detailed_modules>
 
 <dependencies>
 **External dependencies:**
@@ -392,7 +392,7 @@ MCP Server → Validation Workflows → OpenRouter Client → Response
 **Internal dependencies:**
 
 - none
-</dependencies>
+  </dependencies>
 
 <development_commands>
 **Development commands:**

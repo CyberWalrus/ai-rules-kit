@@ -81,11 +81,11 @@ If requirements unclear, ask about:
 
 **1.2 Web Search Verification**
 
-| Search | Purpose |
-|:---|:---|
-| "[tool] config [version] 2024-2025" | Current syntax |
-| "[tool] breaking changes [version]" | Migration issues |
-| "[tool] [option] deprecated" | Outdated patterns |
+| Search                              | Purpose           |
+| :---------------------------------- | :---------------- |
+| "[tool] config [version] 2024-2025" | Current syntax    |
+| "[tool] breaking changes [version]" | Migration issues  |
+| "[tool] [option] deprecated"        | Outdated patterns |
 
 Document: recommended approach, known issues, sources (URLs)
 
@@ -93,13 +93,15 @@ Document: recommended approach, known issues, sources (URLs)
 
 ```javascript
 // 1. Get library ID
-mcp_context7_resolve-library-id({ libraryName: "[package]" })
+mcp_context7_resolve - library - id({ libraryName: '[package]' });
 
 // 2. Get docs for config options
-mcp_context7_get-library-docs({
-    context7CompatibleLibraryID: "[/org/project]",
-    topic: "configuration options"
-})
+mcp_context7_get -
+    library -
+    docs({
+        context7CompatibleLibraryID: '[/org/project]',
+        topic: 'configuration options',
+    });
 ```
 
 Extract: version, config options, type signatures, defaults
@@ -125,11 +127,11 @@ Step 1 complete when:
 
 **2.2 Tool-Native Validation (not unit tests)**
 
-| Type | Command Pattern |
-|:---|:---|
-| Syntax validation | `[tool] --check`, `[tool] validate` |
-| Dry run | `[tool] --dry-run`, `[tool] --what-if` |
-| Config preview | `[tool] --print-config`, `[tool] --show` |
+| Type              | Command Pattern                          |
+| :---------------- | :--------------------------------------- |
+| Syntax validation | `[tool] --check`, `[tool] validate`      |
+| Dry run           | `[tool] --dry-run`, `[tool] --what-if`   |
+| Config preview    | `[tool] --print-config`, `[tool] --show` |
 
 **2.3 Fallback Plan**
 
@@ -145,7 +147,7 @@ Step 2 complete when:
 - [ ] Compatibility verified for target environment
 - [ ] Testing commands identified (dry-run/validate)
 - [ ] Fallback documented if tools unavailable
-</completion_criteria>
+      </completion_criteria>
 
 ### Step 3: Create Plan
 
@@ -161,11 +163,13 @@ Step 2 complete when:
 ## 1. Verification Results
 
 **Web Search:**
+
 - Best practice: [summary]
 - Known issues: [list]
 - Sources: [URLs]
 
 **Context7:**
+
 - Package: [name@version]
 - Config options verified: [list]
 - Deprecated options avoided: [list]
@@ -175,6 +179,7 @@ Step 2 complete when:
 Mark: [SEQUENTIAL] or [PARALLEL]
 
 **[SEQUENTIAL] Step 1: [Name]**
+
 - Action: [what to do]
 - File: [path]
 - Config: [specific options with values]
@@ -211,7 +216,7 @@ Step 3 complete when:
 - [ ] Verification results include URLs
 - [ ] Config options have "Verified via" column
 - [ ] Testing commands specified
-</completion_criteria>
+      </completion_criteria>
 
 </algorithm_steps>
 

@@ -303,7 +303,7 @@ Step 5 complete when:
 [SEQUENTIAL] Step 6: CI/CD setup (GitHub Actions)
 [SEQUENTIAL] Step 7: Documentation (README, package-ai-docs.md with project metadata)
 
-- Create package-ai-docs.md according to template from .cursor/docs/ai-package-template.md
+- Create package-ai-docs.md according to template from {{DOCS_DIR}}/ai-package-template.md
 - Include YAML frontmatter: package_context (name, type, architecture_type, main_exports, workspace_path)
 - Fill sections: package_purpose, business_context (business goal, users, criticality, owner), architecture_overview, design_decisions
   [SEQUENTIAL] Step 8: Validation (all commands work)

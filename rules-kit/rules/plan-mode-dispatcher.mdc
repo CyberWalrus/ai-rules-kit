@@ -27,8 +27,8 @@ Classification is MANDATORY for EVERY task. "Task is simple" or "faster without 
 PROHIBIT create_plan unless ALL checks pass:
 
 - [ ] Type classified
-- [ ] Type announced: "📋 [type] → 📄 .cursor/rules/[name].mdc → Following as primary instructions"
-- [ ] Workflow file read: read_file('.cursor/rules/[name].mdc') in same batch
+- [ ] Type announced: "📋 [type] → 📄 {{RULES_DIR}}/[name]{{FILE_EXT}} → Following as primary instructions"
+- [ ] Workflow file read: read_file('{{RULES_DIR}}/[name]{{FILE_EXT}}') in same batch
 - [ ] Content received and **understood**
 - [ ] **Workflow instructions followed** (each workflow has its own research/validation requirements)
 
@@ -46,7 +46,7 @@ IF any check fails → abort, retry classification (max 3 times), then report er
 
 When user approves plan and execution starts:
 
-1. **MANDATORY FIRST LINE:** Output `[MODE_INITIALIZED: AGENT_MODE] → 📄 .cursor/rules/07-agent-mode-workflow.mdc → Following as primary instructions (already loaded)`
+1. **MANDATORY FIRST LINE:** Output `[MODE_INITIALIZED: AGENT_MODE] → 📄 {{RULES_DIR}}/07-agent-mode-workflow{{FILE_EXT}} → Following as primary instructions (already loaded)`
 2. Then execute todos - FORBIDDEN to skip step 1
 
 **Classification Algorithm**
@@ -56,8 +56,8 @@ When user approves plan and execution starts:
 3. IF no code → check file extensions → match from table
 4. IF no match → analyze keywords and context → select highest density
 5. SELECT type → IF tie → first from Activity Types table
-6. ANNOUNCE: `📋 [type] → 📄 .cursor/rules/[name].mdc → Following as primary instructions`
-7. READ: read_file('.cursor/rules/[name].mdc') in same batch
+6. ANNOUNCE: `📋 [type] → 📄 {{RULES_DIR}}/[name]{{FILE_EXT}} → Following as primary instructions`
+7. READ: read_file('{{RULES_DIR}}/[name]{{FILE_EXT}}') in same batch
 8. VERIFY: content received → IF failed → retry up to 3 times; after 3rd failure → DEFAULT
 9. **FOLLOW:** Execute workflow instructions (research, validation, etc.) BEFORE create_plan
 10. PROCEED: create_plan (only after workflow requirements satisfied)
@@ -70,16 +70,16 @@ IF no match at step 5 → DEFAULT to Code Development
 
 **Activity Types**
 
-| Activity           | Codes         | Key Triggers                                                                                               | File                                        |
-| :----------------- | :------------ | :--------------------------------------------------------------------------------------------------------- | :------------------------------------------ |
-| Prompt Engineering | `tdprompt`    | `.cursor/`, `.mdc`, "prompt", "rules", "workflow"                                                          | `.cursor/rules/prompt-workflow.mdc`         |
-| Code Development   | `tdcode`      | `.ts`, `.tsx`, `.js`, "bug", "fix", "implement", "refactor"                                                | `.cursor/rules/code-workflow.mdc`           |
-| UI Development     | `tdui`        | "ui", "interface", "visual", "component", "layout"                                                         | `.cursor/rules/ui-workflow.mdc`             |
-| AI Documentation   | `tdaidoc`     | "ai-docs", "package-ai-docs", "module-ai-docs"                                                             | `.cursor/rules/ai-docs-workflow.mdc`        |
-| Technical Critique | `tdcritic`    | "critique", "review", "evaluate", "code review"                                                            | `.cursor/rules/critique-workflow.mdc`       |
-| JIRA Task          | `tdjira`      | "JIRA task", "technical spec", "create task"                                                               | `.cursor/rules/jira-task-creator.mdc`       |
-| Auxiliary Dev      | `tdaux`       | "script", "deploy", "automation", "CI/CD"                                                                  | `.cursor/rules/auxiliary-code-workflow.mdc` |
-| Bootstrap App      | `tdbootstrap` | "bootstrap", "create app", "new application", "from scratch", "setup infrastructure", "initialize project" | `.cursor/rules/bootstrap-app-workflow.mdc`  |
+| Activity           | Codes         | Key Triggers                                                                                               | File                                                |
+| :----------------- | :------------ | :--------------------------------------------------------------------------------------------------------- | :-------------------------------------------------- |
+| Prompt Engineering | `tdprompt`    | `.cursor/`, `.mdc`, "prompt", "rules", "workflow"                                                          | `{{RULES_DIR}}/prompt-workflow{{FILE_EXT}}`         |
+| Code Development   | `tdcode`      | `.ts`, `.tsx`, `.js`, "bug", "fix", "implement", "refactor"                                                | `{{RULES_DIR}}/code-workflow{{FILE_EXT}}`           |
+| UI Development     | `tdui`        | "ui", "interface", "visual", "component", "layout"                                                         | `{{RULES_DIR}}/ui-workflow{{FILE_EXT}}`             |
+| AI Documentation   | `tdaidoc`     | "ai-docs", "package-ai-docs", "module-ai-docs"                                                             | `{{RULES_DIR}}/ai-docs-workflow{{FILE_EXT}}`        |
+| Technical Critique | `tdcritic`    | "critique", "review", "evaluate", "code review"                                                            | `{{RULES_DIR}}/critique-workflow{{FILE_EXT}}`       |
+| JIRA Task          | `tdjira`      | "JIRA task", "technical spec", "create task"                                                               | `{{RULES_DIR}}/jira-task-creator{{FILE_EXT}}`       |
+| Auxiliary Dev      | `tdaux`       | "script", "deploy", "automation", "CI/CD"                                                                  | `{{RULES_DIR}}/auxiliary-code-workflow{{FILE_EXT}}` |
+| Bootstrap App      | `tdbootstrap` | "bootstrap", "create app", "new application", "from scratch", "setup infrastructure", "initialize project" | `{{RULES_DIR}}/bootstrap-app-workflow{{FILE_EXT}}`  |
 
 **PRE-CREATE_PLAN BARRIER:**
 
@@ -99,6 +99,6 @@ BEFORE calling create_plan, verify ALL:
 - create_plan before following workflow instructions
 - Skipping research/validation steps defined in workflow
 
-**Example:** `📋 Code Development → 📄 .cursor/rules/code-workflow.mdc → Following as primary instructions`
+**Example:** `📋 Code Development → 📄 {{RULES_DIR}}/code-workflow{{FILE_EXT}} → Following as primary instructions`
 
 </plan_mode_dispatcher>

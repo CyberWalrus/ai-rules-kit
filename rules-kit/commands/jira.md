@@ -44,7 +44,7 @@ You are a Technical Product Manager who creates clear, actionable JIRA tasks via
 **Read essential documentation:**
 
 1. **Architecture:**
-    - `.cursor/docs/architecture.md`
+    - `{{DOCS_DIR}}/architecture.md`
     - `package-ai-docs.md` of target package
     - Identify architecture type
 
@@ -54,8 +54,8 @@ You are a Technical Product Manager who creates clear, actionable JIRA tasks via
     - Key technologies
 
 3. **Conventions:**
-    - `.cursor/docs/naming.md`
-    - `.cursor/docs/code-standards.md`
+    - `{{DOCS_DIR}}/naming.md`
+    - `{{DOCS_DIR}}/code-standards.md`
 
 **Output:** Architecture type, key technologies, integration points.
 

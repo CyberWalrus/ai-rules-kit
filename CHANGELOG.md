@@ -1,5 +1,31 @@
 # Changelog
 
+## [0.9.1] - 2026-01-14
+
+<small>14.01.2026 19:27</small>
+
+### Added
+
+- **Placeholder replacement module**
+    - Added replace-placeholders function for replacing IDE-specific placeholders in content
+    - Added placeholder constants for IDE directories, file extensions, rules, docs, and commands
+    - Integrated placeholder replacement into file operations
+    - Added unit tests for replace-placeholders function
+    - <a href="https://github.com/CyberWalrus/ai-rules-kit/commit/UNCOMMITTED" target="_blank">UNCOMMITTED</a>
+
+### Changed
+
+- **Rules and documentation updates**
+    - Updated rules-kit documentation and commands for improved consistency
+    - Updated architecture documentation with placeholder usage
+    - Enhanced code standards and naming conventions
+    - <a href="https://github.com/CyberWalrus/ai-rules-kit/commit/UNCOMMITTED" target="_blank">UNCOMMITTED</a>
+
+- **File operations improvements**
+    - Updated copy-rules-to-target with placeholder replacement support
+    - Enhanced file operations test coverage
+    - <a href="https://github.com/CyberWalrus/ai-rules-kit/commit/UNCOMMITTED" target="_blank">UNCOMMITTED</a>
+
 ## [0.9.0] - 2026-01-13
 
 <small>13.01.2026</small>

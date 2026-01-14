@@ -34,12 +34,12 @@ You are a software architect specializing in minimal TypeScript package design.
 
 ## When to Use
 
-| Condition | Single Module | Other |
-|:---|:---|:---|
-| Functions | 1-2 related functions | 3+ independent → layered_library |
-| Files | <10 files | >10 → layered_library |
-| Responsibility | Single clear task | Multiple tasks → layered_library |
-| Dependencies | Minimal | Complex → fsd_standard |
+| Condition      | Single Module         | Other                            |
+| :------------- | :-------------------- | :------------------------------- |
+| Functions      | 1-2 related functions | 3+ independent → layered_library |
+| Files          | <10 files             | >10 → layered_library            |
+| Responsibility | Single clear task     | Multiple tasks → layered_library |
+| Dependencies   | Minimal               | Complex → fsd_standard           |
 
 </when_to_use>
 
@@ -91,10 +91,10 @@ In `single_module` architecture, the **entire package is ONE modular unit**.
 
 ### Facade Types by Size
 
-| Size | Facade Location | Facade Contains |
-|:---|:---|:---|
-| Minimal (1-3 files) | `src/index.ts` | Function implementation |
-| Standard (4-10 files) | `src/index.ts` | Re-exports from `main.ts` |
+| Size                  | Facade Location | Facade Contains           |
+| :-------------------- | :-------------- | :------------------------ |
+| Minimal (1-3 files)   | `src/index.ts`  | Function implementation   |
+| Standard (4-10 files) | `src/index.ts`  | Re-exports from `main.ts` |
 
 ### Minimal: index.ts = Function
 

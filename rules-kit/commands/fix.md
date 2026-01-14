@@ -43,112 +43,113 @@ yarn lint
 ### 2.1. ESLint errors
 
 1. **First auto-fix:** ESLint can automatically fix many issues
-   - Run: `yarn lint:eslint` (includes `--fix` flag)
-   - Re-run `yarn lint` to verify fixes
+    - Run: `yarn lint:eslint` (includes `--fix` flag)
+    - Re-run `yarn lint` to verify fixes
 
 2. **Manual fixes for remaining errors:**
-   - Read error message and file location
-   - Apply fix according to ESLint rule
-   - Common fixes: import order, unused variables, formatting
+    - Read error message and file location
+    - Apply fix according to ESLint rule
+    - Common fixes: import order, unused variables, formatting
 
 3. **After fixing file:**
-   - Run `yarn lint:eslint` and verify
-   - Continue until 0 ESLint errors
+    - Run `yarn lint:eslint` and verify
+    - Continue until 0 ESLint errors
 
 ### 2.2. TypeScript errors
 
 1. **Run type check:**
 
-   ```bash
-   yarn lint:ts
-   # or
-   tsc --noEmit
-   ```
+    ```bash
+    yarn lint:ts
+    # or
+    tsc --noEmit
+    ```
 
 2. **Fix type errors:**
-   - Add missing type annotations
-   - Fix type mismatches
-   - Resolve import/export type issues
-   - Fix generic type parameters
+    - Add missing type annotations
+    - Fix type mismatches
+    - Resolve import/export type issues
+    - Fix generic type parameters
 
 3. **After fixing each file:**
-   - Re-run `yarn lint:ts` to verify
-   - Continue until 0 TypeScript errors
+    - Re-run `yarn lint:ts` to verify
+    - Continue until 0 TypeScript errors
 
 ### 2.3. Test errors
 
 1. **Run tests:**
 
-   ```bash
-   yarn lint:test-unit
-   yarn lint:test-e2e
-   ```
+    ```bash
+    yarn lint:test-unit
+    yarn lint:test-e2e
+    ```
 
 2. **Fix test errors:**
-   - Update test expectations if code changed
-   - Fix test setup/teardown issues
-   - Fix mock data
-   - Fix async/await handling
+    - Update test expectations if code changed
+    - Fix test setup/teardown issues
+    - Fix mock data
+    - Fix async/await handling
 
 3. **After each fix:**
-   - Re-run tests to verify
-   - Ensure 100% coverage for new code
-   - Continue until all tests pass
+    - Re-run tests to verify
+    - Ensure 100% coverage for new code
+    - Continue until all tests pass
 
 ### 2.4. Knip errors
 
 1. **Run Knip:**
 
-   ```bash
-   yarn lint:knip
-   ```
+    ```bash
+    yarn lint:knip
+    ```
 
 2. **Fix unused code:**
-   - Remove unused exports
-   - Remove unused files
-   - Fix import/export mismatches
+    - Remove unused exports
+    - Remove unused files
+    - Fix import/export mismatches
 
 3. **After each fix:**
-   - Re-run `yarn lint:knip` to verify
-   - Continue until 0 Knip errors
+    - Re-run `yarn lint:knip` to verify
+    - Continue until 0 Knip errors
 
 ## 3. MCP validation (MANDATORY)
 
 **After EACH file change validate via MCP:**
 
 1. **Determine validation type:**
-   - Files `.ts/.tsx` → `validationType: 'code'`
-   - Files `*.test.ts` → `validationType: 'tests'`
-   - Files `.mdc/.md` → `validationType: 'prompts'`
-   - `architecture.xml` → `validationType: 'architecture'`
-   - AI documentation → `validationType: 'documentation'`
+    - Files `.ts/.tsx` → `validationType: 'code'`
+    - Files `*.test.ts` → `validationType: 'tests'`
+    - Files `.mdc/.md` → `validationType: 'prompts'`
+    - `architecture.xml` → `validationType: 'architecture'`
+    - AI documentation → `validationType: 'documentation'`
 
 2. **Call MCP validator:**
 
-   ```javascript
-   mcp_mcp-validator_validate({
-     validationType: '[type]',
-     input: {
-       type: 'file',
-       data: '/absolute/path/to/file'
-     }
-   })
-   ```
+    ```javascript
+    mcp_mcp -
+        validator_validate({
+            validationType: '[type]',
+            input: {
+                type: 'file',
+                data: '/absolute/path/to/file',
+            },
+        });
+    ```
 
 3. **Target score: ≥85**
 
 4. **If score <85:**
-   1. Read report
-   2. Fix critical issues
-   3. Fix warnings
-   4. Repeat validation (≤3 attempts per file)
-   5. If still <85 after 3 attempts: escalate (see Error handling)
+    1. Read report
+    2. Fix critical issues
+    3. Fix warnings
+    4. Repeat validation (≤3 attempts per file)
+    5. If still <85 after 3 attempts: escalate (see Error handling)
 
 5. **Report format:**
 
-   ```
-   [OK] File: [name] | Score: [X]/100 | PASSED ✓
-   ```
+    ```
+    [OK] File: [name] | Score: [X]/100 | PASSED ✓
+    ```
 
 **ANTI-PATTERN:** Fix → lint (❌)  
 **CORRECT:** Fix → MCP validation → lint (✓)
@@ -166,19 +167,19 @@ yarn lint
 **Process:**
 
 1. **Find error:**
-   - Use exact error message
-   - Include library/package name if applicable
-   - Search for best practices and solutions
+    - Use exact error message
+    - Include library/package name if applicable
+    - Search for best practices and solutions
 
 2. **Example searches:**
-   - "TypeScript error [exact message] solution"
-   - "[Library] [error type] best practices 2024"
-   - "ESLint rule [rule-name] fix"
+    - "TypeScript error [exact message] solution"
+    - "[Library] [error type] best practices 2024"
+    - "ESLint rule [rule-name] fix"
 
 3. **Document findings:**
-   - Summarize solution approach
-   - Note relevant documentation
-   - Apply solution to code
+    - Summarize solution approach
+    - Note relevant documentation
+    - Apply solution to code
 
 4. **Retry fix with findings**
 
@@ -190,22 +191,24 @@ yarn lint
 
 1. **Resolve library ID:**
 
-   ```javascript
-   mcp_context7_resolve-library-id('[library-name]')
-   ```
+    ```javascript
+    mcp_context7_resolve - library - id('[library-name]');
+    ```
 
 2. **Get library documentation:**
 
-   ```javascript
-   mcp_context7_get-library-docs('[library-id]', {
-     topic: '[relevant-topic]'
-   })
-   ```
+    ```javascript
+    mcp_context7_get -
+        library -
+        docs('[library-id]', {
+            topic: '[relevant-topic]',
+        });
+    ```
 
 3. **Apply documentation guidance:**
-   - Follow library best practices
-   - Use correct API patterns
-   - Fix according to official documentation
+    - Follow library best practices
+    - Use correct API patterns
+    - Fix according to official documentation
 
 4. **Retry fix with documentation**
 
@@ -224,40 +227,40 @@ yarn lint
 **If bugs are discovered during fixing:**
 
 1. **Identify bug:**
-   - Note incorrect behavior
-   - Understand expected behavior
-   - Document bug location and context
+    - Note incorrect behavior
+    - Understand expected behavior
+    - Document bug location and context
 
 2. **Write test reproducing bug:**
-   - Create test that fails with current bug
-   - Test must clearly show the problem
-   - Place in appropriate test file (directory `__tests__/`)
+    - Create test that fails with current bug
+    - Test must clearly show the problem
+    - Place in appropriate test file (directory `__tests__/`)
 
 3. **Fix bug:**
-   - Apply fix to code
-   - Ensure fix addresses root cause
+    - Apply fix to code
+    - Ensure fix addresses root cause
 
 4. **Verify test passes:**
-   - Re-run test
-   - Test should now pass
-   - Ensure no regressions
+    - Re-run test
+    - Test should now pass
+    - Ensure no regressions
 
 5. **Test file location:**
-   - Unit tests: `src/[module]/__tests__/[file].test.ts`
-   - E2E tests: `src/__tests__/e2e/[feature].e2e.test.ts`
+    - Unit tests: `src/[module]/__tests__/[file].test.ts`
+    - E2E tests: `src/__tests__/e2e/[feature].e2e.test.ts`
 
 **Example test structure:**
 
 ```typescript
 it('should correctly handle null values', () => {
-  // Arrange
-  const input = { id: null };
-  
-  // Act
-  const result = functionUnderTest(input);
-  
-  // Assert
-  expect(result).toBe(expectedValue);
+    // Arrange
+    const input = { id: null };
+
+    // Act
+    const result = functionUnderTest(input);
+
+    // Assert
+    expect(result).toBe(expectedValue);
 });
 ```
 
@@ -266,33 +269,33 @@ it('should correctly handle null values', () => {
 **Task is complete ONLY when ALL criteria are met:**
 
 1. **All linter errors fixed:**
-   - ESLint: 0 errors
-   - TypeScript: 0 errors
-   - Tests: all pass
-   - Knip: 0 errors
+    - ESLint: 0 errors
+    - TypeScript: 0 errors
+    - Tests: all pass
+    - Knip: 0 errors
 
 2. **All modified files validated:**
-   - MCP validation score ≥85 for each modified file
-   - Validation report shows PASSED for all files
+    - MCP validation score ≥85 for each modified file
+    - Validation report shows PASSED for all files
 
 3. **All tests pass:**
-   - Unit tests: 100% pass rate
-   - E2E tests: 100% pass rate
-   - 100% coverage for new code
+    - Unit tests: 100% pass rate
+    - E2E tests: 100% pass rate
+    - 100% coverage for new code
 
 4. **All bugs have tests:**
-   - Each discovered bug has corresponding test
-   - Tests verify bug is fixed
-   - Tests are in correct location
+    - Each discovered bug has corresponding test
+    - Tests verify bug is fixed
+    - Tests are in correct location
 
 5. **Final check:**
 
-   ```bash
-   yarn lint
-   ```
+    ```bash
+    yarn lint
+    ```
 
-   - Must return 0 errors
-   - All checks must pass
+    - Must return 0 errors
+    - All checks must pass
 
 **Completion report format:**
 
@@ -333,25 +336,25 @@ Final Status: All errors fixed, all tests pass, all files validated
 
 1. **Report blocking issue:**
 
-   ```
-   ⚠️ BLOCKING ISSUE
-   
-   Error: [exact error message]
-   File: [file path]:[line]
-   Attempts: [N] (including web search/Context7)
-   
-   Issue: [detailed description why fix failed]
-   Research: [findings from web search/Context7]
-   
-   Guidance needed: [specific question or constraint]
-   ```
+    ```
+    ⚠️ BLOCKING ISSUE
+
+    Error: [exact error message]
+    File: [file path]:[line]
+    Attempts: [N] (including web search/Context7)
+
+    Issue: [detailed description why fix failed]
+    Research: [findings from web search/Context7]
+
+    Guidance needed: [specific question or constraint]
+    ```
 
 2. **Stop execution**
 3. **Wait for user guidance**
 4. **After receiving user response:**
-   - Resume process from last successfully completed step
-   - Apply received guidance
-   - Continue fixing errors
+    - Resume process from last successfully completed step
+    - Apply received guidance
+    - Continue fixing errors
 5. **DO NOT claim completion**
 
 ### 7.2. MCP validation failed after 3 attempts
@@ -360,27 +363,27 @@ Final Status: All errors fixed, all tests pass, all files validated
 
 1. **Report validation issue:**
 
-   ```
-   ⚠️ MCP VALIDATION BLOCKED
+    ```
+    ⚠️ MCP VALIDATION BLOCKED
 
-   File: [file path]
-   Score: [X]/100 (target: ≥85)
-   Attempts: 3
+    File: [file path]
+    Score: [X]/100 (target: ≥85)
+    Attempts: 3
 
-   Remaining issues: [list of critical/warning issues]
+    Remaining issues: [list of critical/warning issues]
 
-   Options:
-   1. Continue with technical debt (score [X])
-   2. Manual review required
-   3. Rollback changes
-   ```
+    Options:
+    1. Continue with technical debt (score [X])
+    2. Manual review required
+    3. Rollback changes
+    ```
 
 2. **Wait for user decision**
 3. **If user agrees to debt:**
-   - Document exception, continue fixes, note in report
+    - Document exception, continue fixes, note in report
 4. **If user rejects:**
-   - Rollback problematic changes
-   - Retry with different approach
+    - Rollback problematic changes
+    - Retry with different approach
 
 ### 7.3. Never claim completion with errors
 

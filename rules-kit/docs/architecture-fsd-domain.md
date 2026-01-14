@@ -34,12 +34,12 @@ You are a FSD Domain Architecture Specialist for TypeScript/React projects with 
 
 ## When to Use
 
-| Condition | FSD Domain | FSD Standard |
-|:---|:---|:---|
+| Condition        | FSD Domain          | FSD Standard     |
+| :--------------- | :------------------ | :--------------- |
 | Business domains | 2+ explicit domains | No clear domains |
-| Complexity | High (>50 slices) | Medium |
-| Team structure | Domain teams | Single team |
-| Scale | Enterprise | Standard app |
+| Complexity       | High (>50 slices)   | Medium           |
+| Team structure   | Domain teams        | Single team      |
+| Scale            | Enterprise          | Standard app     |
 
 </when_to_use>
 
@@ -49,14 +49,14 @@ You are a FSD Domain Architecture Specialist for TypeScript/React projects with 
 
 ## Layer Hierarchy
 
-| Layer | Purpose | Has Domains? |
-|:---|:---|:---|
-| app | Entry, providers, global styles | No |
-| pages | Route pages | No |
-| widgets | Complex page sections | **Yes** |
-| features | User interactions | **Yes** |
-| entities | Business models | **Yes** |
-| shared | Cross-cutting utilities | No |
+| Layer    | Purpose                         | Has Domains? |
+| :------- | :------------------------------ | :----------- |
+| app      | Entry, providers, global styles | No           |
+| pages    | Route pages                     | No           |
+| widgets  | Complex page sections           | **Yes**      |
+| features | User interactions               | **Yes**      |
+| entities | Business models                 | **Yes**      |
+| shared   | Cross-cutting utilities         | No           |
 
 **Dependency direction:** app → pages → widgets → features → entities → shared
 
@@ -99,13 +99,13 @@ src/
 
 ### Common Domains
 
-| Domain | Description | Slice Examples |
-|:---|:---|:---|
-| user | User management | auth, profile, registration |
-| payments | Payment system | payment-form, billing, cards |
-| betting | Bets and predictions | bet-slip, odds, events |
-| gambling | Casino games | slots, poker, live-games |
-| loyalty | Loyalty programs | points, rewards, bonuses |
+| Domain   | Description          | Slice Examples               |
+| :------- | :------------------- | :--------------------------- |
+| user     | User management      | auth, profile, registration  |
+| payments | Payment system       | payment-form, billing, cards |
+| betting  | Bets and predictions | bet-slip, odds, events       |
+| gambling | Casino games         | slots, poker, live-games     |
+| loyalty  | Loyalty programs     | points, rewards, bonuses     |
 
 </domain_structure>
 
@@ -117,13 +117,13 @@ src/
 
 ### Layers vs Domains vs Slices
 
-| Element | Is Modular Unit? | Facade Type |
-|:---|:---|:---|
-| `features/` | NO (layer) | — |
-| `features/user/` | NO (domain container) | — |
-| `features/user/auth/` | YES (slice) | Depends on size |
-| `shared/lib/` | NO (container) | NO index.ts |
-| `shared/lib/format-date.ts` | YES (file-module) | File-facade |
+| Element                     | Is Modular Unit?      | Facade Type     |
+| :-------------------------- | :-------------------- | :-------------- |
+| `features/`                 | NO (layer)            | —               |
+| `features/user/`            | NO (domain container) | —               |
+| `features/user/auth/`       | YES (slice)           | Depends on size |
+| `shared/lib/`               | NO (container)        | NO index.ts     |
+| `shared/lib/format-date.ts` | YES (file-module)     | File-facade     |
 
 ### Domain Containers Need No Facade
 
@@ -233,14 +233,14 @@ import { PaymentWidget } from '$widgets/payments';
 <package_root>
   <source_directory name="src">
     <entrypoint name="app/index.ts" />
-    
+
     <layer name="pages" purpose="route pages">
       <module name="home">
         <facade name="index.ts" role="slice_facade" />
         <file name="home-page.tsx" role="component" />
       </module>
     </layer>
-    
+
     <layer name="features" purpose="user interactions">
       <directory name="user">
         <module name="auth">
@@ -255,7 +255,7 @@ import { PaymentWidget } from '$widgets/payments';
         </module>
       </directory>
     </layer>
-    
+
     <layer name="shared" purpose="cross-cutting">
       <module name="button">
         <facade name="index.ts" role="unit_facade" />

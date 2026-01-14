@@ -35,8 +35,8 @@ Let's think step by step about terminology mapping and document selection.
 
 **CRITICAL: DO NOT GENERATE DOCUMENTATION WITHOUT READING REFERENCES FIRST!**
 
-- **MANDATORY:** Read `.cursor/docs/ai-package-template.md` (for package documentation)
-- **MANDATORY:** Read `.cursor/docs/ai-module-template.md` (for module documentation)
+- **MANDATORY:** Read `{{DOCS_DIR}}/ai-package-template.md` (for package documentation)
+- **MANDATORY:** Read `{{DOCS_DIR}}/ai-module-template.md` (for module documentation)
 - Study structure, YAML metadata, XML tags, and examples from references
 - Ensure you understand the differences between package and module documentation
 
@@ -80,7 +80,7 @@ If structure is ambiguous — clarify presence of `package.json` and facade `ind
 
 - Add/clarify YAML block `module_docs` in `package-ai-docs.md`
 - Define `type`, `rule`, `targets` for generating module documentation
-- Use policy from `.cursor/docs/ai-package-template.md`
+- Use policy from `{{DOCS_DIR}}/ai-package-template.md`
 
 <completion_criteria>
 `module_docs` correctly describes goals for generating `module-ai-docs.md`
@@ -170,19 +170,19 @@ If any step is not completed — stop process and request execution of missed st
 
 ### Architectural Concepts (combo-architecture.md)
 
-| **Term**                | **Description**                                                                                                                                                                                                                                                                        | **Application Area**                    |
-| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------- |
-| **Simple Package**      | Single modular unit                                                                                                                                                                                                                                                              | `shared/lib/hooks/use-safe-back/`         |
-| **Complex Package**     | Multiple modular units in FSD                                                                                                                                                                                                                                                    | `features/user/`, `shared/`               |
-| **Modular Unit**        | Isolated code block with public API through facade (index.ts/index.tsx). Defined as folder containing facade file, with no other facade file one level above. All external package parts can import from this folder only through facade file. | Any folder with `index.ts` facade          |
-| **Functional Element** | Independent component/hook/function                                                                                                                                                                                                                                                   | `AuthForm`, `useAuth`, `validatePassword` |
+| **Term**               | **Description**                                                                                                                                                                                                                                | **Application Area**                      |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------- |
+| **Simple Package**     | Single modular unit                                                                                                                                                                                                                            | `shared/lib/hooks/use-safe-back/`         |
+| **Complex Package**    | Multiple modular units in FSD                                                                                                                                                                                                                  | `features/user/`, `shared/`               |
+| **Modular Unit**       | Isolated code block with public API through facade (index.ts/index.tsx). Defined as folder containing facade file, with no other facade file one level above. All external package parts can import from this folder only through facade file. | Any folder with `index.ts` facade         |
+| **Functional Element** | Independent component/hook/function                                                                                                                                                                                                            | `AuthForm`, `useAuth`, `validatePassword` |
 
 ### AI Documentation Concepts
 
-| **Reference**                          | **Documents**     | **Result File**  | **Architecture Match**          |
-| --------------------------------------- | --------------------- | -------------------- | ------------------------------------- |
-| **.cursor/docs/ai-module-template.md**  | Modular units (модульные единицы)   | `module-ai-docs.md`  | ✅ Simple packages (modular units) |
-| **.cursor/docs/ai-package-template.md** | Packages with package.json | `package-ai-docs.md` | ✅ Complex packages (workspace packages)  |
+| **Reference**                           | **Documents**                     | **Result File**      | **Architecture Match**                   |
+| --------------------------------------- | --------------------------------- | -------------------- | ---------------------------------------- |
+| **{{DOCS_DIR}}/ai-module-template.md**  | Modular units (модульные единицы) | `module-ai-docs.md`  | ✅ Simple packages (modular units)       |
+| **{{DOCS_DIR}}/ai-package-template.md** | Packages with package.json        | `package-ai-docs.md` | ✅ Complex packages (workspace packages) |
 
 </terminology_mapping>
 
@@ -243,10 +243,10 @@ shared/
 
 <references>
 - **CRITICAL - READ BEFORE GENERATION:**
-  - `.cursor/docs/ai-package-template.md` - package documentation template
-  - `.cursor/docs/ai-module-template.md` - module documentation template
-- **ADDITIONALLY:** Study architectural principles: `.cursor/docs/architecture.md`
-- **XML ARCHITECTURE GENERATION:** For creating/updating `architecture.xml` files referenced by `package-ai-docs.md`, use prompt `.cursor/docs/generate-architecture-xml.md`.
+  - `{{DOCS_DIR}}/ai-package-template.md` - package documentation template
+  - `{{DOCS_DIR}}/ai-module-template.md` - module documentation template
+- **ADDITIONALLY:** Study architectural principles: `{{DOCS_DIR}}/architecture.md`
+- **XML ARCHITECTURE GENERATION:** For creating/updating `architecture.xml` files referenced by `package-ai-docs.md`, use prompt `{{DOCS_DIR}}/generate-architecture-xml.md`.
 
 **⚠️ WARNING: Documentation generation WITHOUT reading references is FORBIDDEN!**
 </references>
@@ -286,7 +286,7 @@ This is a reference prompt for integrating AI docs with architecture. Expected m
 
 **🚨 MANDATORY FIRST STEP:**
 
-- Read `.cursor/docs/ai-package-template.md` and `.cursor/docs/ai-module-template.md`
+- Read `{{DOCS_DIR}}/ai-package-template.md` and `{{DOCS_DIR}}/ai-module-template.md`
 - Study structure, YAML metadata, and XML tags from references
 
 **Then generate:**
