@@ -4,6 +4,11 @@ export const VERSION_FILE_NAME = 'ai-rules-kit-config.json';
 /** Директории с правилами для копирования (относительно корня пакета) */
 export const RULES_DIRS = ['rules', 'docs', 'commands'] as const;
 
+/** Имена файлов для Claude Code */
+export const CLAUDE_MAIN_FILE_NAME = 'CLAUDE.md';
+export const CLAUDE_SKILL_FILE_NAME = 'SKILL.md';
+export const CLAUDE_DOCS_CATALOG_FILE_NAME = 'docs-catalog.md';
+
 /** GitHub репозиторий с правилами */
 export const GITHUB_REPO = 'CyberWalrus/ai-rules-kit' as const;
 

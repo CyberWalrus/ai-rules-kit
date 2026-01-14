@@ -5,7 +5,7 @@ export type CommandType = 'config' | 'init' | 'replace-all' | 'system-files' | '
 export type InteractiveMenuAction = 'config' | 'exit' | 'init' | 'system-files' | 'upgrade' | 'versions';
 
 /** Тип поддерживаемой IDE */
-export type IdeType = 'cursor' | 'trae';
+export type IdeType = 'claude-code' | 'cursor' | 'trae';
 
 /** Конфигурация правил */
 export type RulesConfig = {
