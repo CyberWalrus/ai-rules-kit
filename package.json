@@ -1,6 +1,6 @@
 {
     "name": "ai-rules-kit",
-    "version": "0.9.1",
+    "version": "0.9.2",
     "description": "CLI tool for managing AI rules in IDE projects (Cursor, TRAE)",
     "bin": {
         "ai-rules-kit": "dist/index.cjs",
