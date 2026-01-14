@@ -40,6 +40,10 @@ vi.mock('@clack/prompts', () => ({
     select: vi.fn().mockResolvedValue('claude-code'),
 }));
 
+vi.mock('../../lib/claude-cli/run-claude-init', () => ({
+    runClaudeInit: vi.fn().mockResolvedValue(undefined),
+}));
+
 describe('Claude Code Init E2E', () => {
     let tempDirPath: string;
     const packageDir = process.cwd();
