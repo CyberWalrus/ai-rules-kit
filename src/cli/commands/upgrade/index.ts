@@ -119,7 +119,7 @@ export async function upgradeCommand(packageDir: string, targetDir: string): Pro
                 ? fetchSystemRulesTarball(GITHUB_REPO, latestSystemRulesVersion, tmpDir)
                 : Promise.resolve(),
         ]);
-        await calculateDiff(tmpDir, targetDir, getIdeRulesDir(ideType));
+        await calculateDiff(tmpDir, targetDir, getIdeRulesDir(ideType), ideType);
         await copyRulesToTarget(
             tmpDir,
             targetDir,

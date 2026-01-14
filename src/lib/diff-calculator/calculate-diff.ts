@@ -3,6 +3,8 @@ import { join } from 'node:path';
 import type { VersionDiff } from '../../model';
 import { RULES_DIRS } from '../../model';
 import { isEmptyString } from '../helpers';
+import type { IdeType } from '../ide-config';
+import { getProjectIdeDir } from '../ide-config';
 import { scanDirectory } from './scan-directory';
 
 /** Вычисляет diff между версиями правил */
@@ -10,6 +12,7 @@ export async function calculateDiff(
     packageDir: string,
     targetDir: string,
     sourceDirPrefix: string = '',
+    ideType: IdeType = 'cursor',
 ): Promise<VersionDiff> {
     if (isEmptyString(packageDir)) {
         throw new Error('packageDir is required');
@@ -18,10 +21,12 @@ export async function calculateDiff(
         throw new Error('targetDir is required');
     }
 
+    const ideDir = getProjectIdeDir(ideType);
+
     const results = await Promise.all(
         RULES_DIRS.map(async (ruleDir) => {
             const sourcePath = join(packageDir, sourceDirPrefix, ruleDir);
-            const targetRuleDir = `.cursor/${ruleDir}`;
+            const targetRuleDir = `${ideDir}/${ruleDir}`;
             const targetPath = join(targetDir, targetRuleDir);
 
             const adds: string[] = [];

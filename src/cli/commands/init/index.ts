@@ -49,6 +49,7 @@ export async function initCommand(packageDir: string, targetDir: string): Promis
         options: [
             { label: 'Cursor', value: 'cursor' },
             { label: 'TRAE', value: 'trae' },
+            { label: 'Claude Code', value: 'claude-code' },
         ],
     });
 

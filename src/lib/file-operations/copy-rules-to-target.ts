@@ -7,12 +7,18 @@ import { isEmptyString } from '../helpers';
 import type { IdeType } from '../ide-config';
 import { getIdeFileExtension, getProjectIdeDir } from '../ide-config';
 import { applyYamlOverrides } from './apply-yaml-overrides';
+import { copyRulesToClaudeCode } from './copy-rules-to-claude-code';
 import { pathExists } from './path-exists';
 import { replacePlaceholders } from './replace-placeholders';
 import { shouldIgnoreFile } from './should-ignore-file';
 
 /** Копирует файл из источника в цель с конвертацией расширения и заменой плейсхолдеров */
-async function copyFileWithConversion(sourcePath: string, targetPath: string, ideType: IdeType): Promise<void> {
+async function copyFileWithConversion(
+    sourcePath: string,
+    targetPath: string,
+    ideType: IdeType,
+    relativePath: string,
+): Promise<void> {
     const sourceExists = await pathExists(sourcePath);
     if (!sourceExists) {
         return;
@@ -24,12 +30,17 @@ async function copyFileWithConversion(sourcePath: string, targetPath: string, id
     const targetExtension = getIdeFileExtension(ideType);
     const sourceExtension = sourcePath.endsWith('.mdc') ? '.mdc' : '.md';
 
+    // Конвертируем расширение только для файлов в rules/ директории
+    const isInRulesDir = relativePath.startsWith('rules/');
+
     let finalTargetPath = targetPath;
 
-    if (sourceExtension === '.mdc' && targetExtension === '.md') {
-        finalTargetPath = targetPath.replace(/\.mdc$/, '.md');
-    } else if (sourceExtension === '.md' && targetExtension === '.mdc') {
-        finalTargetPath = targetPath.replace(/\.md$/, '.mdc');
+    if (isInRulesDir) {
+        if (sourceExtension === '.mdc' && targetExtension === '.md') {
+            finalTargetPath = targetPath.replace(/\.mdc$/, '.md');
+        } else if (sourceExtension === '.md' && targetExtension === '.mdc') {
+            finalTargetPath = targetPath.replace(/\.md$/, '.mdc');
+        }
     }
 
     const content = await readFile(sourcePath, 'utf-8');
@@ -62,7 +73,7 @@ async function copyDirectoryRecursive(
                     await copyDirectoryRecursive(sourcePath, targetPath, baseDir, ignoreList, ideType);
                 }
             } else if (entry.isFile() && !shouldIgnore) {
-                await copyFileWithConversion(sourcePath, targetPath, ideType);
+                await copyFileWithConversion(sourcePath, targetPath, ideType, relativePath);
             }
         }),
     );
@@ -82,6 +93,13 @@ export async function copyRulesToTarget(
     }
     if (isEmptyString(targetDir)) {
         throw new Error('targetDir is required');
+    }
+
+    // Для Claude Code используем специализированную логику
+    if (ideType === 'claude-code') {
+        await copyRulesToClaudeCode(packageDir, targetDir, ignoreList);
+
+        return;
     }
 
     const ideDir = getProjectIdeDir(ideType);

@@ -139,4 +139,80 @@ read_file('{{RULES_DIR}}/test{{FILE_EXT}}')
 
         expect(result).toContain("read_file('.cursor/rules/test.mdc')");
     });
+
+    it('должен заменять {{IDE_DIR}} на .claude для Claude Code', () => {
+        const content = 'Path: {{IDE_DIR}}/docs/file.md';
+        const result = replacePlaceholders(content, 'claude-code');
+
+        expect(result).toBe('Path: .claude/docs/file.md');
+    });
+
+    it('должен заменять {{FILE_EXT}} на .md для Claude Code', () => {
+        const content = 'File: {{RULES_DIR}}/test{{FILE_EXT}}';
+        const result = replacePlaceholders(content, 'claude-code');
+
+        expect(result).toBe('File: .claude/rules/test.md');
+    });
+
+    it('должен заменять {{RULES_DIR}} на .claude/rules для Claude Code', () => {
+        const content = 'See {{RULES_DIR}}/file.md';
+        const result = replacePlaceholders(content, 'claude-code');
+
+        expect(result).toBe('See .claude/rules/file.md');
+    });
+
+    it('должен заменять {{DOCS_DIR}} на .claude/docs для Claude Code', () => {
+        const content = 'See {{DOCS_DIR}}/file.md';
+        const result = replacePlaceholders(content, 'claude-code');
+
+        expect(result).toBe('See .claude/docs/file.md');
+    });
+
+    it('должен заменять {{COMMANDS_DIR}} на .claude/commands для Claude Code', () => {
+        const content = 'See {{COMMANDS_DIR}}/file.md';
+        const result = replacePlaceholders(content, 'claude-code');
+
+        expect(result).toBe('See .claude/commands/file.md');
+    });
+
+    it('должен заменять {{SKILLS_DIR}} на .claude/skills для Claude Code', () => {
+        const content = 'Path: {{SKILLS_DIR}}/skill-name/SKILL.md';
+        const result = replacePlaceholders(content, 'claude-code');
+
+        expect(result).toBe('Path: .claude/skills/skill-name/SKILL.md');
+    });
+
+    it('должен заменять {{CLAUDE_DOCS_DIR}} на .claude/docs для Claude Code', () => {
+        const content = 'Path: {{CLAUDE_DOCS_DIR}}/file.md';
+        const result = replacePlaceholders(content, 'claude-code');
+
+        expect(result).toBe('Path: .claude/docs/file.md');
+    });
+
+    it('должен заменять все плейсхолдеры для Claude Code', () => {
+        const content = `
+Skills: {{SKILLS_DIR}}/*
+Docs: {{CLAUDE_DOCS_DIR}}/*.md
+Commands: {{COMMANDS_DIR}}/*.md
+IDE: {{IDE_DIR}}
+`;
+        const result = replacePlaceholders(content, 'claude-code');
+
+        expect(result).toContain('.claude/skills/*');
+        expect(result).toContain('.claude/docs/*.md');
+        expect(result).toContain('.claude/commands/*.md');
+        expect(result).toContain('IDE: .claude');
+    });
+
+    it('не должен заменять {{SKILLS_DIR}} и {{CLAUDE_DOCS_DIR}} для других IDE', () => {
+        const content = 'Path: {{SKILLS_DIR}}/skill {{CLAUDE_DOCS_DIR}}/doc';
+
+        const cursorResult = replacePlaceholders(content, 'cursor');
+        expect(cursorResult).toContain('{{SKILLS_DIR}}');
+        expect(cursorResult).toContain('{{CLAUDE_DOCS_DIR}}');
+
+        const traeResult = replacePlaceholders(content, 'trae');
+        expect(traeResult).toContain('{{SKILLS_DIR}}');
+        expect(traeResult).toContain('{{CLAUDE_DOCS_DIR}}');
+    });
 });

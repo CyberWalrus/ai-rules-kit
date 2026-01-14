@@ -41,7 +41,7 @@ export async function readConfigFile(targetDir: string, ideType?: IdeType): Prom
         throw new Error('targetDir is required');
     }
 
-    const ideTypesToCheck: IdeType[] = ideType ? [ideType] : ['cursor', 'trae'];
+    const ideTypesToCheck: IdeType[] = ideType ? [ideType] : ['cursor', 'trae', 'claude-code'];
 
     for (const currentIdeType of ideTypesToCheck) {
         const ideDir = getProjectIdeDir(currentIdeType);
