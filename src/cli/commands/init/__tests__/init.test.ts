@@ -2,14 +2,15 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { copyRulesToTarget } from '../../../../lib/file-operations/copy-rules-to-target';
 import { copySystemRulesToTarget } from '../../../../lib/file-operations/copy-system-rules-to-target';
+import { readConfigFile } from '../../../../lib/file-operations/read-config-file';
 import { writeConfigFile } from '../../../../lib/file-operations/write-config-file';
 import {
     fetchPromptsTarball,
     fetchSystemRulesTarball,
     getLatestSystemRulesVersion,
 } from '../../../../lib/github-fetcher';
+import { getUninitializedIdes } from '../../../../lib/ide-config';
 import { readUserConfig } from '../../../../lib/user-config';
-import { getCurrentVersion } from '../../../../lib/version-manager/get-current-version';
 import { getPackageVersion } from '../../../../lib/version-manager/get-package-version';
 import { getVersionsWithRetry } from '../../../../lib/version-manager/get-versions-with-retry';
 import { initCommand } from '../index';
@@ -20,23 +21,25 @@ vi.mock('@clack/prompts', () => ({
 }));
 vi.mock('../../../../lib/file-operations/copy-rules-to-target');
 vi.mock('../../../../lib/file-operations/copy-system-rules-to-target');
+vi.mock('../../../../lib/file-operations/read-config-file');
 vi.mock('../../../../lib/file-operations/write-config-file');
 vi.mock('../../../../lib/github-fetcher');
+vi.mock('../../../../lib/ide-config');
 vi.mock('../../../../lib/user-config');
-vi.mock('../../../../lib/version-manager/get-current-version');
 vi.mock('../../../../lib/version-manager/get-package-version');
 vi.mock('../../../../lib/version-manager/get-versions-with-retry');
 
-const mockGetCurrentVersion = vi.mocked(getCurrentVersion);
 const mockCopyRulesToTarget = vi.mocked(copyRulesToTarget);
 const mockCopySystemRulesToTarget = vi.mocked(copySystemRulesToTarget);
 const mockGetPackageVersion = vi.mocked(getPackageVersion);
+const mockReadConfigFile = vi.mocked(readConfigFile);
 const mockWriteConfigFile = vi.mocked(writeConfigFile);
 const mockFetchPromptsTarball = vi.mocked(fetchPromptsTarball);
 const mockFetchSystemRulesTarball = vi.mocked(fetchSystemRulesTarball);
 const mockGetLatestSystemRulesVersion = vi.mocked(getLatestSystemRulesVersion);
 const mockGetVersionsWithRetry = vi.mocked(getVersionsWithRetry);
 const mockReadUserConfig = vi.mocked(readUserConfig);
+const mockGetUninitializedIdes = vi.mocked(getUninitializedIdes);
 
 describe('initCommand', () => {
     beforeEach(() => {
@@ -46,10 +49,11 @@ describe('initCommand', () => {
         mockCopySystemRulesToTarget.mockResolvedValue(undefined);
         mockFetchSystemRulesTarball.mockResolvedValue(undefined);
         mockGetLatestSystemRulesVersion.mockResolvedValue(null);
+        mockGetUninitializedIdes.mockResolvedValue(['cursor', 'trae', 'claude-code'] as const);
+        mockReadConfigFile.mockResolvedValue(null);
     });
 
     it('должен успешно инициализировать правила в чистой директории', async () => {
-        mockGetCurrentVersion.mockResolvedValue(null);
         mockGetVersionsWithRetry.mockResolvedValue({ promptsVersion: '2025.11.10.1', systemRulesVersion: null });
         mockFetchPromptsTarball.mockResolvedValue(undefined);
         mockCopyRulesToTarget.mockResolvedValue(undefined);
@@ -58,7 +62,7 @@ describe('initCommand', () => {
 
         await initCommand('/package/dir', '/target/dir');
 
-        expect(mockGetCurrentVersion).toHaveBeenCalledWith('/target/dir');
+        expect(mockGetUninitializedIdes).toHaveBeenCalledWith('/target/dir');
         expect(mockGetVersionsWithRetry).toHaveBeenCalledTimes(1);
         expect(mockFetchPromptsTarball).toHaveBeenCalledWith(
             'CyberWalrus/ai-rules-kit',
@@ -110,16 +114,24 @@ describe('initCommand', () => {
         await expect(initCommand('/package/dir', null as unknown as string)).rejects.toThrow('targetDir is required');
     });
 
-    it('должен выбрасывать ошибку если правила уже установлены', async () => {
-        mockGetCurrentVersion.mockResolvedValue('1.0.0');
+    it('должен показывать сообщение и завершать работу если все IDE инициализированы', async () => {
+        mockGetUninitializedIdes.mockResolvedValue([]);
 
-        await expect(initCommand('/package/dir', '/target/dir')).rejects.toThrow(
-            'Rules already initialized with version 1.0.0',
-        );
+        const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+
+        try {
+            await initCommand('/package/dir', '/target/dir');
+
+            expect(mockGetVersionsWithRetry).not.toHaveBeenCalled();
+            expect(mockFetchPromptsTarball).not.toHaveBeenCalled();
+            expect(mockWriteConfigFile).not.toHaveBeenCalled();
+            expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining('IDE'));
+        } finally {
+            consoleLogSpy.mockRestore();
+        }
     });
 
     it('должен скачивать и копировать правила через GitHub', async () => {
-        mockGetCurrentVersion.mockResolvedValue(null);
         mockGetVersionsWithRetry.mockResolvedValue({ promptsVersion: '2025.11.10.1', systemRulesVersion: null });
         mockFetchPromptsTarball.mockResolvedValue(undefined);
         mockGetPackageVersion.mockResolvedValue('1.0.0');
@@ -134,7 +146,6 @@ describe('initCommand', () => {
     });
 
     it('должен записывать конфигурацию через writeConfigFile', async () => {
-        mockGetCurrentVersion.mockResolvedValue(null);
         mockGetVersionsWithRetry.mockResolvedValue({ promptsVersion: '2025.11.10.1', systemRulesVersion: null });
         mockFetchPromptsTarball.mockResolvedValue(undefined);
         mockGetPackageVersion.mockResolvedValue('2.0.0');
@@ -172,7 +183,6 @@ describe('initCommand', () => {
     });
 
     it('должен записывать корректный ISO timestamp в installedAt и updatedAt', async () => {
-        mockGetCurrentVersion.mockResolvedValue(null);
         mockGetVersionsWithRetry.mockResolvedValue({ promptsVersion: '2025.11.10.1', systemRulesVersion: null });
         mockFetchPromptsTarball.mockResolvedValue(undefined);
         mockGetPackageVersion.mockResolvedValue('1.0.0');
