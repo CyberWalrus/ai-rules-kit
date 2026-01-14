@@ -1,4 +1,4 @@
-import { stdin, stdout } from 'node:process';
+import { env, stdin, stdout } from 'node:process';
 import { createInterface } from 'node:readline/promises';
 
 import { t } from '../i18n';
@@ -7,6 +7,11 @@ import { t } from '../i18n';
 export async function askConfirmation(question: string): Promise<boolean> {
     if (question === null || question === undefined || question === '') {
         throw new Error('question is required');
+    }
+
+    // В тестовой среде автоматически возвращаем false
+    if (env.NODE_ENV === 'test' || env.TEST_TYPE === 'e2e') {
+        return false;
     }
 
     const rl = createInterface({

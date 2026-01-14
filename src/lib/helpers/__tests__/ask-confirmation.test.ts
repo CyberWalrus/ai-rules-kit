@@ -7,6 +7,7 @@ vi.mock('node:readline/promises', () => ({
 }));
 
 vi.mock('node:process', () => ({
+    env: {},
     stdin: {},
     stdout: {},
 }));
