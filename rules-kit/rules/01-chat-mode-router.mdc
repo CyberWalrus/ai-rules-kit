@@ -2,6 +2,7 @@
 id: chat-mode-router
 type: compact
 alwaysApply: true
+description: Detects chat mode (Plan/Agent/Ask/Custom/Other) and routes to corresponding dispatcher files. Use for automatic mode detection and workflow routing before any tool calls.
 ---
 
 # Chat Mode Router

@@ -3,6 +3,7 @@ id: ai-documentation-integration-analysis
 type: reference
 globs: "**/package-ai-docs.md, **/module-ai-docs.md"
 alwaysApply: false
+description: Reference workflow for AI documentation integration with architectural rules. Use when creating or updating AI documentation that needs alignment with project architecture.
 ---
 
 # 🔗 AI Documentation Integration with Architecture Rules

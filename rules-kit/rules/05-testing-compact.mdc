@@ -2,6 +2,7 @@
 id: testing-compact
 type: compact
 alwaysApply: true
+description: Enforces 100% coverage for new functions, Russian test names, Arrange-Act-Assert pattern, one test file per function, mock data only, typed mocks, fake timers. Use when writing or reviewing tests for quality and consistency.
 ---
 
 # Testing Essentials

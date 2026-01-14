@@ -2,6 +2,7 @@
 id: naming-compact
 type: compact
 alwaysApply: true
+description: "Naming conventions quick reference: kebab-case files, PascalCase components, camelCase functions, SCREAMING_SNAKE_CASE constants. Use when creating new files or renaming for consistency."
 ---
 
 # Naming Conventions

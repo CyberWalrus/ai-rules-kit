@@ -2,6 +2,7 @@
 id: jira-task-creator-v2
 type: algorithm
 alwaysApply: false
+description: Interactive JIRA task creation with requirements gathering, solution validation via web search and Context7, and wiki markup generation. Use when creating JIRA tasks that are actionable and ready for copy-paste.
 ---
 
 # JIRA Task Creator

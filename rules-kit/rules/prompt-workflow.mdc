@@ -3,6 +3,7 @@ id: prompt-workflow
 type: combo
 globs: "**/*.mdc, .cursor/**/*.md"
 alwaysApply: false
+description: Creates production-ready AI prompts with XML structuring, YAML metadata, and MCP validation (score ≥85). Supports algorithm/reference/combo/compact/command types. Use when creating, improving, editing, or validating AI prompts.
 ---
 
 # Prompt Engineering Workflow

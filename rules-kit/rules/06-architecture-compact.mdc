@@ -2,6 +2,7 @@
 id: architecture-file-placement-compact
 type: compact
 alwaysApply: true
+description: "File placement rules: Golden Rule (code goes inside its unit), facade rules, forbidden practices. Use when determining where to place new files or organizing project structure."
 ---
 
 # Architecture File Placement

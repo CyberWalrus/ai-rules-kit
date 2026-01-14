@@ -2,6 +2,7 @@
 id: code-workflow
 type: algorithm
 alwaysApply: false
+description: Advanced planning mode with architecture validation and quality gate enforcement. Structured preparation workflow with read context, understand task, design solution, validate via MCP (≥85), then create plan. Use when planning complex projects requiring systematic preparation and validation.
 ---
 
 # Code Development Workflow

@@ -2,6 +2,7 @@
 id: technical-critique
 type: algorithm
 alwaysApply: false
+description: Technical critique and validation workflow. Elite Principal Tech Reviewer for code review, architectural analysis, and technical idea validation. Use for tasks requiring review, feedback, or quality assessment of code, concepts, or technical ideas.
 ---
 
 # Technical Critique and Validation System

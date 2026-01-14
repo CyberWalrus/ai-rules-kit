@@ -2,6 +2,7 @@
 id: ask-mode-workflow
 type: compact
 alwaysApply: false
+description: "Ask Mode (read-only): analysis, question formulation, project context, deep analysis, verification through web search/context7/browser, then answer. Use when in Ask Mode for analysis and recommendations without file modifications."
 ---
 
 # Ask Mode Workflow

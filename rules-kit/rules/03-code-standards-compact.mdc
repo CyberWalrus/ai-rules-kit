@@ -2,6 +2,7 @@
 id: code-standards-compact
 type: compact
 alwaysApply: true
+description: "Enforces critical code standards: one file per function, guard clauses, array methods, explicit comparisons, no classes, JSDoc in Russian, ESM-only. Use when writing or reviewing code for style and quality compliance."
 ---
 
 # Code Standards

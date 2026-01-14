@@ -2,6 +2,7 @@
 id: bootstrap-app-workflow
 type: combo
 alwaysApply: false
+description: Bootstraps new applications with proper architecture, dependencies, and project structure. Use when creating new projects or setting up initial application scaffolding.
 ---
 
 # Bootstrap Application Workflow

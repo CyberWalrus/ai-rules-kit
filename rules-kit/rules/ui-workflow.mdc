@@ -2,6 +2,7 @@
 id: ui-workflow
 type: algorithm
 alwaysApply: false
+description: UI planning with browser validation using Playwright MCP tools. Identifies visual problems through browser inspection, clarifies user requirements interactively, creates detailed plans with browser verification checkpoints. Use when fixing visual/UI problems or validating design implementation.
 ---
 
 # UI Development Workflow

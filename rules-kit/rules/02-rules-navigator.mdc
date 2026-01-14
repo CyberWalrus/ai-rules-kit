@@ -2,6 +2,7 @@
 id: rules-navigator
 type: compact
 alwaysApply: true
+description: Lightweight navigation helper for quick access to rules and docs. Use when you need quick reference to available rules without loading full catalog.
 ---
 
 # 📚 Rules & Docs Navigator

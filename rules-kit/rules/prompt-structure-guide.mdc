@@ -2,6 +2,7 @@
 id: prompt-structure-guide
 type: compact
 alwaysApply: false
+description: Reference guide for prompt structure requirements by type (compact/command/algorithm/reference/combo). Defines YAML frontmatter, XML tags, TIER structure, and language policies. Use when creating or editing AI prompts to ensure correct structure matches prompt type.
 ---
 
 # Prompt Structure Guide

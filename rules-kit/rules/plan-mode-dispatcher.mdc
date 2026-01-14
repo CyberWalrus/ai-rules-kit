@@ -2,6 +2,7 @@
 id: plan-mode-dispatcher
 type: compact
 alwaysApply: false
+description: Plan Mode task classification and workflow routing. Meta-classifier for activity type determination with immediate workflow file reading. Use in Plan Mode for routing to appropriate workflows based on task type.
 ---
 
 # Plan Mode Dispatcher

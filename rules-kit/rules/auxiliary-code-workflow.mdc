@@ -2,6 +2,7 @@
 id: auxiliary-code-workflow
 type: algorithm
 alwaysApply: false
+description: "Handles infrastructure tasks outside main project: VPN setup, deployment scripts, VDS configuration, automation tools. Use for side development tasks NOT part of main project architecture."
 ---
 
 # Auxiliary Development Workflow

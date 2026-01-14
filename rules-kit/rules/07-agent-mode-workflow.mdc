@@ -2,6 +2,7 @@
 id: 07-agent-mode-workflow
 type: compact
 alwaysApply: true
+description: "Agent Mode execution: plan → documentation → execution → validation (MCP ≥85) → verification (lint/tests). Use when in Agent Mode for systematic validation and quality gates."
 ---
 
 # Agent Mode Workflow
