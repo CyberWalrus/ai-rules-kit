@@ -1,3 +1,5 @@
+export { ALL_IDES, getInitializedIdes, getUninitializedIdes } from './get-initialized-ides';
+
 /** Тип поддерживаемой IDE */
 export type IdeType = 'claude-code' | 'cursor' | 'trae';
 
