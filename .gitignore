@@ -148,4 +148,6 @@ reports/*
 user-rules/meta-info.md
 
 .cursor/
+.trae/
+.claude/
 CLAUDE.md
