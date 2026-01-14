@@ -6,6 +6,13 @@ export {
     VERSION_FILE_NAME,
 } from './constants/main';
 export {
+    COMMANDS_DIR_PLACEHOLDER,
+    DOCS_DIR_PLACEHOLDER,
+    FILE_EXT_PLACEHOLDER,
+    IDE_DIR_PLACEHOLDER,
+    RULES_DIR_PLACEHOLDER,
+} from './constants/placeholders';
+export {
     type InitCommandParams,
     initCommandParamsSchema,
     type ReplaceAllCommandParams,

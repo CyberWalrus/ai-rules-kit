@@ -1,4 +1,4 @@
-import { cp, mkdir, readdir } from 'node:fs/promises';
+import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join, relative } from 'node:path';
 
 import type { FileOverride } from '../../model';
@@ -8,9 +8,10 @@ import type { IdeType } from '../ide-config';
 import { getIdeFileExtension, getProjectIdeDir } from '../ide-config';
 import { applyYamlOverrides } from './apply-yaml-overrides';
 import { pathExists } from './path-exists';
+import { replacePlaceholders } from './replace-placeholders';
 import { shouldIgnoreFile } from './should-ignore-file';
 
-/** Копирует файл из источника в цель с конвертацией расширения */
+/** Копирует файл из источника в цель с конвертацией расширения и заменой плейсхолдеров */
 async function copyFileWithConversion(sourcePath: string, targetPath: string, ideType: IdeType): Promise<void> {
     const sourceExists = await pathExists(sourcePath);
     if (!sourceExists) {
@@ -18,7 +19,6 @@ async function copyFileWithConversion(sourcePath: string, targetPath: string, id
     }
 
     const targetDir = dirname(targetPath);
-
     await mkdir(targetDir, { recursive: true });
 
     const targetExtension = getIdeFileExtension(ideType);
@@ -26,15 +26,15 @@ async function copyFileWithConversion(sourcePath: string, targetPath: string, id
 
     let finalTargetPath = targetPath;
 
-    if (sourceExtension !== targetExtension) {
-        if (sourceExtension === '.mdc' && targetExtension === '.md') {
-            finalTargetPath = targetPath.replace(/\\.md$/, '.mdc');
-        } else if (sourceExtension === '.md' && targetExtension === '.mdc') {
-            finalTargetPath = targetPath.replace(/\\.mdc$/, '.md');
-        }
+    if (sourceExtension === '.mdc' && targetExtension === '.md') {
+        finalTargetPath = targetPath.replace(/\.mdc$/, '.md');
+    } else if (sourceExtension === '.md' && targetExtension === '.mdc') {
+        finalTargetPath = targetPath.replace(/\.md$/, '.mdc');
     }
 
-    await cp(sourcePath, finalTargetPath, { force: true });
+    const content = await readFile(sourcePath, 'utf-8');
+    const processedContent = replacePlaceholders(content, ideType);
+    await writeFile(finalTargetPath, processedContent, 'utf-8');
 }
 
 /** Рекурсивно копирует файлы из директории с конвертацией */

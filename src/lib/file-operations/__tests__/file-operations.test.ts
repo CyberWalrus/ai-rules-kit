@@ -54,6 +54,7 @@ describe('file-operations', () => {
         it('должен копировать существующие директории правил', async () => {
             mockPathExists.mockResolvedValue(true);
             mockReaddir.mockResolvedValue([{ isDirectory: () => false, isFile: () => true, name: 'file1.mdc' }]);
+            mockReadFile.mockResolvedValue('test content');
             mockMkdir.mockResolvedValue(undefined);
             mockCp.mockResolvedValue(undefined);
 

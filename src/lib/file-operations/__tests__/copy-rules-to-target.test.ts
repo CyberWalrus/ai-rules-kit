@@ -9,21 +9,31 @@ function getTestPath(...segments: string[]): string {
     return join(tmpdir(), 'cursor-rules-test', ...segments);
 }
 
-const { mockCp, mockMkdir, mockPathExists, mockReaddir, mockApplyYamlOverrides, mockShouldIgnoreFile } = vi.hoisted(
-    () => ({
-        mockApplyYamlOverrides: vi.fn(),
-        mockCp: vi.fn(),
-        mockMkdir: vi.fn(),
-        mockPathExists: vi.fn(),
-        mockReaddir: vi.fn(),
-        mockShouldIgnoreFile: vi.fn(),
-    }),
-);
+const {
+    mockMkdir,
+    mockPathExists,
+    mockReaddir,
+    mockReadFile,
+    mockWriteFile,
+    mockApplyYamlOverrides,
+    mockShouldIgnoreFile,
+    mockReplacePlaceholders,
+} = vi.hoisted(() => ({
+    mockApplyYamlOverrides: vi.fn(),
+    mockMkdir: vi.fn(),
+    mockPathExists: vi.fn(),
+    mockReadFile: vi.fn(),
+    mockReaddir: vi.fn(),
+    mockReplacePlaceholders: vi.fn(),
+    mockShouldIgnoreFile: vi.fn(),
+    mockWriteFile: vi.fn(),
+}));
 
 vi.mock('node:fs/promises', () => ({
-    cp: mockCp,
     mkdir: mockMkdir,
+    readFile: mockReadFile,
     readdir: mockReaddir,
+    writeFile: mockWriteFile,
 }));
 
 vi.mock('../path-exists', () => ({
@@ -38,17 +48,23 @@ vi.mock('../should-ignore-file', () => ({
     shouldIgnoreFile: mockShouldIgnoreFile,
 }));
 
+vi.mock('../replace-placeholders', () => ({
+    replacePlaceholders: mockReplacePlaceholders,
+}));
+
 describe('copyRulesToTarget', () => {
     beforeEach(() => {
         vi.clearAllMocks();
         mockShouldIgnoreFile.mockReturnValue(false);
         mockPathExists.mockResolvedValue(true);
+        mockReadFile.mockResolvedValue('content');
+        mockWriteFile.mockResolvedValue(undefined);
+        mockReplacePlaceholders.mockReturnValue('content');
     });
 
     it('должен копировать файлы из существующих директорий', async () => {
         mockReaddir.mockResolvedValue([{ isDirectory: () => false, isFile: () => true, name: 'file1.mdc' }]);
         mockMkdir.mockResolvedValue(undefined);
-        mockCp.mockResolvedValue(undefined);
 
         const packageDir = getTestPath('package');
         const targetDir = getTestPath('target');
@@ -77,7 +93,6 @@ describe('copyRulesToTarget', () => {
             { isDirectory: () => false, isFile: () => true, name: 'ignored.mdc' },
         ]);
         mockMkdir.mockResolvedValue(undefined);
-        mockCp.mockResolvedValue(undefined);
         mockShouldIgnoreFile.mockImplementation((path: string) => path.includes('ignored.mdc'));
 
         const packageDir = getTestPath('package');
@@ -86,7 +101,7 @@ describe('copyRulesToTarget', () => {
         await copyRulesToTarget(packageDir, targetDir, 'cursor', ['ignored.mdc']);
 
         const expectedCalls = RULES_DIRS.length;
-        expect(mockCp).toHaveBeenCalledTimes(expectedCalls);
+        expect(mockWriteFile).toHaveBeenCalledTimes(expectedCalls);
     });
 
     it('должен применять fileOverrides после копирования', async () => {
@@ -97,7 +112,6 @@ describe('copyRulesToTarget', () => {
             .mockResolvedValueOnce(true);
         mockReaddir.mockResolvedValue([{ isDirectory: () => false, isFile: () => true, name: 'file1.mdc' }]);
         mockMkdir.mockResolvedValue(undefined);
-        mockCp.mockResolvedValue(undefined);
         mockApplyYamlOverrides.mockResolvedValue(undefined);
 
         const fileOverrides: FileOverride[] = [
@@ -129,7 +143,6 @@ describe('copyRulesToTarget', () => {
         });
         mockReaddir.mockResolvedValue([{ isDirectory: () => false, isFile: () => true, name: 'file1.mdc' }]);
         mockMkdir.mockResolvedValue(undefined);
-        mockCp.mockResolvedValue(undefined);
 
         const fileOverrides: FileOverride[] = [
             {
@@ -158,7 +171,6 @@ describe('copyRulesToTarget', () => {
             .mockResolvedValueOnce([{ isDirectory: () => false, isFile: () => true, name: 'file3.mdc' }])
             .mockResolvedValueOnce([{ isDirectory: () => false, isFile: () => true, name: 'file4.mdc' }]);
         mockMkdir.mockResolvedValue(undefined);
-        mockCp.mockResolvedValue(undefined);
 
         const packageDir = getTestPath('package');
         const targetDir = getTestPath('target');
@@ -203,7 +215,6 @@ describe('copyRulesToTarget', () => {
             .mockResolvedValueOnce([{ isDirectory: () => false, isFile: () => true, name: 'file3.mdc' }]);
         mockShouldIgnoreFile.mockImplementation((path: string) => path === 'rules/subdir');
         mockMkdir.mockResolvedValue(undefined);
-        mockCp.mockResolvedValue(undefined);
 
         const packageDir = getTestPath('package');
         const targetDir = getTestPath('target');
@@ -212,7 +223,7 @@ describe('copyRulesToTarget', () => {
 
         const rulesDirCalls = mockReaddir.mock.calls.filter((call) => call[0].replace(/\\/g, '/').includes('/rules'));
         expect(rulesDirCalls).toHaveLength(1);
-        expect(mockCp).toHaveBeenCalledTimes(RULES_DIRS.length);
+        expect(mockWriteFile).toHaveBeenCalledTimes(RULES_DIRS.length);
     });
 
     it('должен копировать файлы исключённые отрицательными паттернами', async () => {
@@ -237,18 +248,17 @@ describe('copyRulesToTarget', () => {
             return false;
         });
         mockMkdir.mockResolvedValue(undefined);
-        mockCp.mockResolvedValue(undefined);
 
         const packageDir = getTestPath('package');
         const targetDir = getTestPath('target');
 
         await copyRulesToTarget(packageDir, targetDir, 'cursor', ['rules/**', '!rules/prompt-workflow.mdc']);
 
-        const promptWorkflowCalls = mockCp.mock.calls.filter((call) => call[0].includes('prompt-workflow.mdc'));
+        const promptWorkflowCalls = mockWriteFile.mock.calls.filter((call) => call[0].includes('prompt-workflow.mdc'));
 
         expect(promptWorkflowCalls.length).toBeGreaterThan(0);
 
-        const otherFileCalls = mockCp.mock.calls.filter((call) => call[0].includes('other-file.mdc'));
+        const otherFileCalls = mockWriteFile.mock.calls.filter((call) => call[0].includes('other-file.mdc'));
 
         expect(otherFileCalls).toHaveLength(0);
     });
