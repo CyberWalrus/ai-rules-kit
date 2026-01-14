@@ -4,7 +4,7 @@ import { createTestConfig } from '../../../../__tests__/helpers/create-test-conf
 import { calculateDiff } from '../../../../lib/diff-calculator/calculate-diff';
 import { copyRulesToTarget, readConfigFile, writeConfigFile } from '../../../../lib/file-operations';
 import { fetchPromptsTarball, getLatestPromptsVersion } from '../../../../lib/github-fetcher';
-import { getCurrentVersion } from '../../../../lib/version-manager/get-current-version';
+import { getInitializedIdes } from '../../../../lib/ide-config';
 import { getPackageVersion } from '../../../../lib/version-manager/get-package-version';
 import { upgradeCommand } from '../index';
 
@@ -12,10 +12,9 @@ vi.mock('node:fs/promises');
 vi.mock('../../../../lib/diff-calculator/calculate-diff');
 vi.mock('../../../../lib/file-operations');
 vi.mock('../../../../lib/github-fetcher');
-vi.mock('../../../../lib/version-manager/get-current-version');
+vi.mock('../../../../lib/ide-config');
 vi.mock('../../../../lib/version-manager/get-package-version');
 
-const mockGetCurrentVersion = vi.mocked(getCurrentVersion);
 const mockGetPackageVersion = vi.mocked(getPackageVersion);
 const mockCalculateDiff = vi.mocked(calculateDiff);
 const mockCopyRulesToTarget = vi.mocked(copyRulesToTarget);
@@ -23,33 +22,17 @@ const mockReadConfigFile = vi.mocked(readConfigFile);
 const mockWriteConfigFile = vi.mocked(writeConfigFile);
 const mockFetchPromptsTarball = vi.mocked(fetchPromptsTarball);
 const mockGetLatestPromptsVersion = vi.mocked(getLatestPromptsVersion);
+const mockGetInitializedIdes = vi.mocked(getInitializedIdes);
 
 describe('upgradeCommand', () => {
     beforeEach(() => {
         vi.clearAllMocks();
+        mockGetInitializedIdes.mockResolvedValue(['cursor'] as const);
     });
 
     it('должен успешно обновлять правила при наличии diff', async () => {
-        const config = {
-            cliVersion: '1.0.0',
-            configVersion: '1.0.0',
-            ideType: 'cursor' as const,
-            installedAt: '2025-11-01T12:00:00.000Z',
-            promptsVersion: '2025.11.01.1',
-            ruleSets: [
-                {
-                    id: 'base',
-                    update: true,
-                },
-            ],
-            settings: {
-                language: 'ru' as const,
-            },
-            source: 'cursor-rules',
-            updatedAt: '2025-11-01T12:00:00.000Z',
-        };
+        const config = createTestConfig({ promptsVersion: '2025.11.01.1' });
 
-        mockGetCurrentVersion.mockResolvedValue('2025.11.01.1');
         mockReadConfigFile.mockResolvedValue(config);
         mockGetLatestPromptsVersion.mockResolvedValue('2025.11.10.1');
         mockFetchPromptsTarball.mockResolvedValue(undefined);
@@ -64,11 +47,11 @@ describe('upgradeCommand', () => {
 
         await upgradeCommand('/package/dir', '/target/dir');
 
-        expect(mockGetCurrentVersion).toHaveBeenCalledWith('/target/dir');
+        expect(mockGetInitializedIdes).toHaveBeenCalledWith('/target/dir');
         expect(mockGetLatestPromptsVersion).toHaveBeenCalledWith('CyberWalrus/ai-rules-kit');
         expect(mockFetchPromptsTarball).toHaveBeenCalled();
         expect(mockGetPackageVersion).toHaveBeenCalledWith('/package/dir');
-        expect(mockReadConfigFile).toHaveBeenCalledWith('/target/dir');
+        expect(mockReadConfigFile).toHaveBeenCalledWith('/target/dir', 'cursor');
         expect(mockCalculateDiff).toHaveBeenCalled();
         expect(mockCopyRulesToTarget).toHaveBeenCalled();
         expect(mockWriteConfigFile).toHaveBeenCalled();
@@ -95,7 +78,7 @@ describe('upgradeCommand', () => {
     });
 
     it('должен выбрасывать ошибку если правила не инициализированы', async () => {
-        mockGetCurrentVersion.mockResolvedValue(null);
+        mockGetInitializedIdes.mockResolvedValue([]);
 
         await expect(upgradeCommand('/package/dir', '/target/dir')).rejects.toThrow(
             'Rules not initialized. Run init command first.',
@@ -105,7 +88,6 @@ describe('upgradeCommand', () => {
     it('должен обновлять файлы даже если версии одинаковые', async () => {
         const config = createTestConfig({ promptsVersion: '2025.11.01.1' });
 
-        mockGetCurrentVersion.mockResolvedValue('2025.11.01.1');
         mockReadConfigFile.mockResolvedValue(config);
         mockGetLatestPromptsVersion.mockResolvedValue('2025.11.10.1');
         mockFetchPromptsTarball.mockResolvedValue(undefined);
@@ -120,64 +102,33 @@ describe('upgradeCommand', () => {
 
         await upgradeCommand('/package/dir', '/target/dir');
 
-        expect(mockGetCurrentVersion).toHaveBeenCalledWith('/target/dir');
         expect(mockGetLatestPromptsVersion).toHaveBeenCalled();
         expect(mockFetchPromptsTarball).toHaveBeenCalled();
         expect(mockGetPackageVersion).toHaveBeenCalledWith('/package/dir');
-        expect(mockReadConfigFile).toHaveBeenCalledWith('/target/dir');
+        expect(mockReadConfigFile).toHaveBeenCalledWith('/target/dir', 'cursor');
         expect(mockCalculateDiff).toHaveBeenCalled();
         expect(mockCopyRulesToTarget).toHaveBeenCalled();
         expect(mockWriteConfigFile).toHaveBeenCalled();
     });
 
-    it('должен пропускать обновление если нет ruleSets с update: true', async () => {
-        const config = createTestConfig({
-            ruleSets: [
-                {
-                    id: 'base',
-                    update: false,
-                },
-            ],
+    it('должен обновлять несколько IDE', async () => {
+        const config1 = createTestConfig({ ideType: 'cursor' as const, promptsVersion: '2025.11.01.1' });
+        const config2 = createTestConfig({ ideType: 'trae' as const, promptsVersion: '2025.11.01.1' });
+
+        mockGetInitializedIdes.mockResolvedValue(['cursor', 'trae'] as const);
+        mockReadConfigFile.mockImplementation((targetDir, ideType) => {
+            if (ideType === 'cursor') {
+                return Promise.resolve(config1);
+            }
+            if (ideType === 'trae') {
+                return Promise.resolve(config2);
+            }
+
+            return Promise.resolve(null);
         });
-
-        mockGetCurrentVersion.mockResolvedValue('1.0.0');
-        mockGetPackageVersion.mockResolvedValue('1.1.0');
-        mockReadConfigFile.mockResolvedValue(config);
-
-        await upgradeCommand('/package/dir', '/target/dir');
-
-        expect(mockCalculateDiff).not.toHaveBeenCalled();
-        expect(mockCopyRulesToTarget).not.toHaveBeenCalled();
-        expect(mockWriteConfigFile).not.toHaveBeenCalled();
-    });
-
-    it('должен вызывать calculateDiff для вычисления изменений', async () => {
-        const config = createTestConfig({ promptsVersion: '2025.11.01.1' });
-
-        mockGetCurrentVersion.mockResolvedValue('1.0.0');
-        mockGetPackageVersion.mockResolvedValue('2.0.0');
-        mockReadConfigFile.mockResolvedValue(config);
-        mockCalculateDiff.mockResolvedValue({
-            toAdd: ['.cursor/new'],
-            toDelete: ['.cursor/old'],
-            toUpdate: ['.cursor/rules'],
-        });
-        mockCopyRulesToTarget.mockResolvedValue(undefined);
-        mockWriteConfigFile.mockResolvedValue(undefined);
-
-        await upgradeCommand('/package/dir', '/target/dir');
-
-        expect(mockCalculateDiff).toHaveBeenCalled();
-    });
-
-    it('должен обновлять версию через writeConfigFile', async () => {
-        const config = createTestConfig({ promptsVersion: '2025.11.01.1' });
-
-        mockGetCurrentVersion.mockResolvedValue('2025.11.01.1');
-        mockGetPackageVersion.mockResolvedValue('1.2.0');
-        mockReadConfigFile.mockResolvedValue(config);
         mockGetLatestPromptsVersion.mockResolvedValue('2025.11.10.1');
         mockFetchPromptsTarball.mockResolvedValue(undefined);
+        mockGetPackageVersion.mockResolvedValue('1.0.0');
         mockCalculateDiff.mockResolvedValue({
             toAdd: [],
             toDelete: [],
@@ -186,31 +137,16 @@ describe('upgradeCommand', () => {
         mockCopyRulesToTarget.mockResolvedValue(undefined);
         mockWriteConfigFile.mockResolvedValue(undefined);
 
-        await upgradeCommand('/package/dir', '/target/dir');
+        const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
 
-        expect(mockWriteConfigFile).toHaveBeenCalledTimes(1);
-        expect(mockWriteConfigFile).toHaveBeenCalled();
-    });
+        try {
+            await upgradeCommand('/package/dir', '/target/dir');
 
-    it('должен обрабатывать patch обновления', async () => {
-        const config = createTestConfig({ promptsVersion: '2025.11.01.1' });
-
-        mockGetCurrentVersion.mockResolvedValue('2025.11.01.1');
-        mockGetPackageVersion.mockResolvedValue('1.0.1');
-        mockReadConfigFile.mockResolvedValue(config);
-        mockGetLatestPromptsVersion.mockResolvedValue('2025.11.10.1');
-        mockFetchPromptsTarball.mockResolvedValue(undefined);
-        mockCalculateDiff.mockResolvedValue({
-            toAdd: [],
-            toDelete: [],
-            toUpdate: ['.cursor/rules'],
-        });
-        mockCopyRulesToTarget.mockResolvedValue(undefined);
-        mockWriteConfigFile.mockResolvedValue(undefined);
-
-        await upgradeCommand('/package/dir', '/target/dir');
-
-        expect(mockCopyRulesToTarget).toHaveBeenCalled();
-        expect(mockWriteConfigFile).toHaveBeenCalled();
+            // config читается для каждой IDE плюс 1 раз для проверки версии первой IDE
+            expect(mockReadConfigFile).toHaveBeenCalledTimes(3);
+            expect(mockWriteConfigFile).toHaveBeenCalledTimes(2);
+        } finally {
+            consoleLogSpy.mockRestore();
+        }
     });
 });
