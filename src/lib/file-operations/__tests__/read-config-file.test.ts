@@ -100,7 +100,7 @@ describe('readConfigFile', () => {
         const config: RulesConfig = createTestConfig();
         const oldConfigContent = {
             $schema:
-                'https://raw.githubusercontent.com/CyberWalrus/cursor-rules-cli/main/.cursor/ai-rules-kit-config-1.0.0.schema.json',
+                'https://raw.githubusercontent.com/CyberWalrus/ai-rules-kit/main/.cursor/ai-rules-kit-config-1.0.0.schema.json',
             ...config,
         };
 

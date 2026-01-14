@@ -65,7 +65,7 @@ describe('upgradeCommand', () => {
         await upgradeCommand('/package/dir', '/target/dir');
 
         expect(mockGetCurrentVersion).toHaveBeenCalledWith('/target/dir');
-        expect(mockGetLatestPromptsVersion).toHaveBeenCalledWith('CyberWalrus/cursor-rules');
+        expect(mockGetLatestPromptsVersion).toHaveBeenCalledWith('CyberWalrus/ai-rules-kit');
         expect(mockFetchPromptsTarball).toHaveBeenCalled();
         expect(mockGetPackageVersion).toHaveBeenCalledWith('/package/dir');
         expect(mockReadConfigFile).toHaveBeenCalledWith('/target/dir');

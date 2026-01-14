@@ -61,7 +61,7 @@ describe('initCommand', () => {
         expect(mockGetCurrentVersion).toHaveBeenCalledWith('/target/dir');
         expect(mockGetVersionsWithRetry).toHaveBeenCalledTimes(1);
         expect(mockFetchPromptsTarball).toHaveBeenCalledWith(
-            'CyberWalrus/cursor-rules',
+            'CyberWalrus/ai-rules-kit',
             '2025.11.10.1',
             expect.any(String),
         );

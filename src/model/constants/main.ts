@@ -5,7 +5,7 @@ export const VERSION_FILE_NAME = 'ai-rules-kit-config.json';
 export const RULES_DIRS = ['rules', 'docs', 'commands'] as const;
 
 /** GitHub репозиторий с правилами */
-export const GITHUB_REPO = 'CyberWalrus/cursor-rules' as const;
+export const GITHUB_REPO = 'CyberWalrus/ai-rules-kit' as const;
 
 /** URL npm registry */
 export const NPM_REGISTRY_URL = 'https://registry.npmjs.org' as const;

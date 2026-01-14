@@ -21,17 +21,21 @@ jobs:
       - name: Generate CalVer version
         id: version
         run: |
-          DATE=$(date -u +"%Y.%-m.%-d")
+          DATE=$(date -u +"%Y.%m.%d")
           # Получаем теги напрямую из удаленного репозитория и фильтруем по паттерну
           REMOTE_TAGS=$(git ls-remote --tags origin | grep "refs/tags/system-rules/v${DATE}\." | sed "s/.*refs\/tags\/system-rules\/v${DATE}\.//" | sed "s/\^{}//" | sort -n)
 
           if [ -z "$REMOTE_TAGS" ]; then
-              # Если тегов нет, начинаем с 1
-              INCREMENT=1
+              # Если тегов нет, начинаем с 01
+              INCREMENT="01"
           else
-              # Находим максимальный инкремент и увеличиваем на 1
+              # Находим максимальный инкремент и увеличиваем на 1 с лидирующим нулем
               MAX_INCREMENT=$(echo "$REMOTE_TAGS" | tail -n 1)
               INCREMENT=$((MAX_INCREMENT + 1))
+              # Добавляем лидирующий ноль если число < 10
+              if [ $INCREMENT -lt 10 ]; then
+                  INCREMENT="0${INCREMENT}"
+              fi
           fi
 
           VERSION="${DATE}.${INCREMENT}"
