@@ -237,7 +237,7 @@ description: Test skill
             const pathStr = String(path);
             // Возвращаем true только для исходной директории commands
             // Для целевого файла команды возвращаем false (файл не существует)
-            if (pathStr.includes('/target') && pathStr.includes('.md')) {
+            if (pathStr.includes('target') && pathStr.includes('commands') && pathStr.includes('.md')) {
                 return Promise.resolve(false);
             }
 
@@ -285,7 +285,7 @@ description: Test skill
         vi.mocked(pathExists).mockImplementation((path) => {
             const pathStr = String(path);
             // Для settings.json в target возвращаем false (файл не существует)
-            if (pathStr.includes('/target') && pathStr.includes('settings.json')) {
+            if (pathStr.includes('target') && pathStr.includes('settings.json')) {
                 return Promise.resolve(false);
             }
 
@@ -368,7 +368,7 @@ description: Test skill
             if (pathStr.includes('mcp.json')) {
                 return Promise.resolve(mcpContent);
             }
-            if (pathStr.includes('/target') && pathStr.includes('settings.json')) {
+            if (pathStr.includes('target') && pathStr.includes('settings.json')) {
                 return Promise.resolve(existingSettings);
             }
 
