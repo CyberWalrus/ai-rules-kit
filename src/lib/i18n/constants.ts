@@ -78,6 +78,7 @@ export const RU_TRANSLATIONS = {
     'command.config.select-field': 'Выберите поле для редактирования:',
     'command.config.select-language': 'Выберите язык интерфейса:',
     'command.config.success': '✓ Язык интерфейса установлен: {language}',
+    'command.init.all-ides-initialized': 'Все IDE уже инициализированы в этом проекте:',
     'command.init.already-initialized': 'Правила уже инициализированы с версией {version}',
     'command.init.fetch-failed':
         'Не удалось получить последнюю версию промптов из GitHub. Нет подключения к интернету или GitHub API недоступен.',
@@ -226,6 +227,7 @@ export const EN_TRANSLATIONS = {
     'command.config.select-field': 'Select field to edit:',
     'command.config.select-language': 'Select interface language:',
     'command.config.success': '✓ Interface language set to: {language}',
+    'command.init.all-ides-initialized': 'All IDEs are already initialized in this project:',
     'command.init.already-initialized': 'Rules already initialized with version {version}',
     'command.init.fetch-failed':
         'Failed to fetch latest prompts version from GitHub. No internet connection or GitHub API unavailable.',
