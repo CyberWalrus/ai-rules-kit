@@ -20,7 +20,8 @@ vi.mock('../../lib/github-fetcher', () => ({
 }));
 
 vi.mock('@clack/prompts', () => ({
-    select: vi.fn().mockResolvedValue('cursor'),
+    isCancel: vi.fn((value) => value === 'cancel'),
+    select: vi.fn(),
 }));
 
 describe('Full Cycle E2E', () => {
@@ -28,15 +29,21 @@ describe('Full Cycle E2E', () => {
     const packageDir = process.cwd();
 
     beforeAll(async () => {
+        // Мокаем select для выбора IDE в тестах
+        const { select } = await import('@clack/prompts');
+        vi.mocked(select).mockResolvedValue('cursor');
         tempDirPath = await tempDir.create();
-    });
-
-    beforeEach(() => {
-        vi.clearAllMocks();
     });
 
     afterAll(async () => {
         await tempDir.cleanup(tempDirPath);
+    });
+
+    beforeEach(async () => {
+        vi.clearAllMocks();
+        // Мокаем select для выбора IDE в тестах
+        const { select } = await import('@clack/prompts');
+        vi.mocked(select).mockResolvedValue('cursor');
     });
 
     it('должен выполнять полный цикл: init → upgrade → replace-all', { timeout: 30_000 }, async () => {

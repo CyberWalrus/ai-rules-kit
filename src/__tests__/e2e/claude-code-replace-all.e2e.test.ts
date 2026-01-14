@@ -38,10 +38,6 @@ vi.mock('../../lib/github-fetcher', () => ({
     getLatestSystemRulesVersion: vi.fn().mockResolvedValue(null),
 }));
 
-vi.mock('@clack/prompts', () => ({
-    select: vi.fn().mockResolvedValue('claude-code'),
-}));
-
 describe('Claude Code Replace-All E2E', () => {
     let tempDirPath: string;
     const packageDir = process.cwd();

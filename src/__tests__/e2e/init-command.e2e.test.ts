@@ -18,7 +18,8 @@ vi.mock('../../lib/github-fetcher', () => ({
 }));
 
 vi.mock('@clack/prompts', () => ({
-    select: vi.fn().mockResolvedValue('cursor'),
+    isCancel: vi.fn((value) => value === 'cancel'),
+    select: vi.fn(),
 }));
 
 describe('Init Command E2E', () => {
@@ -27,6 +28,9 @@ describe('Init Command E2E', () => {
 
     beforeEach(async () => {
         vi.clearAllMocks();
+        // Мокаем select для выбора IDE в тестах
+        const { select } = await import('@clack/prompts');
+        vi.mocked(select).mockResolvedValue('cursor');
         tempDirPath = await tempDir.create();
     });
 

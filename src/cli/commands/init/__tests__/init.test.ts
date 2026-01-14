@@ -17,7 +17,8 @@ import { initCommand } from '../index';
 
 vi.mock('node:fs/promises');
 vi.mock('@clack/prompts', () => ({
-    select: vi.fn().mockResolvedValue('cursor'),
+    isCancel: vi.fn((value) => value === 'cancel'),
+    select: vi.fn(),
 }));
 vi.mock('../../../../lib/file-operations/copy-rules-to-target');
 vi.mock('../../../../lib/file-operations/copy-system-rules-to-target');
@@ -42,8 +43,15 @@ const mockReadUserConfig = vi.mocked(readUserConfig);
 const mockGetUninitializedIdes = vi.mocked(getUninitializedIdes);
 
 describe('initCommand', () => {
-    beforeEach(() => {
+    let mockSelect: {
+        mockResolvedValue: (value: 'claude-code' | 'cursor' | 'done' | 'trae') => void;
+    };
+
+    beforeEach(async () => {
         vi.clearAllMocks();
+        const { select } = await import('@clack/prompts');
+        mockSelect = vi.mocked(select) as typeof mockSelect;
+        mockSelect.mockResolvedValue('cursor');
         mockReadUserConfig.mockResolvedValue(null);
         mockGetVersionsWithRetry.mockResolvedValue({ promptsVersion: '2025.11.10.1', systemRulesVersion: null });
         mockCopySystemRulesToTarget.mockResolvedValue(undefined);
@@ -117,9 +125,8 @@ describe('initCommand', () => {
     it('должен показывать сообщение и завершать работу если все IDE инициализированы', async () => {
         mockGetUninitializedIdes.mockResolvedValue([]);
 
-        // Мокаем select чтобы вернуть 'done'
-        const { select } = await import('@clack/prompts');
-        vi.mocked(select).mockResolvedValue('done' as never);
+        // Когда нет неинициализированных IDE, в меню только одна опция "Завершить работу"
+        mockSelect.mockResolvedValue('done');
 
         const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
 
@@ -132,28 +139,20 @@ describe('initCommand', () => {
             expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining('IDE'));
         } finally {
             consoleLogSpy.mockRestore();
-            // Восстанавливаем дефолтный мок
-            vi.mocked(select).mockResolvedValue('cursor' as never);
         }
     });
 
     it('должен завершать работу если выбрана опция "Завершить работу"', async () => {
         mockGetUninitializedIdes.mockResolvedValue(['cursor', 'trae'] as const);
 
-        // Мокаем select чтобы вернуть 'done'
-        const { select } = await import('@clack/prompts');
-        vi.mocked(select).mockResolvedValue('done' as never);
+        // Выбираем опцию "Завершить работу"
+        mockSelect.mockResolvedValue('done');
 
-        try {
-            await initCommand('/package/dir', '/target/dir');
+        await initCommand('/package/dir', '/target/dir');
 
-            expect(mockGetVersionsWithRetry).not.toHaveBeenCalled();
-            expect(mockFetchPromptsTarball).not.toHaveBeenCalled();
-            expect(mockWriteConfigFile).not.toHaveBeenCalled();
-        } finally {
-            // Восстанавливаем дефолтный мок
-            vi.mocked(select).mockResolvedValue('cursor' as never);
-        }
+        expect(mockGetVersionsWithRetry).not.toHaveBeenCalled();
+        expect(mockFetchPromptsTarball).not.toHaveBeenCalled();
+        expect(mockWriteConfigFile).not.toHaveBeenCalled();
     });
 
     it('должен скачивать и копировать правила через GitHub', async () => {

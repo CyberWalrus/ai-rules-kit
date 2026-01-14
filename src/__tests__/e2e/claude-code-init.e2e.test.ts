@@ -36,12 +36,13 @@ vi.mock('../../lib/github-fetcher', () => ({
     getLatestSystemRulesVersion: vi.fn().mockResolvedValue(null),
 }));
 
-vi.mock('@clack/prompts', () => ({
-    select: vi.fn().mockResolvedValue('claude-code'),
-}));
-
 vi.mock('../../lib/claude-cli/run-claude-init', () => ({
     runClaudeInit: vi.fn().mockResolvedValue(undefined),
+}));
+
+vi.mock('@clack/prompts', () => ({
+    isCancel: vi.fn((value) => value === 'cancel'),
+    select: vi.fn(),
 }));
 
 describe('Claude Code Init E2E', () => {
@@ -50,6 +51,9 @@ describe('Claude Code Init E2E', () => {
 
     beforeEach(async () => {
         vi.clearAllMocks();
+        // Мокаем select для выбора IDE в тестах
+        const { select } = await import('@clack/prompts');
+        vi.mocked(select).mockResolvedValue('claude-code');
         tempDirPath = await tempDir.create();
     });
 

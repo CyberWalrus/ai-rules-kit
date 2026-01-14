@@ -1,4 +1,4 @@
-import { select } from '@clack/prompts';
+import { isCancel, select } from '@clack/prompts';
 import { rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -50,40 +50,46 @@ export async function initCommand(packageDir: string, targetDir: string): Promis
     const currentUserConfig = await readUserConfig();
     const uninitializedIdes = await getUninitializedIdes(targetDir);
 
-    // Определяем сообщение для select
-    const initializedCount = ALL_IDES.length - uninitializedIdes.length;
-    const selectMessage =
-        initializedCount > 0
-            ? `Выберите IDE для инициализации (${initializedCount} из ${ALL_IDES.length} уже инициализированы)`
-            : 'Выберите IDE';
-
-    // Формируем опции: неинициализированные IDE + опция "Завершить работу"
-    const selectOptions: Array<{ label: string; value: IdeType | 'done' }> = [
-        ...uninitializedIdes.map((ide) => ({
-            label: IDE_LABELS[ide],
-            value: ide,
-        })),
-        { label: '🚪 Завершить работу', value: 'done' },
-    ];
-
-    // Не устанавливаем initialValue чтобы пользователь явно сделал выбор
-    const selectedValue = await select<IdeType | 'done'>({
-        message: selectMessage,
-        options: selectOptions,
-    });
-
-    if (typeof selectedValue === 'symbol' || selectedValue === 'done') {
-        if (uninitializedIdes.length === 0) {
-            console.log(t('command.init.all-ides-initialized'));
-            for (const ide of ALL_IDES) {
-                console.log(`  - ${IDE_LABELS[ide]}`);
-            }
+    if (uninitializedIdes.length === 0) {
+        console.log(t('command.init.all-ides-initialized'));
+        for (const ide of ALL_IDES) {
+            console.log(`  - ${IDE_LABELS[ide]}`);
         }
 
         return;
     }
 
-    const ideType = selectedValue;
+    // Определяем сообщение для select
+    const initializedCount = ALL_IDES.length - uninitializedIdes.length;
+    const selectMessage =
+        initializedCount > 0
+            ? `Выберите IDE для инициализации (${initializedCount} из ${ALL_IDES.length} уже инициализированы)`
+            : 'Выберите IDE для инициализации';
+
+    // Формируем опции: неинициализированные IDE + опция "Завершить работу"
+    const selectOptions: Array<{ label: string; value: IdeType | 'done'; hint?: string }> = [
+        ...uninitializedIdes.map((ide) => ({
+            label: IDE_LABELS[ide],
+            value: ide,
+        })),
+        { hint: 'выйти из команды', label: 'Завершить работу', value: 'done' },
+    ];
+
+    // Используем интерактивное меню из @clack/prompts
+    const selected = await select<IdeType | 'done'>({
+        message: selectMessage,
+        options: selectOptions,
+    });
+
+    if (isCancel(selected)) {
+        return;
+    }
+
+    if (selected === 'done') {
+        return;
+    }
+
+    const ideType = selected;
 
     // Проверяем, что выбранная IDE еще не инициализирована
     const existingConfig = await readConfigFile(targetDir, ideType);
