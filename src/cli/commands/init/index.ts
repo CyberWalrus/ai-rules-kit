@@ -50,15 +50,6 @@ export async function initCommand(packageDir: string, targetDir: string): Promis
     const currentUserConfig = await readUserConfig();
     const uninitializedIdes = await getUninitializedIdes(targetDir);
 
-    if (uninitializedIdes.length === 0) {
-        console.log(t('command.init.all-ides-initialized'));
-        for (const ide of ALL_IDES) {
-            console.log(`  - ${IDE_LABELS[ide]}`);
-        }
-
-        return;
-    }
-
     // Определяем сообщение для select
     const initializedCount = ALL_IDES.length - uninitializedIdes.length;
     const selectMessage =
@@ -66,27 +57,33 @@ export async function initCommand(packageDir: string, targetDir: string): Promis
             ? `Выберите IDE для инициализации (${initializedCount} из ${ALL_IDES.length} уже инициализированы)`
             : 'Выберите IDE';
 
-    // Формируем опции только из не инициализированных IDE
-    const selectOptions = uninitializedIdes.map((ide) => ({
-        label: IDE_LABELS[ide],
-        value: ide,
-    }));
+    // Формируем опции: неинициализированные IDE + опция "Завершить работу"
+    const selectOptions: Array<{ label: string; value: IdeType | 'done' }> = [
+        ...uninitializedIdes.map((ide) => ({
+            label: IDE_LABELS[ide],
+            value: ide,
+        })),
+        { label: '🚪 Завершить работу', value: 'done' },
+    ];
 
-    // Не устанавливаем initialValue если осталась только 1 опция,
-    // чтобы пользователь подтвердил выбор
-    const initialValue = uninitializedIdes.length > 1 ? (currentUserConfig?.ideType ?? 'cursor') : undefined;
-
-    const selectedIdeType = await select<IdeType>({
-        initialValue: uninitializedIdes.includes(initialValue as IdeType) ? (initialValue as IdeType) : undefined,
+    // Не устанавливаем initialValue чтобы пользователь явно сделал выбор
+    const selectedValue = await select<IdeType | 'done'>({
         message: selectMessage,
         options: selectOptions,
     });
 
-    if (typeof selectedIdeType === 'symbol') {
+    if (typeof selectedValue === 'symbol' || selectedValue === 'done') {
+        if (uninitializedIdes.length === 0) {
+            console.log(t('command.init.all-ides-initialized'));
+            for (const ide of ALL_IDES) {
+                console.log(`  - ${IDE_LABELS[ide]}`);
+            }
+        }
+
         return;
     }
 
-    const ideType = selectedIdeType;
+    const ideType = selectedValue;
 
     // Проверяем, что выбранная IDE еще не инициализирована
     const existingConfig = await readConfigFile(targetDir, ideType);
@@ -110,14 +107,29 @@ export async function initCommand(packageDir: string, targetDir: string): Promis
             updateExistingClaudeMd = true;
         } else {
             // CLAUDE.md не существует - предлагаем инициализацию через Claude CLI
+            console.log('');
+            console.log('⚠️  ВАЖНО: Если вы выберете инициализацию через Claude Code CLI:');
+            console.log(
+                '   1. После завершения инициализации Claude ЗАКРОЙТЕ процесс (Ctrl+C или остановите в терминале)',
+            );
+            console.log('   2. Затем нажмите Enter здесь, чтобы продолжить установку правил');
+            console.log('');
+
             const shouldRunClaudeInit = await askConfirmation(
                 'Инициализировать проект через Claude Code CLI (claude /init)?',
             );
             if (shouldRunClaudeInit) {
+                console.log('');
                 console.log('Запуск Claude Code CLI для инициализации...');
+                console.log('После завершения работы Claude остановите процесс и вернитесь сюда.');
+                console.log('');
                 try {
                     await runClaudeInit(targetDir);
-                    console.log('Инициализация через Claude Code CLI завершена');
+                    console.log('');
+                    console.log('✓ Инициализация через Claude Code CLI завершена');
+                    console.log('  Если процесс Claude всё ещё работает — остановите его (Ctrl+C)');
+                    console.log('  Нажмите Enter, чтобы продолжить установку правил...');
+                    console.log('');
                 } catch (error) {
                     throw new Error(`Не удалось выполнить claude /init: ${String(error)}`);
                 }

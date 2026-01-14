@@ -117,6 +117,10 @@ describe('initCommand', () => {
     it('должен показывать сообщение и завершать работу если все IDE инициализированы', async () => {
         mockGetUninitializedIdes.mockResolvedValue([]);
 
+        // Мокаем select чтобы вернуть 'done'
+        const { select } = await import('@clack/prompts');
+        vi.mocked(select).mockResolvedValue('done' as never);
+
         const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
 
         try {
@@ -128,6 +132,27 @@ describe('initCommand', () => {
             expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining('IDE'));
         } finally {
             consoleLogSpy.mockRestore();
+            // Восстанавливаем дефолтный мок
+            vi.mocked(select).mockResolvedValue('cursor' as never);
+        }
+    });
+
+    it('должен завершать работу если выбрана опция "Завершить работу"', async () => {
+        mockGetUninitializedIdes.mockResolvedValue(['cursor', 'trae'] as const);
+
+        // Мокаем select чтобы вернуть 'done'
+        const { select } = await import('@clack/prompts');
+        vi.mocked(select).mockResolvedValue('done' as never);
+
+        try {
+            await initCommand('/package/dir', '/target/dir');
+
+            expect(mockGetVersionsWithRetry).not.toHaveBeenCalled();
+            expect(mockFetchPromptsTarball).not.toHaveBeenCalled();
+            expect(mockWriteConfigFile).not.toHaveBeenCalled();
+        } finally {
+            // Восстанавливаем дефолтный мок
+            vi.mocked(select).mockResolvedValue('cursor' as never);
         }
     });
 

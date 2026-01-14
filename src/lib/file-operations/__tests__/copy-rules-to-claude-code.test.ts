@@ -235,6 +235,11 @@ description: Test skill
 
         vi.mocked(pathExists).mockImplementation((path) => {
             const pathStr = String(path);
+            // Возвращаем true только для исходной директории commands
+            // Для целевого файла команды возвращаем false (файл не существует)
+            if (pathStr.includes('/target') && pathStr.includes('.md')) {
+                return Promise.resolve(false);
+            }
 
             return Promise.resolve(pathStr.includes('rules') || pathStr.includes('commands'));
         });
@@ -279,6 +284,10 @@ description: Test skill
 
         vi.mocked(pathExists).mockImplementation((path) => {
             const pathStr = String(path);
+            // Для settings.json в target возвращаем false (файл не существует)
+            if (pathStr.includes('/target') && pathStr.includes('settings.json')) {
+                return Promise.resolve(false);
+            }
 
             return Promise.resolve(pathStr.includes('rules') || pathStr.includes('mcp.json'));
         });
@@ -318,6 +327,72 @@ description: Test skill
         const settings = JSON.parse(settingsContent);
         expect(settings.mcpServers).toBeDefined();
         expect(settings.mcpServers['test-server']).toBeDefined();
+    });
+
+    it('должен объединять mcpServers с существующим settings.json', async () => {
+        const { pathExists } = await import('../path-exists');
+        const { readdir } = await import('node:fs/promises');
+        const { readFile } = await import('node:fs/promises');
+
+        vi.mocked(pathExists).mockImplementation((path) => {
+            const pathStr = String(path);
+
+            return Promise.resolve(
+                pathStr.includes('rules') || pathStr.includes('mcp.json') || pathStr.includes('settings.json'),
+            );
+        });
+
+        vi.mocked(readdir).mockResolvedValue([]);
+
+        const mcpContent = JSON.stringify({
+            mcpServers: {
+                'new-server': {
+                    args: ['-y', 'new'],
+                    command: 'npx',
+                },
+            },
+        });
+
+        const existingSettings = JSON.stringify({
+            customSetting: 'value',
+            mcpServers: {
+                'existing-server': {
+                    args: ['-y', 'existing'],
+                    command: 'npm',
+                },
+            },
+        });
+
+        vi.mocked(readFile).mockImplementation((path) => {
+            const pathStr = String(path);
+            if (pathStr.includes('mcp.json')) {
+                return Promise.resolve(mcpContent);
+            }
+            if (pathStr.includes('/target') && pathStr.includes('settings.json')) {
+                return Promise.resolve(existingSettings);
+            }
+
+            return Promise.resolve('');
+        });
+
+        await copyRulesToClaudeCode('/source', '/target');
+
+        const { writeFile } = await import('node:fs/promises');
+        const writeCalls = vi.mocked(writeFile).mock.calls;
+        const settingsCall = writeCalls.find((call) => {
+            const arg0 = typeof call[0] === 'string' ? call[0] : String(call[0]);
+
+            return arg0.includes('settings.json');
+        });
+        expect(settingsCall).toBeDefined();
+
+        const settingsContent = String(settingsCall?.[1]);
+        const settings = JSON.parse(settingsContent);
+        // Оба сервера должны присутствовать
+        expect(settings.mcpServers['existing-server']).toBeDefined();
+        expect(settings.mcpServers['new-server']).toBeDefined();
+        // Кастомные настройки должны сохраниться
+        expect(settings.customSetting).toBe('value');
     });
 
     it('должен игнорировать файлы из ignoreList', async () => {

@@ -23,6 +23,7 @@ import { shouldIgnoreFile } from './should-ignore-file';
 
 /**
  * Копирует команды из source в .claude/commands
+ * Не перезаписывает существующие команды
  */
 async function copyCommandsToClaude(packageDir: string, targetDir: string, ignoreList: string[]): Promise<void> {
     const sourceCommandsDir = join(packageDir, 'rules-kit', 'commands');
@@ -49,6 +50,13 @@ async function copyCommandsToClaude(packageDir: string, targetDir: string, ignor
 
         const sourcePath = join(sourceCommandsDir, entry.name);
         const targetPath = join(targetCommandsDir, entry.name);
+
+        // Пропускаем команду, если она уже существует (чтобы не перезаписывать пользовательские команды)
+        const targetExists = await pathExists(targetPath);
+        if (targetExists) {
+            continue;
+        }
+
         const content = await readFile(sourcePath, 'utf-8');
         const processedContent = replacePlaceholders(content, 'claude-code');
         await writeFile(targetPath, processedContent, 'utf-8');
@@ -57,6 +65,7 @@ async function copyCommandsToClaude(packageDir: string, targetDir: string, ignor
 
 /**
  * Копирует и конвертирует документы из source в .claude/docs
+ * Не перезаписывает существующие файлы (кроме docs-catalog.md)
  */
 async function copyDocsToClaude(packageDir: string, targetDir: string, ignoreList: string[]): Promise<string> {
     const sourceDocsDir = join(packageDir, 'rules-kit', 'docs');
@@ -83,7 +92,6 @@ async function copyDocsToClaude(packageDir: string, targetDir: string, ignoreLis
         }
 
         const sourcePath = join(sourceDocsDir, String(entry.name));
-        const targetPath = join(targetDocsDir, String(entry.name));
 
         const content = await readFile(sourcePath, 'utf-8');
 
@@ -94,8 +102,13 @@ async function copyDocsToClaude(packageDir: string, targetDir: string, ignoreLis
             const processedContent = replacePlaceholders(docsCatalogContent, 'claude-code');
             await writeFile(catalogPath, processedContent, 'utf-8');
         } else {
-            const processedContent = replacePlaceholders(content, 'claude-code');
-            await writeFile(targetPath, processedContent, 'utf-8');
+            // Пропускаем файл, если он уже существует (чтобы не перезаписывать пользовательские файлы)
+            const targetPath = join(targetDocsDir, String(entry.name));
+            const targetExists = await pathExists(targetPath);
+            if (!targetExists) {
+                const processedContent = replacePlaceholders(content, 'claude-code');
+                await writeFile(targetPath, processedContent, 'utf-8');
+            }
         }
     }
 
@@ -124,23 +137,72 @@ async function createSkillsFromRules(rulesDir: string, targetDir: string): Promi
 }
 
 /**
- * Конвертирует mcp.json в .claude/settings.json
+ * Глубоко объединяет два объекта
+ */
+function deepMerge<T>(target: T, source: Partial<T>): T {
+    if (typeof target !== 'object' || target === null) {
+        return source as T;
+    }
+    if (typeof source !== 'object' || source === null) {
+        return target;
+    }
+
+    const result = { ...target };
+
+    Object.keys(source as Record<string, unknown>).forEach((key) => {
+        const sourceValue = (source as Record<string, unknown>)[key];
+        const targetValue = (result as Record<string, unknown>)[key];
+
+        if (typeof sourceValue === 'object' && sourceValue !== null && !Array.isArray(sourceValue)) {
+            (result as Record<string, unknown>)[key] = deepMerge(
+                targetValue as Record<string, unknown>,
+                sourceValue as Record<string, unknown>,
+            );
+        } else {
+            (result as Record<string, unknown>)[key] = sourceValue;
+        }
+    });
+
+    return result;
+}
+
+/**
+ * Конвертирует mcp.json в .claude/settings.json, сохраняя существующие настройки
  */
 async function convertMcpSettings(packageDir: string, targetDir: string): Promise<void> {
     const sourceMcpPath = join(packageDir, SYSTEM_RULES_DIR, 'mcp.json');
     const sourceExists = await pathExists(sourceMcpPath);
 
-    let settingsJson = '{\n  "mcpServers": {}\n}';
+    let mcpServers: Record<string, unknown> = {};
 
     if (sourceExists) {
         const mcpContent = await readFile(sourceMcpPath, 'utf-8');
         const mcpConfig = JSON.parse(mcpContent) as McpConfig;
-        settingsJson = convertMcpToSettingsJson(mcpConfig);
+        const newSettingsJson = convertMcpToSettingsJson(mcpConfig);
+        const newSettings = JSON.parse(newSettingsJson) as { mcpServers?: Record<string, unknown> };
+        mcpServers = newSettings.mcpServers ?? {};
     }
 
     const targetSettingsPath = join(targetDir, getClaudeSettingsPath());
+    const targetExists = await pathExists(targetSettingsPath);
+
+    let existingSettings: Record<string, unknown> = {};
+
+    if (targetExists) {
+        const existingContent = await readFile(targetSettingsPath, 'utf-8');
+        try {
+            existingSettings = JSON.parse(existingContent) as Record<string, unknown>;
+        } catch {
+            // Если файл не валидный JSON, начинаем с пустого объекта
+            existingSettings = {};
+        }
+    }
+
+    // Объединяем mcpServers
+    const mergedSettings = deepMerge(existingSettings, { mcpServers });
+
     await mkdir(join(targetDir, '.claude'), { recursive: true });
-    await writeFile(targetSettingsPath, settingsJson, 'utf-8');
+    await writeFile(targetSettingsPath, `${JSON.stringify(mergedSettings, null, 2)}\n`, 'utf-8');
 }
 
 /** Константы для поиска блока правил в CLAUDE.md */
