@@ -9,6 +9,7 @@ import {
     convertMcpToSettingsJson,
     convertToSkillFormat,
     generateClaudeMainFile,
+    generateClaudeRulesBlock,
     getClaudeCommandsDir,
     getClaudeDocsDir,
     getClaudeMainFileName,
@@ -142,16 +143,49 @@ async function convertMcpSettings(packageDir: string, targetDir: string): Promis
     await writeFile(targetSettingsPath, settingsJson, 'utf-8');
 }
 
+/** Константы для поиска блока правил в CLAUDE.md */
+export const BLOCK_START_TAG = '<!-- CLAUDE-RULES-START -->';
+export const BLOCK_END_TAG = '<!-- CLAUDE-RULES-END -->';
+
+/**
+ * Обновляет блок правил в существующем CLAUDE.md
+ * @param claudeMdPath - Путь к файлу CLAUDE.md
+ * @param newBlock - Новый блок правил для вставки
+ */
+export async function updateClaudeRulesBlock(claudeMdPath: string, newBlock: string): Promise<void> {
+    const existingContent = await readFile(claudeMdPath, 'utf-8');
+
+    const startIndex = existingContent.indexOf(BLOCK_START_TAG);
+    const endIndex = existingContent.indexOf(BLOCK_END_TAG);
+
+    if (startIndex === -1 || endIndex === -1) {
+        // Теги не найдены - добавляем блок в конец файла
+        const updatedContent = `${existingContent.trimEnd()}\n\n${newBlock}\n`;
+        await writeFile(claudeMdPath, updatedContent, 'utf-8');
+
+        return;
+    }
+
+    // Заменяем блок между тегами
+    const before = existingContent.slice(0, startIndex);
+    const after = existingContent.slice(endIndex + BLOCK_END_TAG.length);
+
+    const updatedContent = before + newBlock + after;
+    await writeFile(claudeMdPath, updatedContent, 'utf-8');
+}
+
 /**
  * Копирует правила для Claude Code со специальной обработкой
  * @param packageDir - Директория с исходными правилами
  * @param targetDir - Целевая директория проекта
  * @param ignoreList - Список файлов для игнорирования
+ * @param updateExisting - Обновлять блок в существующем CLAUDE.md
  */
 export async function copyRulesToClaudeCode(
     packageDir: string,
     targetDir: string,
     ignoreList: string[] = [],
+    updateExisting = false,
 ): Promise<void> {
     if (isEmptyString(packageDir)) {
         throw new Error('packageDir is required');
@@ -174,9 +208,17 @@ export async function copyRulesToClaudeCode(
     const docsCatalogContent = await copyDocsToClaude(packageDir, targetDir, ignoreList);
 
     // 3. Генерируем CLAUDE.md в корне проекта
-    const claudeMdContent = generateClaudeMainFile(alwaysApplyRules, docsCatalogContent);
     const claudeMdPath = join(targetDir, getClaudeMainFileName());
-    await writeFile(claudeMdPath, claudeMdContent, 'utf-8');
+
+    if (updateExisting) {
+        // Режим обновления существующего файла
+        const rulesBlock = generateClaudeRulesBlock(alwaysApplyRules, docsCatalogContent);
+        await updateClaudeRulesBlock(claudeMdPath, rulesBlock);
+    } else {
+        // Стандартный режим - создаём новый файл
+        const claudeMdContent = generateClaudeMainFile(alwaysApplyRules, docsCatalogContent);
+        await writeFile(claudeMdPath, claudeMdContent, 'utf-8');
+    }
 
     // 4. Создаём Skills для alwaysApply: false правил
     await createSkillsFromRules(rulesDir, targetDir);

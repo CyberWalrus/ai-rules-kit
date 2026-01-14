@@ -1,7 +1,12 @@
 /* eslint-disable @typescript-eslint/no-base-to-string */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { copyRulesToClaudeCode } from '../copy-rules-to-claude-code';
+import {
+    BLOCK_END_TAG,
+    BLOCK_START_TAG,
+    copyRulesToClaudeCode,
+    updateClaudeRulesBlock,
+} from '../copy-rules-to-claude-code';
 
 vi.mock('node:fs/promises', () => ({
     mkdir: vi.fn(),
@@ -360,5 +365,95 @@ description: Test skill
             return arg0.includes('ignore.md');
         });
         expect(ignoreCall).toBeUndefined();
+    });
+});
+
+describe('updateClaudeRulesBlock', () => {
+    it('должен заменять блок между тегами', async () => {
+        const { readFile } = await import('node:fs/promises');
+        const { writeFile } = await import('node:fs/promises');
+
+        const existingContent = `# Existing Content
+
+Some existing content.
+
+${BLOCK_START_TAG}
+
+Old block content.
+
+${BLOCK_END_TAG}
+
+More content.`;
+
+        const newBlock = `${BLOCK_START_TAG}
+
+New block content.
+
+${BLOCK_END_TAG}`;
+
+        vi.mocked(readFile).mockResolvedValue(existingContent);
+
+        await updateClaudeRulesBlock('/target/CLAUDE.md', newBlock);
+
+        const writeCalls = vi.mocked(writeFile).mock.calls;
+        expect(writeCalls.length).toBe(1);
+        const writtenContent = String(writeCalls[0]?.[1]);
+        expect(writtenContent).toContain('New block content');
+        expect(writtenContent).not.toContain('Old block content');
+        expect(writtenContent).toContain('# Existing Content');
+        expect(writtenContent).toContain('More content');
+    });
+
+    it('должен добавлять блок в конец если теги не найдены', async () => {
+        const { readFile } = await import('node:fs/promises');
+        const { writeFile } = await import('node:fs/promises');
+
+        const existingContent = '# Existing Content\n\nSome existing content.';
+        const newBlock = `${BLOCK_START_TAG}\n\nNew block content.\n\n${BLOCK_END_TAG}`;
+
+        vi.mocked(readFile).mockResolvedValue(existingContent);
+
+        await updateClaudeRulesBlock('/target/CLAUDE.md', newBlock);
+
+        const writeCalls = vi.mocked(writeFile).mock.calls;
+        expect(writeCalls.length).toBe(1);
+        const writtenContent = String(writeCalls[0]?.[1]);
+        expect(writtenContent).toContain('# Existing Content');
+        expect(writtenContent).toContain('New block content');
+        expect(writtenContent.slice(-1)).toBe('\n');
+    });
+
+    it('должен сохранять контент до и после блока', async () => {
+        const { readFile } = await import('node:fs/promises');
+        const { writeFile } = await import('node:fs/promises');
+
+        const existingContent = `# Start
+
+Content before block.
+
+${BLOCK_START_TAG}
+
+Old content.
+
+${BLOCK_END_TAG}
+
+Content after block.
+
+# End`;
+
+        const newBlock = `${BLOCK_START_TAG}\n\nUpdated content.\n\n${BLOCK_END_TAG}`;
+
+        vi.mocked(readFile).mockResolvedValue(existingContent);
+
+        await updateClaudeRulesBlock('/target/CLAUDE.md', newBlock);
+
+        const writeCalls = vi.mocked(writeFile).mock.calls;
+        const writtenContent = String(writeCalls[0]?.[1]);
+        expect(writtenContent).toContain('# Start');
+        expect(writtenContent).toContain('Content before block');
+        expect(writtenContent).toContain('Content after block');
+        expect(writtenContent).toContain('# End');
+        expect(writtenContent).toContain('Updated content');
+        expect(writtenContent).not.toContain('Old content');
     });
 });

@@ -9,6 +9,7 @@ import { getIdeFileExtension, getProjectIdeDir } from '../ide-config';
 import { applyYamlOverrides } from './apply-yaml-overrides';
 import { copyRulesToClaudeCode } from './copy-rules-to-claude-code';
 import { pathExists } from './path-exists';
+import { removeSkillDescription } from './remove-skill-description';
 import { replacePlaceholders } from './replace-placeholders';
 import { shouldIgnoreFile } from './should-ignore-file';
 
@@ -43,7 +44,13 @@ async function copyFileWithConversion(
         }
     }
 
-    const content = await readFile(sourcePath, 'utf-8');
+    let content = await readFile(sourcePath, 'utf-8');
+
+    // Для Cursor/TRAE удаляем поле description (нужно только для Claude Code)
+    if (ideType !== 'claude-code') {
+        content = removeSkillDescription(content);
+    }
+
     const processedContent = replacePlaceholders(content, ideType);
     await writeFile(finalTargetPath, processedContent, 'utf-8');
 }
@@ -86,7 +93,8 @@ export async function copyRulesToTarget(
     ideType: IdeType,
     ignoreList: string[] = [],
     fileOverrides: FileOverride[] = [],
-    sourceDirPrefix: string = '',
+    sourceDirPrefix = '',
+    updateExistingClaudeMd = false,
 ): Promise<void> {
     if (isEmptyString(packageDir)) {
         throw new Error('packageDir is required');
@@ -97,7 +105,7 @@ export async function copyRulesToTarget(
 
     // Для Claude Code используем специализированную логику
     if (ideType === 'claude-code') {
-        await copyRulesToClaudeCode(packageDir, targetDir, ignoreList);
+        await copyRulesToClaudeCode(packageDir, targetDir, ignoreList, updateExistingClaudeMd);
 
         return;
     }
