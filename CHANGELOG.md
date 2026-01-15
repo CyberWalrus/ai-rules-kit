@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.13.1] - 2026-01-15
+
+<small>15.01.2026 06:07</small>
+
+### Added
+
+- **Interactive menu option for initializing other IDEs**
+    - Added `init-other-ide` option to interactive menu for initializing rules in other IDEs (TRAE, Claude Code, Cursor)
+    - Added `getUninitializedIdes` function integration to check for uninitialized IDEs
+    - Added translations for new menu option in Russian and English
+    - Added `init-other-ide` type to `InteractiveMenuAction` union type
+    - Added unit tests for new menu option visibility and behavior
+
 ## [0.9.1] - 2026-01-14
 
 <small>14.01.2026 19:27</small>
