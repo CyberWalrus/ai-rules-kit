@@ -1,6 +1,7 @@
 import { cancel, intro, isCancel, outro, select } from '@clack/prompts';
 
 import { t } from '../../lib/i18n';
+import { getUninitializedIdes } from '../../lib/ide-config';
 import { getCurrentVersion } from '../../lib/version-manager/get-current-version';
 import type { InteractiveMenuAction } from '../../model/types/main';
 import { configCommand } from '../commands/config';
@@ -14,6 +15,7 @@ import { getTargetDir } from './get-target-dir';
 /** Создает список опций для меню */
 function buildMenuOptions(
     isInitialized: boolean,
+    hasUninitializedIdes: boolean,
 ): Array<{ label: string; value: InteractiveMenuAction; hint?: string }> {
     const options: Array<{ label: string; value: InteractiveMenuAction; hint?: string }> = [];
 
@@ -30,6 +32,14 @@ function buildMenuOptions(
             hint: t('cli.interactive-menu.upgrade.hint'),
             label: t('cli.interactive-menu.upgrade'),
             value: 'upgrade',
+        });
+    }
+
+    if (isInitialized && hasUninitializedIdes) {
+        options.push({
+            hint: t('cli.interactive-menu.init-other-ide.hint'),
+            label: t('cli.interactive-menu.init-other-ide'),
+            value: 'init-other-ide',
         });
     }
 
@@ -59,6 +69,7 @@ async function handleMenuAction(
 ): Promise<boolean> {
     switch (action) {
         case 'init':
+        case 'init-other-ide':
             await initCommand(packageDir, targetDir);
             outro(t('cli.main.init.success'));
 
@@ -100,7 +111,9 @@ export async function showInteractiveMenu(currentFilePath: string): Promise<void
 
         const currentVersion = await getCurrentVersion(targetDir);
         const isInitialized = currentVersion !== null;
-        const options = buildMenuOptions(isInitialized);
+        const uninitializedIdes = await getUninitializedIdes(targetDir);
+        const hasUninitializedIdes = uninitializedIdes.length > 0;
+        const options = buildMenuOptions(isInitialized, hasUninitializedIdes);
 
         const action = await select<InteractiveMenuAction>({
             message: t('cli.interactive-menu.select-action'),

@@ -11,6 +11,8 @@ export const RU_TRANSLATIONS = {
     'cli.interactive-menu.init': 'Инициализировать правила',
     'cli.interactive-menu.init.hint':
         'Первая установка правил в проект. Скачивает последнюю версию из GitHub и создает конфигурацию',
+    'cli.interactive-menu.init-other-ide': 'Инициализировать для другой IDE',
+    'cli.interactive-menu.init-other-ide.hint': 'Установить правила для другой IDE (TRAE, Claude Code, Cursor)',
     'cli.interactive-menu.replace-all': 'Заменить все правила',
     'cli.interactive-menu.replace-all.hint':
         'Полная замена всех файлов правил. Сохраняет ignoreList и fileOverrides из конфига',
@@ -160,6 +162,8 @@ export const EN_TRANSLATIONS = {
     'cli.interactive-menu.init': 'Initialize rules',
     'cli.interactive-menu.init.hint':
         'First-time installation of rules. Downloads latest version from GitHub and creates configuration',
+    'cli.interactive-menu.init-other-ide': 'Initialize for another IDE',
+    'cli.interactive-menu.init-other-ide.hint': 'Install rules for another IDE (TRAE, Claude Code, Cursor)',
     'cli.interactive-menu.replace-all': 'Replace all rules',
     'cli.interactive-menu.replace-all.hint':
         'Complete replacement of all rule files. Preserves ignoreList and fileOverrides from config',

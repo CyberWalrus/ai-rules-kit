@@ -8,6 +8,7 @@ const mockOutro = vi.hoisted(() => vi.fn());
 const mockGetCurrentVersion = vi.hoisted(() => vi.fn());
 const mockGetPackageDir = vi.hoisted(() => vi.fn());
 const mockGetTargetDir = vi.hoisted(() => vi.fn());
+const mockGetUninitializedIdes = vi.hoisted(() => vi.fn());
 const mockInitCommand = vi.hoisted(() => vi.fn());
 const mockUpgradeCommand = vi.hoisted(() => vi.fn());
 const mockConfigCommand = vi.hoisted(() => vi.fn());
@@ -21,6 +22,7 @@ const mockT = vi.hoisted(() =>
             'cli.interactive-menu.finish': 'Завершить',
             'cli.interactive-menu.goodbye': 'До свидания!',
             'cli.interactive-menu.init': 'Инициализировать правила',
+            'cli.interactive-menu.init-other-ide': 'Инициализировать для другой IDE',
             'cli.interactive-menu.select-action': 'Выберите действие:',
             'cli.interactive-menu.system-files': 'Системные файлы',
             'cli.interactive-menu.target-dir-not-found': 'Директория не найдена',
@@ -60,6 +62,10 @@ vi.mock('../get-target-dir', () => ({
     getTargetDir: mockGetTargetDir,
 }));
 
+vi.mock('../../../lib/ide-config', () => ({
+    getUninitializedIdes: mockGetUninitializedIdes,
+}));
+
 vi.mock('../../commands/init', () => ({
     initCommand: mockInitCommand,
 }));
@@ -90,6 +96,7 @@ describe('showInteractiveMenu', () => {
         mockGetTargetDir.mockReturnValue('/test/target');
         mockGetPackageDir.mockReturnValue('/test/package');
         mockGetCurrentVersion.mockResolvedValue(null);
+        mockGetUninitializedIdes.mockResolvedValue(['cursor', 'trae', 'claude-code']);
         mockInitCommand.mockResolvedValue(undefined);
         mockUpgradeCommand.mockResolvedValue(undefined);
         mockConfigCommand.mockResolvedValue('finish');
@@ -143,6 +150,57 @@ describe('showInteractiveMenu', () => {
         const hasUpgradeOption = selectCall.options.some((option) => option.value === 'upgrade');
 
         expect(hasUpgradeOption).toBe(true);
+    });
+
+    it('должен показывать опцию init-other-ide если проект инициализирован и есть неинициализированные IDE', async () => {
+        mockGetCurrentVersion.mockResolvedValue('1.0.0');
+        mockGetUninitializedIdes.mockResolvedValue(['trae', 'claude-code']);
+        mockSelect.mockResolvedValue('exit');
+
+        await showInteractiveMenu('/test/path');
+
+        const selectCall = mockSelect.mock.calls[0][0] as { options: Array<{ value: string }> };
+        const hasInitOtherIdeOption = selectCall.options.some((option) => option.value === 'init-other-ide');
+
+        expect(hasInitOtherIdeOption).toBe(true);
+    });
+
+    it('не должен показывать опцию init-other-ide если все IDE инициализированы', async () => {
+        mockGetCurrentVersion.mockResolvedValue('1.0.0');
+        mockGetUninitializedIdes.mockResolvedValue([]);
+        mockSelect.mockResolvedValue('exit');
+
+        await showInteractiveMenu('/test/path');
+
+        const selectCall = mockSelect.mock.calls[0][0] as { options: Array<{ value: string }> };
+        const hasInitOtherIdeOption = selectCall.options.some((option) => option.value === 'init-other-ide');
+
+        expect(hasInitOtherIdeOption).toBe(false);
+    });
+
+    it('не должен показывать опцию init-other-ide если проект не инициализирован', async () => {
+        mockGetCurrentVersion.mockResolvedValue(null);
+        mockGetUninitializedIdes.mockResolvedValue(['cursor', 'trae', 'claude-code']);
+        mockSelect.mockResolvedValue('exit');
+
+        await showInteractiveMenu('/test/path');
+
+        const selectCall = mockSelect.mock.calls[0][0] as { options: Array<{ value: string }> };
+        const hasInitOtherIdeOption = selectCall.options.some((option) => option.value === 'init-other-ide');
+
+        expect(hasInitOtherIdeOption).toBe(false);
+    });
+
+    it('должен вызывать initCommand при выборе init-other-ide', async () => {
+        mockGetCurrentVersion.mockResolvedValue('1.0.0');
+        mockGetUninitializedIdes.mockResolvedValue(['trae', 'claude-code']);
+        mockSelect.mockResolvedValueOnce('init-other-ide').mockResolvedValue('exit');
+
+        await showInteractiveMenu('/test/path');
+
+        expect(mockInitCommand).toHaveBeenCalledTimes(1);
+        expect(mockInitCommand).toHaveBeenCalledWith('/test/package', '/test/target');
+        expect(mockOutro).toHaveBeenCalledWith(expect.any(String));
     });
 
     it('должен вызывать initCommand при выборе init', async () => {
