@@ -9,7 +9,7 @@ export async function getLatestPromptsVersion(repo: string): Promise<string | nu
 
     const token = await getGithubToken();
     const headers: Record<string, string> = {
-        'User-Agent': 'cursor-rules-cli',
+        'User-Agent': 'ai-rules-kit',
         ...(token !== undefined && { Authorization: `Bearer ${token}` }),
     };
 

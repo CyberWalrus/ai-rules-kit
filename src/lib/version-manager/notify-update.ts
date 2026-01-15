@@ -17,8 +17,8 @@ export async function notifyIfUpdateAvailable(packageName: string, currentVersio
         console.log('');
         console.log(`${bold(t('version-manager.update-available'))}`);
         console.log(`${red(currentVersion)} → ${green(latestVersion)}`);
-        console.log(`Run ${cyan('npm i -g cursor-rules-cli@latest')}`);
-        console.log(`or  ${cyan('yarn global add cursor-rules-cli')}`);
+        console.log(`Run ${cyan('npm i -g ai-rules-kit@latest')}`);
+        console.log(`or  ${cyan('yarn global add ai-rules-kit')}`);
         console.log('');
     } catch (err) {
         if (process.env.NODE_ENV === 'development') {

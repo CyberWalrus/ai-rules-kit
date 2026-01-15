@@ -28,7 +28,7 @@ describe('getUserConfigDir', () => {
 
         const result = getUserConfigDir();
 
-        expect(result).toBe(join('C:\\Users\\Test\\AppData\\Roaming', 'cursor-rules-cli'));
+        expect(result).toBe(join('C:\\Users\\Test\\AppData\\Roaming', 'ai-rules-kit'));
     });
 
     it('должен выбрасывать ошибку если APPDATA не установлен на Windows', () => {
@@ -44,7 +44,7 @@ describe('getUserConfigDir', () => {
 
         const result = getUserConfigDir();
 
-        expect(result).toBe(join('/Users/test', 'Library', 'Preferences', 'cursor-rules-cli'));
+        expect(result).toBe(join('/Users/test', 'Library', 'Preferences', 'ai-rules-kit'));
     });
 
     it('должен выбрасывать ошибку если HOME не установлен на macOS', () => {
@@ -61,7 +61,7 @@ describe('getUserConfigDir', () => {
 
         const result = getUserConfigDir();
 
-        expect(result).toBe(join('/home/test/.config', 'cursor-rules-cli'));
+        expect(result).toBe(join('/home/test/.config', 'ai-rules-kit'));
     });
 
     it('должен возвращать путь для Linux без XDG_CONFIG_HOME', () => {
@@ -71,7 +71,7 @@ describe('getUserConfigDir', () => {
 
         const result = getUserConfigDir();
 
-        expect(result).toBe(join('/home/test', '.config', 'cursor-rules-cli'));
+        expect(result).toBe(join('/home/test', '.config', 'ai-rules-kit'));
     });
 
     it('должен выбрасывать ошибку если HOME не установлен на Linux', () => {

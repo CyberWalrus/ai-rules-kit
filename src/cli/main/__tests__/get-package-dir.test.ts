@@ -5,8 +5,8 @@ import { getPackageDir } from '../get-package-dir';
 
 describe('getPackageDir', () => {
     it('должен возвращать путь на 1 уровень вверх для production окружения (dist/cli.js)', () => {
-        const productionPath = '/Users/test/project/node_modules/cursor-rules-cli/dist/cli.js';
-        const expectedPath = join('/Users/test/project/node_modules/cursor-rules-cli/dist', '..');
+        const productionPath = '/Users/test/project/node_modules/ai-rules-kit/dist/cli.js';
+        const expectedPath = join('/Users/test/project/node_modules/ai-rules-kit/dist', '..');
 
         const result = getPackageDir(productionPath);
 

@@ -28,7 +28,7 @@ describe('notifyIfUpdateAvailable', () => {
             target: '0.3.7',
         });
 
-        await notifyIfUpdateAvailable('cursor-rules-cli', '0.3.6');
+        await notifyIfUpdateAvailable('ai-rules-kit', '0.3.6');
 
         expect(vi.mocked(console.log)).toHaveBeenCalled();
         const logs = vi.mocked(console.log).mock.calls.map((call) => call[0] as string);
@@ -44,7 +44,7 @@ describe('notifyIfUpdateAvailable', () => {
             target: '0.3.6',
         });
 
-        await notifyIfUpdateAvailable('cursor-rules-cli', '0.3.6');
+        await notifyIfUpdateAvailable('ai-rules-kit', '0.3.6');
 
         expect(vi.mocked(console.log)).not.toHaveBeenCalled();
     });
@@ -52,7 +52,7 @@ describe('notifyIfUpdateAvailable', () => {
     it('должен игнорировать ошибки при получении версии', async () => {
         vi.mocked(getNpmVersion).mockRejectedValue(new Error('Network error'));
 
-        await expect(notifyIfUpdateAvailable('cursor-rules-cli', '0.3.6')).resolves.toBeUndefined();
+        await expect(notifyIfUpdateAvailable('ai-rules-kit', '0.3.6')).resolves.toBeUndefined();
     });
 
     it('должен вывести сообщение при minor обновлении', async () => {
@@ -63,7 +63,7 @@ describe('notifyIfUpdateAvailable', () => {
             target: '1.0.0',
         });
 
-        await notifyIfUpdateAvailable('cursor-rules-cli', '0.3.6');
+        await notifyIfUpdateAvailable('ai-rules-kit', '0.3.6');
 
         expect(vi.mocked(console.log)).toHaveBeenCalled();
         const logs = vi.mocked(console.log).mock.calls.map((call) => call[0] as string);
@@ -79,7 +79,7 @@ describe('notifyIfUpdateAvailable', () => {
             target: '2.0.0',
         });
 
-        await notifyIfUpdateAvailable('cursor-rules-cli', '1.0.0');
+        await notifyIfUpdateAvailable('ai-rules-kit', '1.0.0');
 
         expect(vi.mocked(console.log)).toHaveBeenCalled();
         const logs = vi.mocked(console.log).mock.calls.map((call) => call[0] as string);

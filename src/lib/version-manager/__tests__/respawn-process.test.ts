@@ -11,7 +11,7 @@ describe('respawnProcess', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
-        process.argv = ['/usr/local/bin/node', '/usr/local/bin/cursor-rules-cli', 'update'];
+        process.argv = ['/usr/local/bin/node', '/usr/local/bin/ai-rules-kit', 'update'];
         process.exit = vi.fn() as never;
     });
 
@@ -26,7 +26,7 @@ describe('respawnProcess', () => {
         respawnProcess();
 
         expect(mockSpawn).toHaveBeenCalledTimes(1);
-        expect(mockSpawn).toHaveBeenCalledWith('/usr/local/bin/node', ['/usr/local/bin/cursor-rules-cli', 'update'], {
+        expect(mockSpawn).toHaveBeenCalledWith('/usr/local/bin/node', ['/usr/local/bin/ai-rules-kit', 'update'], {
             detached: true,
             stdio: 'inherit',
         });
@@ -54,12 +54,12 @@ describe('respawnProcess', () => {
     });
 
     it('должен работать когда process.argv содержит только исполняемый файл и скрипт', () => {
-        process.argv = ['/usr/local/bin/node', '/usr/local/bin/cursor-rules-cli'];
+        process.argv = ['/usr/local/bin/node', '/usr/local/bin/ai-rules-kit'];
         const mockSpawn = vi.mocked(spawn);
 
         respawnProcess();
 
-        expect(mockSpawn).toHaveBeenCalledWith('/usr/local/bin/node', ['/usr/local/bin/cursor-rules-cli'], {
+        expect(mockSpawn).toHaveBeenCalledWith('/usr/local/bin/node', ['/usr/local/bin/ai-rules-kit'], {
             detached: true,
             stdio: 'inherit',
         });

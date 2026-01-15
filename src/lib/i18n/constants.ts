@@ -21,7 +21,7 @@ export const RU_TRANSLATIONS = {
     'cli.interactive-menu.system-files.hint':
         'Копирование промптов и правил для пользователя. Вставьте в Cursor: Rules and Commands -> User Rules',
     'cli.interactive-menu.target-dir-not-found': 'Целевая директория не найдена',
-    'cli.interactive-menu.title': 'cursor-rules-cli',
+    'cli.interactive-menu.title': 'ai-rules-kit',
     'cli.interactive-menu.upgrade': 'Обновить правила',
     'cli.interactive-menu.upgrade.hint':
         'Обновление с сохранением ignoreList и fileOverrides. Файлы правил перезаписываются новыми версиями',
@@ -145,8 +145,8 @@ export const RU_TRANSLATIONS = {
     'github-fetcher.parse-error': '⚠️ Не удалось распарсить ответ GitHub API: {message}',
     'helpers.confirmation.prompt': '{question} (y/n): ',
     'version-manager.update-available': 'Доступно обновление!',
-    'version-manager.update-install-npm': 'Выполните npm i -g cursor-rules-cli@latest',
-    'version-manager.update-install-yarn': 'или  yarn global add cursor-rules-cli',
+    'version-manager.update-install-npm': 'Выполните npm i -g ai-rules-kit@latest',
+    'version-manager.update-install-yarn': 'или  yarn global add ai-rules-kit',
 } as const;
 
 /** Английские переводы */
@@ -172,7 +172,7 @@ export const EN_TRANSLATIONS = {
     'cli.interactive-menu.system-files.hint':
         'Copy prompts and rules for user. Paste in Cursor: Rules and Commands -> User Rules',
     'cli.interactive-menu.target-dir-not-found': 'Target directory not found',
-    'cli.interactive-menu.title': 'cursor-rules-cli',
+    'cli.interactive-menu.title': 'ai-rules-kit',
     'cli.interactive-menu.upgrade': 'Update rules',
     'cli.interactive-menu.upgrade.hint':
         'Update preserving ignoreList and fileOverrides. Rule files are overwritten with new versions',
@@ -294,6 +294,6 @@ export const EN_TRANSLATIONS = {
     'github-fetcher.parse-error': '⚠️ Failed to parse GitHub API response: {message}',
     'helpers.confirmation.prompt': '{question} (y/n): ',
     'version-manager.update-available': 'Update available!',
-    'version-manager.update-install-npm': 'Run npm i -g cursor-rules-cli@latest',
-    'version-manager.update-install-yarn': 'or  yarn global add cursor-rules-cli',
+    'version-manager.update-install-npm': 'Run npm i -g ai-rules-kit@latest',
+    'version-manager.update-install-yarn': 'or  yarn global add ai-rules-kit',
 } as const;

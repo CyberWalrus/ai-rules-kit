@@ -15,7 +15,7 @@ export function getUserConfigDir(): string {
             throw new Error('APPDATA environment variable is not set');
         }
 
-        configDir = join(appData, 'cursor-rules-cli');
+        configDir = join(appData, 'ai-rules-kit');
     } else if (osPlatform === 'darwin') {
         const home = process.env.HOME;
 
@@ -23,7 +23,7 @@ export function getUserConfigDir(): string {
             throw new Error('HOME environment variable is not set');
         }
 
-        configDir = join(home, 'Library', 'Preferences', 'cursor-rules-cli');
+        configDir = join(home, 'Library', 'Preferences', 'ai-rules-kit');
     } else {
         const xdgConfigHome = process.env.XDG_CONFIG_HOME;
         const home = process.env.HOME;
@@ -33,9 +33,9 @@ export function getUserConfigDir(): string {
         }
 
         if (xdgConfigHome !== null && xdgConfigHome !== undefined && !isEmptyString(xdgConfigHome)) {
-            configDir = join(xdgConfigHome, 'cursor-rules-cli');
+            configDir = join(xdgConfigHome, 'ai-rules-kit');
         } else {
-            configDir = join(home, '.config', 'cursor-rules-cli');
+            configDir = join(home, '.config', 'ai-rules-kit');
         }
     }
 

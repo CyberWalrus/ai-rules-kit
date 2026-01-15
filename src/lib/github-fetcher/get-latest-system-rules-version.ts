@@ -10,7 +10,7 @@ export async function getLatestSystemRulesVersion(repo: string): Promise<string 
 
     const token = await getGithubToken();
     const headers: Record<string, string> = {
-        'User-Agent': 'cursor-rules-cli',
+        'User-Agent': 'ai-rules-kit',
         ...(token !== undefined && { Authorization: `Bearer ${token}` }),
     };
 
