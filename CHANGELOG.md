@@ -1,5 +1,38 @@
 # Changelog
 
+## [0.13.2] - 2026-01-15
+
+<small>15.01.2026 08:12</small>
+
+### Changed
+
+- **Refactored user confirmation prompt**
+    - Replaced readline-based confirmation with @clack/prompts for better interactive experience
+    - Simplified ask-confirmation function implementation
+    - Updated related unit tests
+
+- **Package name updates**
+    - Updated package name references from cursor-rules-cli to ai-rules-kit across codebase
+    - Fixed package name in GitHub Actions publish workflow
+    - Updated user config directory paths to use new package name
+    - Updated version manager notifications with correct package name
+    - Updated i18n translations with new package name
+
+### Fixed
+
+- **Init command improvements**
+    - Added check for CLAUDE.md file creation after Claude CLI initialization
+    - Improved handling of existing Claude configuration files
+
+- **GitHub Actions workflow**
+    - Fixed package name in npm version check step
+
+### Tests
+
+- Updated unit tests for ask-confirmation function
+- Updated E2E tests for Claude Code initialization
+- Updated tests for user config and version manager modules
+
 ## [0.13.1] - 2026-01-15
 
 <small>15.01.2026 06:07</small>
