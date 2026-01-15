@@ -1,111 +1,56 @@
+import { confirm, isCancel } from '@clack/prompts';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { askConfirmation } from '../ask-confirmation';
 
-vi.mock('node:readline/promises', () => ({
-    createInterface: vi.fn(),
-}));
-
-vi.mock('node:process', () => ({
-    env: {},
-    stdin: {},
-    stdout: {},
+vi.mock('@clack/prompts', () => ({
+    confirm: vi.fn(),
+    isCancel: vi.fn(),
 }));
 
 describe('askConfirmation', () => {
     beforeEach(() => {
         vi.clearAllMocks();
+        vi.mocked(isCancel).mockReturnValue(false);
     });
 
-    it.each([
-        ['y', true],
-        ['yes', true],
-        ['Y', true],
-        ['YES', true],
-    ])('должен возвращать true для ответа "%s"', async (answer, expected) => {
-        const { createInterface } = await import('node:readline/promises');
-        const mockQuestion = vi.fn().mockResolvedValue(answer);
-        const mockClose = vi.fn();
-
-        vi.mocked(createInterface).mockReturnValue({
-            close: mockClose,
-            question: mockQuestion,
-        } as never);
-
-        const result = await askConfirmation('Test question');
-
-        expect(result).toBe(expected);
-        expect(mockQuestion).toHaveBeenCalledWith('Test question (y/n): ');
-        expect(mockClose).toHaveBeenCalled();
-    });
-
-    it.each([
-        ['n', false],
-        ['no', false],
-        ['N', false],
-        ['NO', false],
-    ])('должен возвращать false для ответа "%s"', async (answer, expected) => {
-        const { createInterface } = await import('node:readline/promises');
-        const mockQuestion = vi.fn().mockResolvedValue(answer);
-        const mockClose = vi.fn();
-
-        vi.mocked(createInterface).mockReturnValue({
-            close: mockClose,
-            question: mockQuestion,
-        } as never);
-
-        const result = await askConfirmation('Test question');
-
-        expect(result).toBe(expected);
-        expect(mockClose).toHaveBeenCalled();
-    });
-
-    it('должен возвращать false для любого другого ответа', async () => {
-        const { createInterface } = await import('node:readline/promises');
-        const mockQuestion = vi.fn().mockResolvedValue('maybe');
-        const mockClose = vi.fn();
-
-        vi.mocked(createInterface).mockReturnValue({
-            close: mockClose,
-            question: mockQuestion,
-        } as never);
-
-        const result = await askConfirmation('Test question');
-
-        expect(result).toBe(false);
-        expect(mockClose).toHaveBeenCalled();
-    });
-
-    it('должен обрабатывать ответы с пробелами', async () => {
-        const { createInterface } = await import('node:readline/promises');
-        const mockQuestion = vi.fn().mockResolvedValue('  y  ');
-        const mockClose = vi.fn();
-
-        vi.mocked(createInterface).mockReturnValue({
-            close: mockClose,
-            question: mockQuestion,
-        } as never);
+    it('должен возвращать true когда пользователь подтверждает', async () => {
+        vi.mocked(confirm).mockResolvedValue(true);
 
         const result = await askConfirmation('Test question');
 
         expect(result).toBe(true);
-        expect(mockClose).toHaveBeenCalled();
+        expect(confirm).toHaveBeenCalledWith({
+            active: 'Да',
+            inactive: 'Нет',
+            initialValue: false,
+            message: 'Test question',
+        });
     });
 
-    it('должен возвращать false для пустого ответа после trim', async () => {
-        const { createInterface } = await import('node:readline/promises');
-        const mockQuestion = vi.fn().mockResolvedValue('   ');
-        const mockClose = vi.fn();
-
-        vi.mocked(createInterface).mockReturnValue({
-            close: mockClose,
-            question: mockQuestion,
-        } as never);
+    it('должен возвращать false когда пользователь отказывает', async () => {
+        vi.mocked(confirm).mockResolvedValue(false);
 
         const result = await askConfirmation('Test question');
 
         expect(result).toBe(false);
-        expect(mockClose).toHaveBeenCalled();
+        expect(confirm).toHaveBeenCalledWith({
+            active: 'Да',
+            inactive: 'Нет',
+            initialValue: false,
+            message: 'Test question',
+        });
+    });
+
+    it('должен возвращать false при отмене (Ctrl+C)', async () => {
+        const cancelSymbol = Symbol('cancel');
+        vi.mocked(confirm).mockResolvedValue(cancelSymbol as never);
+        vi.mocked(isCancel).mockReturnValue(true);
+
+        const result = await askConfirmation('Test question');
+
+        expect(result).toBe(false);
+        expect(isCancel).toHaveBeenCalledWith(cancelSymbol);
     });
 
     it('должен выбрасывать ошибку если question равен null', async () => {
@@ -120,17 +65,9 @@ describe('askConfirmation', () => {
         await expect(askConfirmation('')).rejects.toThrow('question is required');
     });
 
-    it('должен закрывать интерфейс даже при ошибке', async () => {
-        const { createInterface } = await import('node:readline/promises');
-        const mockQuestion = vi.fn().mockRejectedValue(new Error('Test error'));
-        const mockClose = vi.fn();
-
-        vi.mocked(createInterface).mockReturnValue({
-            close: mockClose,
-            question: mockQuestion,
-        } as never);
+    it('должен пробрасывать ошибку от confirm', async () => {
+        vi.mocked(confirm).mockRejectedValue(new Error('Test error'));
 
         await expect(askConfirmation('Test question')).rejects.toThrow('Test error');
-        expect(mockClose).toHaveBeenCalled();
     });
 });
