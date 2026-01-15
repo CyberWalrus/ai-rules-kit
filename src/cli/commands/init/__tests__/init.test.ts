@@ -1,7 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { runClaudeInit } from '../../../../lib/claude-cli';
 import { copyRulesToTarget } from '../../../../lib/file-operations/copy-rules-to-target';
 import { copySystemRulesToTarget } from '../../../../lib/file-operations/copy-system-rules-to-target';
+import { pathExists } from '../../../../lib/file-operations/path-exists';
 import { readConfigFile } from '../../../../lib/file-operations/read-config-file';
 import { writeConfigFile } from '../../../../lib/file-operations/write-config-file';
 import {
@@ -9,7 +11,8 @@ import {
     fetchSystemRulesTarball,
     getLatestSystemRulesVersion,
 } from '../../../../lib/github-fetcher';
-import { getUninitializedIdes } from '../../../../lib/ide-config';
+import { askConfirmation } from '../../../../lib/helpers';
+import { getIdeRulesDir, getUninitializedIdes } from '../../../../lib/ide-config';
 import { readUserConfig } from '../../../../lib/user-config';
 import { getPackageVersion } from '../../../../lib/version-manager/get-package-version';
 import { getVersionsWithRetry } from '../../../../lib/version-manager/get-versions-with-retry';
@@ -20,18 +23,23 @@ vi.mock('@clack/prompts', () => ({
     isCancel: vi.fn((value) => value === 'cancel'),
     select: vi.fn(),
 }));
+vi.mock('../../../../lib/claude-cli');
 vi.mock('../../../../lib/file-operations/copy-rules-to-target');
 vi.mock('../../../../lib/file-operations/copy-system-rules-to-target');
+vi.mock('../../../../lib/file-operations/path-exists');
 vi.mock('../../../../lib/file-operations/read-config-file');
 vi.mock('../../../../lib/file-operations/write-config-file');
 vi.mock('../../../../lib/github-fetcher');
+vi.mock('../../../../lib/helpers');
 vi.mock('../../../../lib/ide-config');
 vi.mock('../../../../lib/user-config');
 vi.mock('../../../../lib/version-manager/get-package-version');
 vi.mock('../../../../lib/version-manager/get-versions-with-retry');
 
+const mockRunClaudeInit = vi.mocked(runClaudeInit);
 const mockCopyRulesToTarget = vi.mocked(copyRulesToTarget);
 const mockCopySystemRulesToTarget = vi.mocked(copySystemRulesToTarget);
+const mockPathExists = vi.mocked(pathExists);
 const mockGetPackageVersion = vi.mocked(getPackageVersion);
 const mockReadConfigFile = vi.mocked(readConfigFile);
 const mockWriteConfigFile = vi.mocked(writeConfigFile);
@@ -41,6 +49,8 @@ const mockGetLatestSystemRulesVersion = vi.mocked(getLatestSystemRulesVersion);
 const mockGetVersionsWithRetry = vi.mocked(getVersionsWithRetry);
 const mockReadUserConfig = vi.mocked(readUserConfig);
 const mockGetUninitializedIdes = vi.mocked(getUninitializedIdes);
+const mockGetIdeRulesDir = vi.mocked(getIdeRulesDir);
+const mockAskConfirmation = vi.mocked(askConfirmation);
 
 describe('initCommand', () => {
     let mockSelect: {
@@ -58,6 +68,7 @@ describe('initCommand', () => {
         mockFetchSystemRulesTarball.mockResolvedValue(undefined);
         mockGetLatestSystemRulesVersion.mockResolvedValue(null);
         mockGetUninitializedIdes.mockResolvedValue(['cursor', 'trae', 'claude-code'] as const);
+        mockGetIdeRulesDir.mockReturnValue('rules');
         mockReadConfigFile.mockResolvedValue(null);
     });
 
@@ -226,5 +237,80 @@ describe('initCommand', () => {
         expect(installedAt.getTime()).toBeLessThanOrEqual(afterCall.getTime());
         expect(updatedAt.getTime()).toBeGreaterThanOrEqual(beforeCall.getTime());
         expect(updatedAt.getTime()).toBeLessThanOrEqual(afterCall.getTime());
+    });
+
+    it('должен передавать updateExisting = true если Claude CLI создал CLAUDE.md', async () => {
+        mockSelect.mockResolvedValue('claude-code');
+        mockGetUninitializedIdes.mockResolvedValue(['claude-code'] as const);
+        mockGetIdeRulesDir.mockReturnValue('rules-kit');
+        mockGetVersionsWithRetry.mockResolvedValue({ promptsVersion: '2025.11.10.1', systemRulesVersion: null });
+        mockFetchPromptsTarball.mockResolvedValue(undefined);
+        mockGetPackageVersion.mockResolvedValue('1.0.0');
+        mockCopyRulesToTarget.mockResolvedValue(undefined);
+        mockWriteConfigFile.mockResolvedValue(undefined);
+        mockRunClaudeInit.mockResolvedValue(undefined);
+
+        // Первый вызов pathExists для проверки существующего CLAUDE.md - не существует
+        // Второй вызов после runClaudeInit - существует (Claude CLI создал файл)
+        mockPathExists.mockResolvedValueOnce(false).mockResolvedValueOnce(true);
+
+        // Пользователь соглашается на инициализацию через Claude CLI
+        mockAskConfirmation.mockResolvedValue(true);
+
+        const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+
+        try {
+            await initCommand('/package/dir', '/target/dir');
+
+            expect(mockRunClaudeInit).toHaveBeenCalledWith('/target/dir');
+            expect(mockCopyRulesToTarget).toHaveBeenCalledWith(
+                expect.any(String),
+                '/target/dir',
+                'claude-code',
+                [],
+                [],
+                'rules-kit',
+                true, // updateExisting должен быть true
+            );
+        } finally {
+            consoleLogSpy.mockRestore();
+        }
+    });
+
+    it('должен передавать updateExisting = false если Claude CLI не создал CLAUDE.md', async () => {
+        mockSelect.mockResolvedValue('claude-code');
+        mockGetUninitializedIdes.mockResolvedValue(['claude-code'] as const);
+        mockGetIdeRulesDir.mockReturnValue('rules-kit');
+        mockGetVersionsWithRetry.mockResolvedValue({ promptsVersion: '2025.11.10.1', systemRulesVersion: null });
+        mockFetchPromptsTarball.mockResolvedValue(undefined);
+        mockGetPackageVersion.mockResolvedValue('1.0.0');
+        mockCopyRulesToTarget.mockResolvedValue(undefined);
+        mockWriteConfigFile.mockResolvedValue(undefined);
+        mockRunClaudeInit.mockResolvedValue(undefined);
+
+        // Оба вызова pathExists возвращают false (CLAUDE.md не создан)
+        mockPathExists.mockResolvedValue(false);
+
+        // Пользователь соглашается на инициализацию через Claude CLI
+        mockAskConfirmation.mockResolvedValue(true);
+
+        const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+
+        try {
+            await initCommand('/package/dir', '/target/dir');
+
+            expect(mockRunClaudeInit).toHaveBeenCalledWith('/target/dir');
+            expect(mockCopyRulesToTarget).toHaveBeenCalledWith(
+                expect.any(String),
+                '/target/dir',
+                'claude-code',
+                [],
+                [],
+                'rules-kit',
+                false, // updateExisting должен быть false
+            );
+        } finally {
+            consoleLogSpy.mockRestore();
+        }
     });
 });

@@ -42,7 +42,13 @@ vi.mock('../../lib/claude-cli/run-claude-init', () => ({
     runClaudeInit: vi.fn().mockResolvedValue(undefined),
 }));
 
+vi.mock('../../lib/helpers', () => ({
+    askConfirmation: vi.fn().mockResolvedValue(true),
+    isEmptyString: vi.fn((value) => value === null || value === undefined || value === ''),
+}));
+
 vi.mock('@clack/prompts', () => ({
+    confirm: vi.fn().mockResolvedValue(true),
     isCancel: vi.fn((value) => value === 'cancel'),
     select: vi.fn(),
 }));

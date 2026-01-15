@@ -40,6 +40,11 @@ vi.mock('../../lib/claude-cli/run-claude-init', () => ({
     runClaudeInit: vi.fn().mockResolvedValue(undefined),
 }));
 
+vi.mock('../../lib/helpers', () => ({
+    askConfirmation: vi.fn().mockResolvedValue(true),
+    isEmptyString: vi.fn((value) => value === null || value === undefined || value === ''),
+}));
+
 vi.mock('@clack/prompts', () => ({
     isCancel: vi.fn((value) => value === 'cancel'),
     select: vi.fn(),
@@ -139,5 +144,29 @@ describe('Claude Code Init E2E', () => {
         const settingsPath = join(tempDirPath, '.claude', 'settings.json');
 
         await expect(access(settingsPath, constants.F_OK)).resolves.toBeUndefined();
+    });
+
+    it('должен сохранять содержимое CLAUDE.md созданного Claude CLI', async () => {
+        const { writeFile } = await import('node:fs/promises');
+        const { runClaudeInit } = await import('../../lib/claude-cli/run-claude-init');
+
+        const originalContent = '# Original CLAUDE.md\n\nCreated by Claude CLI with project-specific instructions.';
+
+        // Мокаем runClaudeInit чтобы он создавал CLAUDE.md
+        vi.mocked(runClaudeInit).mockImplementation(async () => {
+            await writeFile(join(tempDirPath, 'CLAUDE.md'), originalContent, 'utf-8');
+        });
+
+        await initCommand(packageDir, tempDirPath);
+
+        const claudeMdPath = join(tempDirPath, 'CLAUDE.md');
+        const content = await readFile(claudeMdPath, 'utf-8');
+
+        // Проверяем что оригинальное содержимое сохранено
+        expect(content).toContain('Original CLAUDE.md');
+        expect(content).toContain('Created by Claude CLI');
+        // И что блок правил добавлен
+        expect(content).toContain('CLAUDE-RULES-START');
+        expect(content).toContain('CLAUDE-RULES-END');
     });
 });

@@ -136,6 +136,12 @@ export async function initCommand(packageDir: string, targetDir: string): Promis
                     console.log('  Если процесс Claude всё ещё работает — остановите его (Ctrl+C)');
                     console.log('  Нажмите Enter, чтобы продолжить установку правил...');
                     console.log('');
+
+                    // После успешной инициализации проверяем, создал ли Claude CLI файл CLAUDE.md
+                    const claudeMdCreatedByCli = await pathExists(existingClaudeMd);
+                    if (claudeMdCreatedByCli) {
+                        updateExistingClaudeMd = true;
+                    }
                 } catch (error) {
                     throw new Error(`Не удалось выполнить claude /init: ${String(error)}`);
                 }
