@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.13.3] - 2026-01-17
+
+<small>17.01.2026 12:25</small>
+
+### Added
+
+- **Reset command for rules and configuration**
+    - Added `reset` command to completely remove rules and configuration files for selected IDE
+    - Supports resetting single IDE or all initialized IDEs
+    - Interactive selection of IDE to reset with confirmation prompt
+    - Added `deleteConfigFile` function to remove configuration files
+    - Added translations for reset command in Russian and English
+    - Added reset command to interactive menu
+    - Added E2E tests for reset command
+
+### Changed
+
+- Updated various test files with minor improvements
+
 ## [0.13.2] - 2026-01-15
 
 <small>15.01.2026 08:12</small>
