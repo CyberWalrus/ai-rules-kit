@@ -22,6 +22,8 @@ export {
     initCommandParamsSchema,
     type ReplaceAllCommandParams,
     replaceAllCommandParamsSchema,
+    type ResetCommandParams,
+    resetCommandParamsSchema,
     type UpgradeCommandParams,
     upgradeCommandParamsSchema,
 } from './schemas/command-params';

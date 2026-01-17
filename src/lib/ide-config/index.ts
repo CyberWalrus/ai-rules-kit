@@ -1,3 +1,4 @@
+export { getClaudeSettingsPath } from '../claude-code-config';
 export { ALL_IDES, getInitializedIdes, getUninitializedIdes } from './get-initialized-ides';
 
 /** Тип поддерживаемой IDE */

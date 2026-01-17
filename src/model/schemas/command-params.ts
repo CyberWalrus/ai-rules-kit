@@ -26,3 +26,12 @@ export const upgradeCommandParamsSchema = z.object({
 
 /** Тип параметров команды upgrade */
 export type UpgradeCommandParams = z.infer<typeof upgradeCommandParamsSchema>;
+
+/** Схема валидации параметров для команды reset */
+export const resetCommandParamsSchema = z.object({
+    packageDir: z.string().min(1, 'packageDir cannot be empty'),
+    targetDir: z.string().min(1, 'targetDir cannot be empty'),
+});
+
+/** Тип параметров команды reset */
+export type ResetCommandParams = z.infer<typeof resetCommandParamsSchema>;

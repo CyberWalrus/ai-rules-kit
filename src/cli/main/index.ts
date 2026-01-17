@@ -6,6 +6,7 @@ import { checkVersionsInBackground } from '../../lib/version-manager/check-versi
 import { configCommand } from '../commands/config';
 import { initCommand } from '../commands/init';
 import { replaceAllCommand } from '../commands/replace-all';
+import { resetCommand } from '../commands/reset';
 import { systemFilesCommand } from '../commands/system-files';
 import { upgradeCommand } from '../commands/upgrade';
 import { ensureLatestVersion } from './ensure-latest-version';
@@ -56,6 +57,17 @@ const main = defineCommand({
                 const targetDir = getTargetDir();
                 await replaceAllCommand(packageDir, targetDir);
                 console.log(t('cli.main.replace-all.success'));
+            },
+        }),
+        reset: defineCommand({
+            meta: {
+                description: 'Reset rules and configuration',
+                name: 'reset',
+            },
+            /** Запускает сброс правил и конфигурации */
+            async run(): Promise<void> {
+                const targetDir = getTargetDir();
+                await resetCommand(packageDir, targetDir);
             },
         }),
         'system-files': defineCommand({

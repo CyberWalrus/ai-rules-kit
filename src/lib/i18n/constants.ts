@@ -16,6 +16,8 @@ export const RU_TRANSLATIONS = {
     'cli.interactive-menu.replace-all': 'Заменить все правила',
     'cli.interactive-menu.replace-all.hint':
         'Полная замена всех файлов правил. Сохраняет ignoreList и fileOverrides из конфига',
+    'cli.interactive-menu.reset': 'Сбросить правила',
+    'cli.interactive-menu.reset.hint': 'Полное удаление правил и конфигурации',
     'cli.interactive-menu.select-action': 'Выберите действие:',
     'cli.interactive-menu.system-files': 'Глобальные промпты и конфиги для Cursor',
     'cli.interactive-menu.system-files.hint':
@@ -92,6 +94,15 @@ export const RU_TRANSLATIONS = {
     'command.replace-all.success': '✓ Заменены промпты на версию {version}',
     'command.replace-all.use-local': 'Хотите продолжить с текущей локальной версией?',
     'command.replace-all.use-local.no': 'Замена всех правил отменена пользователем',
+    'command.reset.all': 'Все IDE',
+    'command.reset.cancel': 'Отмена',
+    'command.reset.cancelled': 'Операция отменена',
+    'command.reset.complete': '✓ Сброс завершен',
+    'command.reset.confirm-multiple': 'Сбросить правила для {count} IDE?',
+    'command.reset.confirm-single': 'Сбросить правила для {ide}?',
+    'command.reset.no-initialized': 'Нет инициализированных IDE',
+    'command.reset.select-ide': 'Выберите IDE для сброса:',
+    'command.reset.success': '✓ Сброшено: {ide}',
     'command.system-files.back-to-menu': 'В главное меню',
     'command.system-files.copied': '✓ Скопировано в буфер обмена. Вставьте в Cursor: Rules and Commands -> User Rules',
     'command.system-files.copied.core-instructions':
@@ -167,6 +178,8 @@ export const EN_TRANSLATIONS = {
     'cli.interactive-menu.replace-all': 'Replace all rules',
     'cli.interactive-menu.replace-all.hint':
         'Complete replacement of all rule files. Preserves ignoreList and fileOverrides from config',
+    'cli.interactive-menu.reset': 'Reset rules',
+    'cli.interactive-menu.reset.hint': 'Complete removal of rules and configuration',
     'cli.interactive-menu.select-action': 'Select action:',
     'cli.interactive-menu.system-files': 'Global prompts and configs for Cursor',
     'cli.interactive-menu.system-files.hint':
@@ -243,6 +256,15 @@ export const EN_TRANSLATIONS = {
     'command.replace-all.success': '✓ Replaced prompts to version {version}',
     'command.replace-all.use-local': 'Do you want to continue with the current local version?',
     'command.replace-all.use-local.no': 'Replace-all cancelled by user',
+    'command.reset.all': 'All IDEs',
+    'command.reset.cancel': 'Cancel',
+    'command.reset.cancelled': 'Operation cancelled',
+    'command.reset.complete': '✓ Reset complete',
+    'command.reset.confirm-multiple': 'Reset rules for {count} IDEs?',
+    'command.reset.confirm-single': 'Reset rules for {ide}?',
+    'command.reset.no-initialized': 'No initialized IDEs',
+    'command.reset.select-ide': 'Select IDE to reset:',
+    'command.reset.success': '✓ Reset: {ide}',
     'command.system-files.back-to-menu': 'Back to main menu',
     'command.system-files.copied': '✓ Copied to clipboard. Paste in Cursor: Rules and Commands -> User Rules',
     'command.system-files.copied.core-instructions':

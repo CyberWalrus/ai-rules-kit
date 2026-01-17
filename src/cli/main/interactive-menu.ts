@@ -6,6 +6,7 @@ import { getCurrentVersion } from '../../lib/version-manager/get-current-version
 import type { InteractiveMenuAction } from '../../model/types/main';
 import { configCommand } from '../commands/config';
 import { initCommand } from '../commands/init';
+import { resetCommand } from '../commands/reset';
 import { systemFilesCommand } from '../commands/system-files';
 import { upgradeCommand } from '../commands/upgrade';
 import { versionsCommand } from '../commands/versions';
@@ -32,6 +33,14 @@ function buildMenuOptions(
             hint: t('cli.interactive-menu.upgrade.hint'),
             label: t('cli.interactive-menu.upgrade'),
             value: 'upgrade',
+        });
+    }
+
+    if (isInitialized) {
+        options.push({
+            hint: t('cli.interactive-menu.reset.hint'),
+            label: t('cli.interactive-menu.reset'),
+            value: 'reset',
         });
     }
 
@@ -77,6 +86,10 @@ async function handleMenuAction(
         case 'upgrade':
             await upgradeCommand(packageDir, targetDir);
             outro(t('cli.main.upgrade.success'));
+
+            return false;
+        case 'reset':
+            await resetCommand(packageDir, targetDir);
 
             return false;
         case 'config': {

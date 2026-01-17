@@ -1,5 +1,5 @@
 /** Тип команды CLI */
-export type CommandType = 'config' | 'init' | 'replace-all' | 'system-files' | 'upgrade';
+export type CommandType = 'config' | 'init' | 'replace-all' | 'reset' | 'system-files' | 'upgrade';
 
 /** Тип действия интерактивного меню */
 export type InteractiveMenuAction =
@@ -7,6 +7,7 @@ export type InteractiveMenuAction =
     | 'exit'
     | 'init-other-ide'
     | 'init'
+    | 'reset'
     | 'system-files'
     | 'upgrade'
     | 'versions';
