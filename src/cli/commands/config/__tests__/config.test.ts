@@ -135,4 +135,108 @@ describe('configCommand', () => {
             }),
         );
     });
+
+    describe('обработка текстового ввода', () => {
+        it('должен корректно обрабатывать пустую строку в mcp-settings', async () => {
+            const existingConfig = {
+                language: 'en' as const,
+                mcpSettings: {
+                    aiModel: 'openai/gpt-oss-120b',
+                    apiKey: 'test-key',
+                    apiProviders: 'test-provider',
+                },
+            };
+            mockReadUserConfig.mockResolvedValue(existingConfig);
+            // Выбираем mcp-settings, затем api-providers, вводим пустую строку, завершаем
+            mockSelect
+                .mockResolvedValueOnce('mcp-settings')
+                .mockResolvedValueOnce('api-providers')
+                .mockResolvedValueOnce('finish')
+                .mockResolvedValueOnce('finish');
+            mockText.mockResolvedValue('');
+
+            await configCommand();
+
+            const savedConfig = mockWriteUserConfig.mock.calls[0]?.[0] as { mcpSettings?: { apiProviders?: string } };
+            expect(savedConfig.mcpSettings?.apiProviders).toBeUndefined();
+        });
+
+        it('должен корректно обрабатывать пустую строку в meta-info полях', async () => {
+            const existingConfig = {
+                language: 'en' as const,
+                metaInfo: {
+                    name: 'Test Name',
+                },
+            };
+            mockReadUserConfig.mockResolvedValue(existingConfig);
+            mockSelect
+                .mockResolvedValueOnce('meta-info')
+                .mockResolvedValueOnce('name')
+                .mockResolvedValueOnce('finish')
+                .mockResolvedValueOnce('finish');
+            mockText.mockResolvedValue('');
+
+            await configCommand();
+
+            const savedConfig = mockWriteUserConfig.mock.calls[0]?.[0] as { metaInfo?: { name?: string } };
+            expect(savedConfig.metaInfo?.name).toBeUndefined();
+        });
+
+        it('должен корректно обрабатывать пустую строку для age', async () => {
+            const existingConfig = {
+                language: 'en' as const,
+                metaInfo: {
+                    age: 25,
+                },
+            };
+            mockReadUserConfig.mockResolvedValue(existingConfig);
+            mockSelect
+                .mockResolvedValueOnce('meta-info')
+                .mockResolvedValueOnce('age')
+                .mockResolvedValueOnce('finish')
+                .mockResolvedValueOnce('finish');
+            mockText.mockResolvedValue('');
+
+            await configCommand();
+
+            const savedConfig = mockWriteUserConfig.mock.calls[0]?.[0] as { metaInfo?: { age?: number } };
+            expect(savedConfig.metaInfo?.age).toBeUndefined();
+        });
+
+        it('должен корректно обрабатывать пустую строку для github-token', async () => {
+            const existingConfig = {
+                githubToken: 'existing-token',
+                language: 'en' as const,
+            };
+            mockReadUserConfig.mockResolvedValue(existingConfig);
+            mockSelect.mockResolvedValueOnce('github-token').mockResolvedValueOnce('finish');
+            mockText.mockResolvedValue('');
+
+            await configCommand();
+
+            const savedConfig = mockWriteUserConfig.mock.calls[0]?.[0] as { githubToken?: string };
+            expect(savedConfig.githubToken).toBeUndefined();
+        });
+
+        it('должен корректно обрабатывать строковые значения после trim', async () => {
+            const existingConfig = {
+                language: 'en' as const,
+                metaInfo: {
+                    name: '  Test Name  ',
+                },
+            };
+            mockReadUserConfig.mockResolvedValue(existingConfig);
+            mockSelect
+                .mockResolvedValueOnce('meta-info')
+                .mockResolvedValueOnce('name')
+                .mockResolvedValueOnce('finish')
+                .mockResolvedValueOnce('finish');
+            mockText.mockResolvedValue('  New Name  ');
+
+            await configCommand();
+
+            const savedConfig = mockWriteUserConfig.mock.calls[0]?.[0] as { metaInfo?: { name?: string } };
+            expect(savedConfig.metaInfo?.name).toBe('New Name');
+        });
+    });
 });

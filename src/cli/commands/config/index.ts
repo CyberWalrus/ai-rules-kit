@@ -116,7 +116,7 @@ async function editMetaInfo(currentMetaInfo: UserMetaInfo | null | undefined): P
                 continue;
             }
 
-            const ageValue = ageInput.trim();
+            const ageValue = String(ageInput).trim();
             if (ageValue === '') {
                 value = undefined;
             } else {
@@ -166,7 +166,7 @@ async function editMetaInfo(currentMetaInfo: UserMetaInfo | null | undefined): P
                 continue;
             }
 
-            value = fieldInput.trim() === '' ? undefined : fieldInput.trim();
+            value = String(fieldInput).trim() === '' ? undefined : String(fieldInput).trim();
         }
 
         const fieldMap: Record<string, keyof UserMetaInfo> = {
@@ -260,7 +260,7 @@ async function editMcpSettings(currentMcpSettings: McpSettings | null | undefine
             continue;
         }
 
-        const value = fieldInput.trim();
+        const value = String(fieldInput).trim();
 
         if (field === 'api-key') {
             mcpSettings.apiKey = value;
@@ -291,7 +291,7 @@ async function editGithubToken(currentToken: string | null | undefined): Promise
         return currentToken ?? undefined;
     }
 
-    const value = tokenInput.trim();
+    const value = String(tokenInput).trim();
 
     return value === '' ? undefined : value;
 }
