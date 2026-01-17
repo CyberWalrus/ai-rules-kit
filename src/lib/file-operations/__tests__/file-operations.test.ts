@@ -118,7 +118,7 @@ describe('file-operations', () => {
 
             expect(result).toEqual(config);
             expect(mockPathExists).toHaveBeenCalled();
-            expect(mockReadFile).toHaveBeenCalledWith(join(targetDir, '.cursor', 'ai-rules-kit-config.json'), 'utf-8');
+            expect(mockReadFile).toHaveBeenCalledWith(join(targetDir, '.cursor', 'ai-rules-kit-config.json'), 'utf8');
         });
 
         it('должен возвращать null если файл не существует', async () => {
@@ -154,7 +154,7 @@ describe('file-operations', () => {
             expect(mockWriteFile).toHaveBeenCalledWith(
                 join(targetDir, '.cursor', 'ai-rules-kit-config.json'),
                 JSON.stringify(expectedConfig, null, 2),
-                'utf-8',
+                'utf8',
             );
         });
     });

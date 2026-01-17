@@ -14,7 +14,7 @@ export async function getSystemRulesFile(fileName: string, forceRefresh: boolean
     const filePath = join(cacheDir, fileName);
 
     try {
-        return await readFile(filePath, 'utf-8');
+        return await readFile(filePath, 'utf8');
     } catch (error) {
         throw new Error(
             `Failed to read system rules file "${fileName}": ${error instanceof Error ? error.message : String(error)}`,

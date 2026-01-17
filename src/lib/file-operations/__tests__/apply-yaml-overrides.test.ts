@@ -45,7 +45,7 @@ Content here
             priority: 10,
         });
 
-        expect(mockReadFile).toHaveBeenCalledWith(testFilePath, 'utf-8');
+        expect(mockReadFile).toHaveBeenCalledWith(testFilePath, 'utf8');
         expect(mockWriteFile).toHaveBeenCalled();
 
         const writtenContent = mockWriteFile.mock.calls[0]?.[1] as string;

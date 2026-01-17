@@ -19,7 +19,7 @@ async function getCachedVersion(cacheDir: string): Promise<string | null> {
     }
 
     try {
-        const content = await readFile(versionPath, 'utf-8');
+        const content = await readFile(versionPath, 'utf8');
 
         return content.trim();
     } catch {
@@ -31,7 +31,7 @@ async function getCachedVersion(cacheDir: string): Promise<string | null> {
 async function saveCachedVersion(cacheDir: string, version: string): Promise<void> {
     const versionPath = join(cacheDir, VERSION_FILE);
 
-    await writeFile(versionPath, version, 'utf-8');
+    await writeFile(versionPath, version, 'utf8');
 }
 
 /** Сравнивает две версии (возвращает true, если version1 > version2) */

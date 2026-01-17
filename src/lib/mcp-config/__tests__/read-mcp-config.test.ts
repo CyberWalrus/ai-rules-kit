@@ -44,7 +44,7 @@ describe('readMcpConfig', () => {
         const result = await readMcpConfig();
 
         expect(result).toEqual(config);
-        expect(mockReadFile).toHaveBeenCalledWith(mockConfigPath, 'utf-8');
+        expect(mockReadFile).toHaveBeenCalledWith(mockConfigPath, 'utf8');
     });
 
     it('должен возвращать null если файл не существует', async () => {

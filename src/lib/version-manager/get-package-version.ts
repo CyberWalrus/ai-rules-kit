@@ -12,7 +12,7 @@ export async function getPackageVersion(packageDir: string): Promise<string> {
     const packageJsonPath = join(packageDir, 'package.json');
 
     try {
-        const content = await readFile(packageJsonPath, 'utf-8');
+        const content = await readFile(packageJsonPath, 'utf8');
         const packageJson = JSON.parse(content) as { version: string };
 
         return packageJson.version;

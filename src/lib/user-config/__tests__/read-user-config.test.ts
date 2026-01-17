@@ -41,7 +41,7 @@ describe('readUserConfig', () => {
         expect(result).toEqual(config);
         expect(mockGetUserConfigDir).toHaveBeenCalled();
         expect(mockPathExists).toHaveBeenCalledWith(join('/test/config', 'config.json'));
-        expect(mockReadFile).toHaveBeenCalledWith(join('/test/config', 'config.json'), 'utf-8');
+        expect(mockReadFile).toHaveBeenCalledWith(join('/test/config', 'config.json'), 'utf8');
     });
 
     it('должен возвращать null если файл не существует', async () => {

@@ -18,7 +18,7 @@ export async function readUserConfig(): Promise<UserConfig | null> {
             return null;
         }
 
-        const content = await readFile(configFilePath, 'utf-8');
+        const content = await readFile(configFilePath, 'utf8');
         const parsed = JSON.parse(content) as unknown;
 
         return userConfigSchema.parse(parsed);

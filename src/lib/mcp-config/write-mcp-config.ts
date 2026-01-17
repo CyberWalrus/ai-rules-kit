@@ -15,5 +15,5 @@ export async function writeMcpConfig(config: McpConfig): Promise<void> {
     const content = JSON.stringify(config, null, 4);
 
     await mkdir(configDir, { recursive: true });
-    await writeFile(configPath, content, 'utf-8');
+    await writeFile(configPath, content, 'utf8');
 }

@@ -46,7 +46,7 @@ export async function classifyRules(rulesDir: string): Promise<ClassifiedRules> 
         }
 
         const filePath = join(rulesDir, entry.name);
-        const content = await readFile(filePath, 'utf-8');
+        const content = await readFile(filePath, 'utf8');
         const parsed = parseRuleFrontmatter(content);
 
         if (parsed === null) {

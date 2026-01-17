@@ -25,7 +25,7 @@ export async function copyToClipboard(text: string): Promise<void> {
             stdio: ['pipe', 'ignore', 'ignore'],
         });
 
-        process.stdin.write(text, 'utf-8');
+        process.stdin.write(text, 'utf8');
         process.stdin.end();
 
         process.on('close', (code) => {

@@ -17,7 +17,7 @@ export async function writeUserConfig(config: UserConfig): Promise<void> {
 
     try {
         await mkdir(configDir, { recursive: true });
-        await writeFile(configFilePath, content, 'utf-8');
+        await writeFile(configFilePath, content, 'utf8');
     } catch (error) {
         throw new Error(`Failed to write user config file: ${String(error)}`);
     }

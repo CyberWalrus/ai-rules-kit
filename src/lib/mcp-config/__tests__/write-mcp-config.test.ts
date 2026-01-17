@@ -44,7 +44,7 @@ describe('writeMcpConfig', () => {
         await writeMcpConfig(config);
 
         expect(mockMkdir).toHaveBeenCalledWith('/Users/test/.cursor', { recursive: true });
-        expect(mockWriteFile).toHaveBeenCalledWith(mockConfigPath, JSON.stringify(config, null, 4), 'utf-8');
+        expect(mockWriteFile).toHaveBeenCalledWith(mockConfigPath, JSON.stringify(config, null, 4), 'utf8');
     });
 
     it('должен выбрасывать ошибку если config равен null', async () => {

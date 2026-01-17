@@ -12,7 +12,7 @@ import { writeConfigFile } from './write-config-file';
 /** Читает и парсит файл конфигурации */
 async function readAndParseConfig(configFilePath: string): Promise<RulesConfig | null> {
     try {
-        const content = await readFile(configFilePath, 'utf-8');
+        const content = await readFile(configFilePath, 'utf8');
         const parsed = JSON.parse(content) as { [key: string]: unknown; $schema?: string };
 
         const oldSchemaPattern = /\.(cursor|trae)\/(cursor-rules|ai-rules-kit)-config-(\d+\.\d+\.\d+)\.schema\.json/;

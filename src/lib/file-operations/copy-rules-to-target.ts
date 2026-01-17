@@ -44,7 +44,7 @@ async function copyFileWithConversion(
         }
     }
 
-    let content = await readFile(sourcePath, 'utf-8');
+    let content = await readFile(sourcePath, 'utf8');
 
     // Для Cursor/TRAE удаляем поле description (нужно только для Claude Code)
     if (ideType !== 'claude-code') {
@@ -52,7 +52,7 @@ async function copyFileWithConversion(
     }
 
     const processedContent = replacePlaceholders(content, ideType);
-    await writeFile(finalTargetPath, processedContent, 'utf-8');
+    await writeFile(finalTargetPath, processedContent, 'utf8');
 }
 
 /** Рекурсивно копирует файлы из директории с конвертацией */

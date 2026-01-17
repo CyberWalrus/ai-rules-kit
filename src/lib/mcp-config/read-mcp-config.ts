@@ -14,7 +14,7 @@ export async function readMcpConfig(): Promise<McpConfig | null> {
             return null;
         }
 
-        const content = await readFile(configPath, 'utf-8');
+        const content = await readFile(configPath, 'utf8');
         const parsed = JSON.parse(content) as unknown;
 
         if (typeof parsed !== 'object' || parsed === null) {

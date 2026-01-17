@@ -51,7 +51,7 @@ describe('readConfigFile', () => {
 
         expect(result).toEqual(config);
         expect(mockPathExists).toHaveBeenCalled();
-        expect(mockReadFile).toHaveBeenCalledWith(join(targetDir, '.cursor', 'ai-rules-kit-config.json'), 'utf-8');
+        expect(mockReadFile).toHaveBeenCalledWith(join(targetDir, '.cursor', 'ai-rules-kit-config.json'), 'utf8');
     });
 
     it('должен возвращать null если файл не существует', async () => {

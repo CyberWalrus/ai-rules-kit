@@ -52,7 +52,7 @@ describe('version-manager', () => {
             const version = await getPackageVersion('/package');
 
             expect(version).toBe('2.0.0');
-            expect(mockReadFile).toHaveBeenCalledWith(expect.stringContaining('package.json'), 'utf-8');
+            expect(mockReadFile).toHaveBeenCalledWith(expect.stringContaining('package.json'), 'utf8');
         });
 
         it('должен выбрасывать ошибку если файл не читается', async () => {

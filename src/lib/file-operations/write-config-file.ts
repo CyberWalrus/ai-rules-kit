@@ -27,7 +27,7 @@ export async function writeConfigFile(targetDir: string, config: RulesConfig, id
 
     try {
         await mkdir(join(targetDir, ideDir), { recursive: true });
-        await writeFile(configFilePath, content, 'utf-8');
+        await writeFile(configFilePath, content, 'utf8');
     } catch (error) {
         throw new Error(`Failed to write config file: ${String(error)}`);
     }

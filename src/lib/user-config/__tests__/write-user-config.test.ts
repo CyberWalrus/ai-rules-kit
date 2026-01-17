@@ -38,7 +38,7 @@ describe('writeUserConfig', () => {
         expect(mockWriteFile).toHaveBeenCalledWith(
             join('/test/config', 'config.json'),
             JSON.stringify(config, null, 2),
-            'utf-8',
+            'utf8',
         );
     });
 

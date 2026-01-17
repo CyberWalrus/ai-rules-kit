@@ -43,7 +43,7 @@ describe('writeConfigFile', () => {
         expect(mockWriteFile).toHaveBeenCalledWith(
             join(targetDir, '.cursor', 'ai-rules-kit-config.json'),
             JSON.stringify(expectedConfig, null, 2),
-            'utf-8',
+            'utf8',
         );
     });
 

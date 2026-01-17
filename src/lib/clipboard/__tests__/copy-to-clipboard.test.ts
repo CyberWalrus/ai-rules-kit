@@ -40,7 +40,7 @@ describe('copyToClipboard', () => {
         expect(mockSpawn).toHaveBeenCalledWith('pbcopy', [], {
             stdio: ['pipe', 'ignore', 'ignore'],
         });
-        expect(mockProcess.stdin.write).toHaveBeenCalledWith('test text', 'utf-8');
+        expect(mockProcess.stdin.write).toHaveBeenCalledWith('test text', 'utf8');
         expect(mockProcess.stdin.end).toHaveBeenCalled();
     });
 

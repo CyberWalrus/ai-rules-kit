@@ -57,9 +57,9 @@ async function copyCommandsToClaude(packageDir: string, targetDir: string, ignor
             continue;
         }
 
-        const content = await readFile(sourcePath, 'utf-8');
+        const content = await readFile(sourcePath, 'utf8');
         const processedContent = replacePlaceholders(content, 'claude-code');
-        await writeFile(targetPath, processedContent, 'utf-8');
+        await writeFile(targetPath, processedContent, 'utf8');
     }
 }
 
@@ -93,21 +93,21 @@ async function copyDocsToClaude(packageDir: string, targetDir: string, ignoreLis
 
         const sourcePath = join(sourceDocsDir, String(entry.name));
 
-        const content = await readFile(sourcePath, 'utf-8');
+        const content = await readFile(sourcePath, 'utf8');
 
         // Конвертируем rules-catalog.md в docs-catalog.md
         if (entry.name === 'rules-catalog.md') {
             docsCatalogContent = convertDocsCatalog(content);
             const catalogPath = join(targetDocsDir, CLAUDE_DOCS_CATALOG_FILE_NAME);
             const processedContent = replacePlaceholders(docsCatalogContent, 'claude-code');
-            await writeFile(catalogPath, processedContent, 'utf-8');
+            await writeFile(catalogPath, processedContent, 'utf8');
         } else {
             // Пропускаем файл, если он уже существует (чтобы не перезаписывать пользовательские файлы)
             const targetPath = join(targetDocsDir, String(entry.name));
             const targetExists = await pathExists(targetPath);
             if (!targetExists) {
                 const processedContent = replacePlaceholders(content, 'claude-code');
-                await writeFile(targetPath, processedContent, 'utf-8');
+                await writeFile(targetPath, processedContent, 'utf8');
             }
         }
     }
@@ -132,7 +132,7 @@ async function createSkillsFromRules(rulesDir: string, targetDir: string): Promi
 
         const skillPath = join(skillDir, CLAUDE_SKILL_FILE_NAME);
         const processedContent = replacePlaceholders(converted.content, 'claude-code');
-        await writeFile(skillPath, processedContent, 'utf-8');
+        await writeFile(skillPath, processedContent, 'utf8');
     }
 }
 
@@ -176,7 +176,7 @@ async function convertMcpSettings(packageDir: string, targetDir: string): Promis
     let mcpServers: Record<string, unknown> = {};
 
     if (sourceExists) {
-        const mcpContent = await readFile(sourceMcpPath, 'utf-8');
+        const mcpContent = await readFile(sourceMcpPath, 'utf8');
         const mcpConfig = JSON.parse(mcpContent) as McpConfig;
         const newSettingsJson = convertMcpToSettingsJson(mcpConfig);
         const newSettings = JSON.parse(newSettingsJson) as { mcpServers?: Record<string, unknown> };
@@ -189,7 +189,7 @@ async function convertMcpSettings(packageDir: string, targetDir: string): Promis
     let existingSettings: Record<string, unknown> = {};
 
     if (targetExists) {
-        const existingContent = await readFile(targetSettingsPath, 'utf-8');
+        const existingContent = await readFile(targetSettingsPath, 'utf8');
         try {
             existingSettings = JSON.parse(existingContent) as Record<string, unknown>;
         } catch {
@@ -202,7 +202,7 @@ async function convertMcpSettings(packageDir: string, targetDir: string): Promis
     const mergedSettings = deepMerge(existingSettings, { mcpServers });
 
     await mkdir(join(targetDir, '.claude'), { recursive: true });
-    await writeFile(targetSettingsPath, `${JSON.stringify(mergedSettings, null, 2)}\n`, 'utf-8');
+    await writeFile(targetSettingsPath, `${JSON.stringify(mergedSettings, null, 2)}\n`, 'utf8');
 }
 
 /** Константы для поиска блока правил в CLAUDE.md */
@@ -215,7 +215,7 @@ export const BLOCK_END_TAG = '<!-- CLAUDE-RULES-END -->';
  * @param newBlock - Новый блок правил для вставки
  */
 export async function updateClaudeRulesBlock(claudeMdPath: string, newBlock: string): Promise<void> {
-    const existingContent = await readFile(claudeMdPath, 'utf-8');
+    const existingContent = await readFile(claudeMdPath, 'utf8');
 
     const startIndex = existingContent.indexOf(BLOCK_START_TAG);
     const endIndex = existingContent.indexOf(BLOCK_END_TAG);
@@ -223,7 +223,7 @@ export async function updateClaudeRulesBlock(claudeMdPath: string, newBlock: str
     if (startIndex === -1 || endIndex === -1) {
         // Теги не найдены - добавляем блок в конец файла
         const updatedContent = `${existingContent.trimEnd()}\n\n${newBlock}\n`;
-        await writeFile(claudeMdPath, updatedContent, 'utf-8');
+        await writeFile(claudeMdPath, updatedContent, 'utf8');
 
         return;
     }
@@ -233,7 +233,7 @@ export async function updateClaudeRulesBlock(claudeMdPath: string, newBlock: str
     const after = existingContent.slice(endIndex + BLOCK_END_TAG.length);
 
     const updatedContent = before + newBlock + after;
-    await writeFile(claudeMdPath, updatedContent, 'utf-8');
+    await writeFile(claudeMdPath, updatedContent, 'utf8');
 }
 
 /**
@@ -279,7 +279,7 @@ export async function copyRulesToClaudeCode(
     } else {
         // Стандартный режим - создаём новый файл
         const claudeMdContent = generateClaudeMainFile(alwaysApplyRules, docsCatalogContent);
-        await writeFile(claudeMdPath, claudeMdContent, 'utf-8');
+        await writeFile(claudeMdPath, claudeMdContent, 'utf8');
     }
 
     // 4. Создаём Skills для alwaysApply: false правил
