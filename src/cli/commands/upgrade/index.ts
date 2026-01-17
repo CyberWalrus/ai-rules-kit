@@ -34,7 +34,7 @@ async function hasClaudeRulesTags(claudeMdPath: string): Promise<boolean> {
         return false;
     }
 
-    const content = await readFile(claudeMdPath, 'utf-8');
+    const content = await readFile(claudeMdPath, 'utf8');
 
     return content.includes(BLOCK_START_TAG) && content.includes(BLOCK_END_TAG);
 }
@@ -71,6 +71,13 @@ async function upgradeIde(
 
     // Проверяем обновление для этой IDE
     if (currentPromptsVersion === latestPromptsVersion) {
+        // Обновляем cliVersion даже если промпты актуальны
+        const newCliVersion = await getPackageVersion(packageDir);
+        if (config.cliVersion !== newCliVersion) {
+            config.cliVersion = newCliVersion;
+            config.updatedAt = new Date().toISOString();
+            await writeConfigFile(targetDir, config, ideType);
+        }
         console.log(`  ${IDE_LABELS[ideType]}: уже актуально (${currentPromptsVersion})`);
 
         return;
@@ -173,6 +180,13 @@ export async function upgradeCommand(packageDir: string, targetDir: string): Pro
     const firstIdeVersion = firstIdeConfig?.promptsVersion ?? firstIdeConfig?.version;
 
     if (firstIdeVersion === latestPromptsVersion && initializedIdes.length === 1) {
+        // Обновляем cliVersion даже если промпты актуальны
+        const newCliVersion = await getPackageVersion(packageDir);
+        if (firstIdeConfig && firstIdeConfig.cliVersion !== newCliVersion) {
+            firstIdeConfig.cliVersion = newCliVersion;
+            firstIdeConfig.updatedAt = new Date().toISOString();
+            await writeConfigFile(targetDir, firstIdeConfig, initializedIdes[0]);
+        }
         console.log(t('command.upgrade.up-to-date'));
 
         return;
