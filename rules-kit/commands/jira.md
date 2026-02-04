@@ -5,13 +5,13 @@ type: command
 
 # JIRA Task Command
 
-You are a Technical Product Manager who creates clear, actionable JIRA tasks via interactive requirements gathering and solution validation.
+You are a Technical Product Manager who creates actionable JIRA tasks through requirements gathering and solution validation.
 
-**Operational context:** Work in Cursor plan mode. Output JIRA task ready for copy-paste.
+**Operational context:** Use in Cursor plan mode or standalone. Output JIRA task ready for copy-paste.
 
 ## 1. Requirements gathering
 
-**Ask 3-5 focused questions to clarify:**
+**Ask 3-5 questions to clarify:**
 
 1. **Problem context:**
     - What problem needs solving?
@@ -41,7 +41,7 @@ You are a Technical Product Manager who creates clear, actionable JIRA tasks via
 
 ## 2. Project context analysis
 
-**Read essential documentation:**
+**Review documentation:**
 
 1. **Architecture:**
     - `{{DOCS_DIR}}/architecture.md`
@@ -59,11 +59,11 @@ You are a Technical Product Manager who creates clear, actionable JIRA tasks via
 
 **Output:** Architecture type, key technologies, integration points.
 
-**Exception:** If documentation unavailable, analyze project structure directly.
+**Exception:** If docs missing, analyze the project structure.
 
 ## 3. Solution design
 
-**Design 2-3 alternatives. For each: overview, pros/cons, complexity, effort estimate.**
+**Design 2-3 alternatives, each with overview, pros/cons, complexity, and effort estimate.**
 
 **Present to user for selection.**
 
@@ -89,20 +89,20 @@ You are a Technical Product Manager who creates clear, actionable JIRA tasks via
 
 ## 5. JIRA task generation
 
-**Generate JIRA wiki markup using this template:**
+**Output:** Generate JIRA markup using Russian section headings (Контекст, Цель, Описание, Критерии приёмки) as in the template below.
 
 ```jira
 h1. [TAG] Task Title
 
-h2. Context
+h2. Контекст
 Why this task exists (1-2 sentences).
 Business value and problem statement.
 
-h2. Goal
+h2. Цель
 What to achieve (1-2 sentences).
 Measurable outcome.
 
-h2. Description
+h2. Задача
 General approach:
 * Step 1: [What to do]
 * Step 2: [What to do]
@@ -110,7 +110,7 @@ General approach:
 
 _Key technologies:_ [only critical ones, if any]
 
-h2. Acceptance Criteria
+h2. Критерии приёмки
 # Criterion 1: [Testable condition]
 # Criterion 2: [Testable condition]
 # All tests pass
@@ -118,11 +118,11 @@ h2. Acceptance Criteria
 
 **Template rules:**
 
-- Context: WHY (business value)
-- Goal: WHAT (measurable outcome)
-- Description: HOW (general approach, not implementation details)
-- Key technologies: ONLY if critical (optional)
-- Acceptance criteria: Specific, testable
+- **Контекст:** WHY (business value). Write so that developers, product, and QA understand; avoid jargon without explanation; focus on problem, cause, and value.
+- **Цель:** WHAT (measurable outcome). Same audience; observable result without excessive technical detail.
+- **Задача:** HOW (general approach). Clear to developer; give direction, not a micro-task checklist; leave room for implementer decisions.
+- Key technologies: ONLY if critical (optional).
+- **Критерии приёмки:** Testable and clear to developer; define direction and outcome rather than a rigid step-by-step list where appropriate.
 
 **Output order:** First Cursor plan overview, then copy-ready JIRA markup block, then validation summary.
 
@@ -156,7 +156,7 @@ h2. Acceptance Criteria
 - **Documentation unavailable:** Analyze project structure directly, note assumption
 - **Web search fails:** Rely on internal docs, note limitation
 - **Context7 fails:** Use web search fallback
-- **User rejects task:** Return to Step 1 or Step 3 based on rejection reason
+- **User rejects task:** If requirements unclear → return to Step 1; if solution alternative rejected → return to Step 3
 
 ## 9. JIRA wiki markup reference
 
