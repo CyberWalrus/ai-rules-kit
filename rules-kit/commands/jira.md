@@ -107,14 +107,20 @@ h3. Критерии приёмки
 
 - **Контекст:** WHY (business value). Write so developers, product, and QA understand; avoid jargon; focus on problem and value.
 - **Цель:** WHAT (measurable outcome). Observable result without excessive technical detail.
-- **Задача:** HOW (general approach). Give direction, NOT specific files or micro-tasks. Leave room for implementer decisions. Combine related items.
-- **Критерии приёмки:** Testable conditions. NO specific file paths. Describe WHAT should work, not HOW to implement.
+- **Задача:** HOW (general approach). Give direction, NOT specific files or micro-tasks. Leave room for implementer decisions. Combine related items. Write so the task stays valid when code structure or names change before the task is started — prefer fewer, high-level bullets (e.g. 3–7) that describe scope and direction, not an implementation checklist.
+- **Критерии приёмки:** Testable conditions. NO specific file paths or code symbols. Describe WHAT should work and what must be gone/working, not HOW to implement.
 
 **FORBIDDEN in Задача and Критерии приёмки:**
 
-- Specific file paths (e.g., `src/components/Button.tsx`)
-- Line-by-line instructions
-- Implementation details that belong in code
+- Specific file paths, directory names, or module paths (e.g. `src/components/Button.tsx`, `fast-binding-saga/`, `account/selectors.ts`)
+- Specific code symbols: function names, selector names, type names, saga names, constant names (e.g. `getIsTryFastBinding`, `FastTrackBinding`, `TK_FASTTRACK`)
+- Package or dependency names used as a removal/change checklist (e.g. "remove fastify from package.json")
+- Line-by-line or file-by-file instructions; implementation details that belong in code
+- Long enumerated lists that mirror current codebase structure — these become outdated; merge into fewer outcome-oriented points
+
+**Abstraction level:** In "Задача", write at the level of "replace X with Y", "remove all code related to Z", "ensure flow A works end-to-end". The implementer discovers concrete files and symbols; the task must not depend on them.
+
+**Example (Задача):** Bad: listing "delete saga X, remove selectors A/B/C from file Y, remove types from Z". Good: "Implement alternative identification mechanism; remove all FastTrack-related code (sagas, selectors, types, UI, mocks and translations); update identification flow and clean dependencies so the codebase no longer references FastTrack."
 
 ## 4. Quality validation (4 subagents in parallel)
 
