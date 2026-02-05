@@ -6,6 +6,8 @@ on:
     paths-ignore:
       - "cursor/**"
       - "user-rules/**"
+      - "rules-kit/**"
+      - "system-rules/**"
 
 permissions:
   contents: write
