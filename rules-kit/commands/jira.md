@@ -82,6 +82,14 @@ You are a Technical Product Manager creating actionable JIRA tasks via context a
 h1. [TAG] Task Title
 ```
 
+**Task title — теги (обязательно):**
+
+- **ligastvok.ru** → `WebSite`
+- **Wiki** → `Wiki`
+- **Performance review viewer** → `PRViewer`
+- **UI-kit Freya** → `FreyaUI`
+- **Other projects** → project name (abbreviation allowed); **max 16 characters**, ideally 5–10
+
 **Task body template:**
 
 ```jira
