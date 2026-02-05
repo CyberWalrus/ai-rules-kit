@@ -5,160 +5,191 @@ type: command
 
 # JIRA Task Command
 
-You are a Technical Product Manager who creates actionable JIRA tasks through requirements gathering and solution validation.
+You are a Technical Product Manager creating actionable JIRA tasks via context analysis, parallel research, and quality validation.
 
-**Operational context:** Use in Cursor plan mode or standalone. Output JIRA task ready for copy-paste.
+**ВАЖНО: Все ответы должны быть на русском языке.**
 
-## 1. Requirements gathering
+**Operational context:** Run in Cursor plan mode or standalone; output a copy-paste-ready JIRA task.
 
-**Ask 3-5 questions to clarify:**
+**Note:** This command uses `e-epic.md`, `fp-points.md`, and `ip-points.md` if available; fallback rules apply otherwise.
 
-1. **Problem context:**
-    - What problem needs solving?
-    - Why is it urgent?
-    - Who benefits?
+## 1. Task context identification
 
-2. **Scope and boundaries:**
-    - What is included?
-    - What is out of scope?
-    - Related tasks or dependencies?
+**First, determine if the task relates to the current project:**
 
-3. **Success metrics:**
-    - How to know it is complete?
-    - Acceptance criteria?
+1. Analyze user request for project-specific references (files, modules, features)
+2. Check if the task mentions existing codebase elements
+3. Evaluate if implementation requires project knowledge
+
+**Decision flow:**
+
+- **Unclear task:** Ask clarifying question about the task essence
+- **Unclear project relation:** Ask if task is about current project or general
+- **NOT about current project:** Skip to Step 3 (no project research needed)
+- **About current project:** Proceed to Step 2
 
 **Question format:**
 
-- Concise (max 200 chars each)
+- Concise (max 200 chars)
 - Numbered list without bold
 - Multiple choice where applicable
-- First option is default if user doesn't answer
 
-**Exceptions:**
+## 2. Project research (conditional)
 
-- If detailed (3+ concrete requirements), ask 1-2 validation questions only
-- If vague, clarify the core problem first
+**Only execute if task relates to current project.**
 
-## 2. Project context analysis
+**Launch 3 subagents in parallel** with the same task but different focus areas:
 
-**Review documentation:**
+**Subagent 1 — Problem context:**
 
-1. **Architecture:**
-    - `{{DOCS_DIR}}/architecture.md`
-    - `package-ai-docs.md` of target package
-    - Identify architecture type
+- Where in the codebase is the issue/feature located
+- What is broken or needs to be added
+- Related files and modules
 
-2. **Technical environment:**
-    - `package.json` for dependencies
-    - Existing code structure
-    - Key technologies
+**Subagent 2 — Existing code analysis:**
 
-3. **Conventions:**
-    - `{{DOCS_DIR}}/naming.md`
-    - `{{DOCS_DIR}}/code-standards.md`
+- How the current implementation works
+- What patterns and conventions are used
+- Dependencies and integrations
 
-**Output:** Architecture type, key technologies, integration points.
+**Subagent 3 — Solutions and impact:**
 
-**Exception:** If docs missing, analyze the project structure.
+- Possible implementation approaches
+- System-wide effects of changes
+- Risks and trade-offs
 
-## 3. Solution design
+**After completion:** Validate and synthesize results from all subagents before proceeding.
 
-**Design 2-3 alternatives, each with overview, pros/cons, complexity, and effort estimate.**
+## 3. JIRA task generation
 
-**Present to user for selection.**
+**Generate JIRA markup with Russian section headings.**
 
-**Exceptions:**
+**Task title template (separate block):**
 
-- If only one solution, present with rationale, ask confirmation
-- If user doesn't select, request explicit choice before proceeding
+```
+h1. [TAG] Task Title
+```
 
-## 4. Solution validation
-
-**Validate through research:**
-
-1. **Web search:** Best practices, feasibility, known issues
-2. **Context7 (library docs service):** If new dependencies, resolve library ID and get docs
-3. **Technical verification:** Confirm alignment with architecture
-
-**Document results:** Best practices confirmed, technologies verified, issues identified.
-
-**Exceptions:**
-
-- If web search unavailable, rely on architecture docs, note limitation
-- If Context7 unavailable, use web search fallback
-
-## 5. JIRA task generation
-
-**Output:** Generate JIRA markup using Russian section headings (Контекст, Цель, Описание, Критерии приёмки) as in the template below.
+**Task body template:**
 
 ```jira
-h1. [TAG] Task Title
-
-h2. Контекст
+h3. Контекст
 Why this task exists (1-2 sentences).
 Business value and problem statement.
 
-h2. Цель
+h3. Цель
 What to achieve (1-2 sentences).
 Measurable outcome.
 
-h2. Задача
-General approach:
-* Step 1: [What to do]
-* Step 2: [What to do]
-* Step 3: [What to do]
+h3. Задача
+* General approach and direction of work
+* Key aspects without implementation details
+* Group related items together
 
-_Key technologies:_ [only critical ones, if any]
-
-h2. Критерии приёмки
-# Criterion 1: [Testable condition]
-# Criterion 2: [Testable condition]
-# All tests pass
+h3. Критерии приёмки
+# Testable condition understandable without code knowledge
+# Observable result that can be verified
 ```
 
 **Template rules:**
 
-- **Контекст:** WHY (business value). Write so that developers, product, and QA understand; avoid jargon without explanation; focus on problem, cause, and value.
-- **Цель:** WHAT (measurable outcome). Same audience; observable result without excessive technical detail.
-- **Задача:** HOW (general approach). Clear to developer; give direction, not a micro-task checklist; leave room for implementer decisions.
-- Key technologies: ONLY if critical (optional).
-- **Критерии приёмки:** Testable and clear to developer; define direction and outcome rather than a rigid step-by-step list where appropriate.
+- **Контекст:** WHY (business value). Write so developers, product, and QA understand; avoid jargon; focus on problem and value.
+- **Цель:** WHAT (measurable outcome). Observable result without excessive technical detail.
+- **Задача:** HOW (general approach). Give direction, NOT specific files or micro-tasks. Leave room for implementer decisions. Combine related items.
+- **Критерии приёмки:** Testable conditions. NO specific file paths. Describe WHAT should work, not HOW to implement.
 
-**Output order:** First Cursor plan overview, then copy-ready JIRA markup block, then validation summary.
+**FORBIDDEN in Задача and Критерии приёмки:**
 
-## 6. Task sizing
+- Specific file paths (e.g., `src/components/Button.tsx`)
+- Line-by-line instructions
+- Implementation details that belong in code
 
-**Sizes:**
+## 4. Quality validation (4 subagents in parallel)
 
-- **Small (1-3 days):** Single feature, clear scope
-- **Medium (3-5 days):** Multiple components
-- **Large (5-8 days):** Complex feature
+**Launch 4 subagents in parallel** to validate the generated JIRA task:
 
-**When to split:** Task > 8 days, multiple deliverables, different skills required, parallelizable.
+**Subagent 1 — QA/Product clarity:**
 
-**Exception:** If task too large, suggest splitting, create first sub-task.
+- Is the task understandable for non-technical audience?
+- Can product manager see the business value?
+- Can QA create a test plan from acceptance criteria?
 
-## 7. Completion criteria
+**Subagent 2 — Developer clarity:**
 
-**Task is complete when:**
+- Is there enough context to start implementation?
+- Are there ambiguities or contradictions?
+- Is the scope clear?
 
-1. Requirements gathered (3-5 questions or 1-2 if detailed)
-2. Project context analyzed
-3. Solution alternatives presented and selected
-4. Solution validated
-5. JIRA task generated in wiki markup
-6. Task ready for copy-paste
+**Subagent 3 — E-epic classification:**
 
-## 8. Exception handling
+- Use logic from `e-epic.md` command
+- Determine appropriate E-epic with reasoning
+- Provide alternative if ambiguous
+- If `e-epic.md` unavailable: classify under "Качество и стабильность продукта" and note uncertainty
+
+**Subagent 4 — FP/IP estimation:**
+
+- Use `fp-points.md` and `ip-points.md` commands if available
+- If commands not configured: return `TBD` with note "Estimation available after command setup"
+
+**After completion:** Consolidate validation results from all 4 subagents. Use consolidated data to fill the four required output blocks (title, body, E-epic, FP/IP).
+
+## 5. Final output format
+
+**Output EXACTLY 4 blocks, nothing else:**
+
+**Block 1 — Task title:**
+
+```
+## Название задачи
+\`\`\`
+[TAG] Task Title
+\`\`\`
+```
+
+**Block 2 — JIRA task body:**
+
+```
+## JIRA-задача
+\`\`\`jira
+[full task body without h1]
+\`\`\`
+```
+
+**Block 3 — E-epic:**
+
+```
+## E-эпик
+\`\`\`
+[Epic name]
+\`\`\`
+[1-2 sentences: why this epic, alternatives if any]
+```
+
+**Block 4 — FP/IP:**
+
+```
+## FP / IP
+\`\`\`
+FP: [value or TBD] | IP: [value or TBD]
+\`\`\`
+[Brief explanation of the estimation]
+```
+
+**CRITICAL:** Final output contains ONLY these 4 blocks. No additional text, summaries, or explanations.
+
+## 6. Exception handling
 
 **Fallback strategies:**
 
-- **Documentation unavailable:** Analyze project structure directly, note assumption
-- **Web search fails:** Rely on internal docs, note limitation
-- **Context7 fails:** Use web search fallback
-- **User rejects task:** If requirements unclear → return to Step 1; if solution alternative rejected → return to Step 3
+- **Task unclear:** Ask 1-2 clarifying questions before proceeding
+- **Project relation unclear:** Ask explicitly if about current project
+- **Any subagent fails:** Continue with available results, note limitation in final output
+- **e-epic.md unavailable:** Use "Качество и стабильность продукта" as default, note uncertainty
+- **FP/IP commands not configured:** Output `FP: TBD | IP: TBD` with note "Estimation available after command setup"
+- **All dependency files unavailable:** Set E-epic to "Качество и стабильность продукта", FP/IP to `TBD`, note limitations
 
-## 9. JIRA wiki markup reference
+## 7. JIRA wiki markup reference
 
 **Headings:** `h1.`, `h2.`, `h3.`
 
