@@ -13,6 +13,12 @@ You are a Technical Product Manager creating actionable JIRA tasks via context a
 
 **Note:** This command uses `e-epic.md`, `fp-points.md`, and `ip-points.md` if available; fallback rules apply otherwise.
 
+---
+
+**⛔ BLOCKER — Subagents (ZERO TOLERANCE):** If the environment supports subagents (separate chats/agents/tasks), you **MUST** call them for steps 2 and 4 — do not do their work yourself. Check UI/docs for subagent launch; if available → launch 3 for step 2, 4 for step 4, wait for results, then synthesize. If subagents are unavailable → do steps yourself and state in output: "Subagents not invoked: not supported by environment."
+
+---
+
 ## 1. Task context identification
 
 **First, determine if the task relates to the current project:**
@@ -37,6 +43,8 @@ You are a Technical Product Manager creating actionable JIRA tasks via context a
 ## 2. Project research (conditional)
 
 **Only execute if task relates to current project.**
+
+**⛔ If subagents are available, call 3 — do not do research yourself.**
 
 **Launch 3 subagents in parallel** with the same task but different focus areas:
 
@@ -105,6 +113,8 @@ h3. Критерии приёмки
 - Implementation details that belong in code
 
 ## 4. Quality validation (4 subagents in parallel)
+
+**⛔ If subagents are available, call 4 — do not validate or estimate yourself.**
 
 **Launch 4 subagents in parallel** to validate the generated JIRA task:
 
@@ -191,7 +201,7 @@ FP: [value or TBD] | IP: [value or TBD]
 
 ## 7. JIRA wiki markup reference
 
-**Headings:** `h1.`, `h2.`, `h3.`
+**Headings:** `h2.`, `h3.`
 
 **Lists:** `*` unordered, `#` ordered
 
