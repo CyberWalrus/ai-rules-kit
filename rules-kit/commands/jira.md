@@ -56,20 +56,20 @@ h1. [TAG] Task Title
 **Task body template:**
 
 ```jira
-h3. Контекст
+h2. Контекст
 Why this task exists (1-2 sentences).
 Business value and problem statement.
 
-h3. Цель
+h2. Цель
 What to achieve (1-2 sentences).
 Measurable outcome.
 
-h3. Задача
+h2. Задача
 * General approach and direction of work
 * Key aspects without implementation details
 * Group related items together
 
-h3. Критерии приёмки
+h2. Критерии приёмки
 # Testable condition understandable without code knowledge
 # Observable result that can be verified
 ```
@@ -163,7 +163,7 @@ FP: [value or TBD] | IP: [value or TBD]
 
 ## 6. JIRA wiki markup reference
 
-**Headings:** `h2.`, `h3.`
+**Headings:** `h1.`, `h2.`
 
 **Lists:** `*` unordered, `#` ordered
 
