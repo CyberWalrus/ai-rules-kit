@@ -161,14 +161,14 @@ h2. Критерии приёмки
 
 **Subagent 3 — E-epic classification:**
 
-- Use logic from `e-epic.md` command
+- Use logic from `{{COMMANDS_DIR}}/e-epic.md` command
 - Determine appropriate E-epic with reasoning
 - Provide alternative if ambiguous
-- If `e-epic.md` unavailable: classify under "Качество и стабильность продукта" and note uncertainty
+- If `{{COMMANDS_DIR}}/e-epic.md` unavailable: classify under "Качество и стабильность продукта" and note uncertainty
 
 **Subagent 4 — FP/IP estimation:**
 
-- Use `fp-points.md` and `ip-points.md` commands if available
+- Use `{{COMMANDS_DIR}}/fp-points.md` and `{{COMMANDS_DIR}}/ip-points.md` commands if available
 - If commands not configured: return `TBD` with note "Estimation available after command setup"
 
 **After completion:** Consolidate validation results from all 4 subagents. Use consolidated data to fill the four required output blocks (title, body, E-epic, FP/IP).
@@ -226,7 +226,7 @@ FP: [value or TBD] | IP: [value or TBD]
 - **Task unclear:** Ask 1-2 clarifying questions before proceeding
 - **Project relation unclear:** Ask explicitly if about current project
 - **Any subagent fails:** Continue with available results, note limitation in final output
-- **e-epic.md unavailable:** Use "Качество и стабильность продукта" as default, note uncertainty
+- **{{COMMANDS_DIR}}/e-epic.md unavailable:** Use "Качество и стабильность продукта" as default, note uncertainty
 - **FP/IP commands not configured:** Output `FP: TBD | IP: TBD` with note "Estimation available after command setup"
 - **All dependency files unavailable:** Set E-epic to "Качество и стабильность продукта", FP/IP to `TBD`, note limitations
 

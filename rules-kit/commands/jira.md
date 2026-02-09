@@ -105,9 +105,9 @@ h2. Критерии приёмки
 
 ## 3. Quick classification
 
-**E-epic:** Pick the most obvious fit from `e-epic.md` logic. If unclear → "Качество и стабильность продукта".
+**E-epic:** Pick the most obvious fit from `{{COMMANDS_DIR}}/e-epic.md` logic. If unclear → "Качество и стабильность продукта".
 
-**FP/IP:** Quick estimate based on scope. If `fp-points.md`/`ip-points.md` configured → use them. If not → `TBD`.
+**FP/IP:** Quick estimate based on scope. If `{{COMMANDS_DIR}}/fp-points.md`/`{{COMMANDS_DIR}}/ip-points.md` configured → use them. If not → `TBD`.
 
 Don't overthink — first reasonable choice is usually correct.
 
@@ -158,7 +158,7 @@ FP: [value or TBD] | IP: [value or TBD]
 ## 5. Exception handling
 
 - **Task unclear:** Ask ONE question, proceed with answer
-- **e-epic.md unavailable:** Use "Качество и стабильность продукта"
+- **{{COMMANDS_DIR}}/e-epic.md unavailable:** Use "Качество и стабильность продукта"
 - **FP/IP commands not configured:** Output `TBD`
 
 ## 6. JIRA wiki markup reference
